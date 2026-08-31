@@ -1,13 +1,11 @@
-package pl.visa.dnd_character_manager.apiLoader;
+package pl.visa.dndCM.apiLoader;
 
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Arrays;
 
 public class Main {
 
     private static final String API_URL
-            = "https://www.dnd5eapi.co/api/classes";
+        = "https://api.open5e.com/v2/classes/?document__key__in=srd-2024";
 
     public static void main(String[] args) throws Exception {
 

@@ -1,4 +1,4 @@
-package pl.visa.dnd_character_manager.apiLoader;
+package pl.visa.dndCM.apiLoader;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;

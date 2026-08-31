@@ -1,4 +1,4 @@
-package pl.visa.dnd_character_manager;
+package pl.visa.dndCM;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

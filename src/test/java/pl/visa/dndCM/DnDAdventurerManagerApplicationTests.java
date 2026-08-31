@@ -1,10 +1,10 @@
-package pl.visa.dnd_character_manager;
+package pl.visa.dndCM;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DnDDndCharacterManagerApplicationTests {
+class DnDAdventurerManagerApplicationTests {
 
     @Test
     void contextLoads() {

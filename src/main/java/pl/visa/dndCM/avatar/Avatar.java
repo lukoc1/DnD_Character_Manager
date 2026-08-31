@@ -1,18 +1,16 @@
-package pl.visa.dnd_character_manager.character;
+package pl.visa.dndCM.avatar;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import pl.visa.dnd_character_manager.user.User;
+import lombok.*;
+import pl.visa.dndCM.user.User;
 
 @Entity
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DndCharacter {
+@Builder
+public class Avatar {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

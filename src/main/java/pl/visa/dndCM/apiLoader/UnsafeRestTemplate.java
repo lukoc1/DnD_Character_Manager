@@ -1,4 +1,4 @@
-package pl.visa.dnd_character_manager.apiLoader;
+package pl.visa.dndCM.apiLoader;
 
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
