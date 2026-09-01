@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+<!--  <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">-->
+<!--    <span th:text="${message}">Operacja zakończona sukcesem.</span>-->
+<!--    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>-->
+<!--  </div>-->
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 m-0">Lista postaci</h1>
+<!--    <a class="btn btn-success" th:href="@{/drink/new}">-->
+<!--      <i class="bi bi-plus-lg"></i> Dodaj nowy-->
+<!--    </a>-->
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+      <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Nazwa</th>
+        <th>Opis</th>
+
+        <th class="text-end">Akcje</th>
+      </tr>
+      </thead>
+      <tbody>
+
+      <tr th:each="a : ${avatars}">
+        <td th:text="${a.id}">1</td>
+        <td th:text="${a.name}">Nazwa</td>
+<!--        <td class="text-truncate" style="max-width: 320px" th:text="${d.description}">Opis</td>-->
+<!--        <td class="text-end">-->
+<!--          <a class="btn btn-sm btn-outline-primary" th:href="@{|/drink/${d.id}|}">Podgląd</a>-->
+<!--          <a class="btn btn-sm btn-outline-secondary" th:href="@{|/drink/${d.id}/edit|}">Edytuj</a>-->
+<!--          <a class="btn btn-sm btn-outline-danger data-confirm" th:href="@{|/drink/${d.id}/delete|}">Usuń</a>-->
+<!--        </td>-->
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>
