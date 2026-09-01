@@ -16,8 +16,8 @@ public class AvatarDTO {
     private String owner;
 
     private String name;
-    private String background;
-    private String className;
-    private String species;
-    private String subclassName;
+//    private String background;
+//    private String className;
+//    private String species;
+//    private String subclassName;
 }

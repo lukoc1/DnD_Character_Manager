@@ -20,8 +20,8 @@ public class UserService {
     }
 
     public void save(RegisterUserDTO userDTO) {
-        // prevent duplicate usernames (unique constraint in DB causes 500)
-        if (userRepository.findByName(userDTO.getName()).isPresent()) {
+
+        if (userRepository.existsByName(userDTO.getName())) {
             throw new IllegalArgumentException("User already exists");
         }
         userRepository.save(User.builder()
@@ -31,7 +31,16 @@ public class UserService {
     }
 
     public Optional<User> findByName(String name) {
-        return userRepository.findByName(name);
+        Optional<User> user = userRepository.findByName(name);
+
+        System.out.println("found: " + user.isPresent());
+
+        if (user.isPresent()) {
+            System.out.println("id: " + user.get().getId());
+            System.out.println("name: " + user.get().getName());
+        }
+
+        return user;
     }
 
     public UserDTO toDTO(User user) {
