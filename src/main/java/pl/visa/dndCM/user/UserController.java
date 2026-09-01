@@ -12,32 +12,41 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/user")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping("/signup")
+    @GetMapping("/adduser")
     public String showSighUpForm(Model model) {
         model.addAttribute("registerUserDTO", new RegisterUserDTO());
         return "add-user";
     }
 
-    @PostMapping("/adduser")
+    @PostMapping(value = "/adduser", params = "cancel")
+    public String cancelUserRegistration() {
+        return "redirect:/";
+    }
+
+    @PostMapping(value = "/adduser", params = "register")
     public String addUser(@Valid RegisterUserDTO userDTO, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "add-user";
         }
 
-        userService.save(userDTO);
+        try {
+            userService.save(userDTO);
+        } catch (IllegalArgumentException ex) {
+            return "add-user";
+        }
         return "redirect:/";
     }
 
-    @GetMapping("/login")
-    public String showHomePage(Model model) {
-        return "login";
-    }
+//    @GetMapping("/login")
+//    public String showHomePage(Model model) {
+//        return "login";
+//    }
 
 //    @GetMapping("/list")
 //    public String list(Model model) {

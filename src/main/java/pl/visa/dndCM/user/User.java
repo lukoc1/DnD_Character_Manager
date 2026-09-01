@@ -1,6 +1,7 @@
 package pl.visa.dndCM.user;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import pl.visa.dndCM.avatar.Avatar;
 
@@ -20,7 +21,10 @@ public class User {
     private Long id;
 
 //    private UUID uuid;
+    @NotBlank
+    @Column(unique = true)
     private String name;
+    @NotBlank
     private String password;
 
     @OneToMany(mappedBy = "owner")

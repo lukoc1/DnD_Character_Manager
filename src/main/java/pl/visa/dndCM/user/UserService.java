@@ -1,11 +1,9 @@
 package pl.visa.dndCM.user;
 
-import jakarta.validation.Valid;
-import org.jspecify.annotations.Nullable;
-import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -18,18 +16,27 @@ public class UserService {
 
     public List<UserDTO> findAll() {
         return userRepository.findAll()
-                .stream().map(s -> toDTO(s)).toList();
+                .stream().map(this::toDTO).toList();
     }
 
     public void save(RegisterUserDTO userDTO) {
-        userRepository.save(User.builder().name(userDTO.getName())
-                .password(PasswordUtil.hashPassword(userDTO.getPassword())).build());
+        // prevent duplicate usernames (unique constraint in DB causes 500)
+        if (userRepository.findByName(userDTO.getName()).isPresent()) {
+            throw new IllegalArgumentException("User already exists");
+        }
+        userRepository.save(User.builder()
+                .name(userDTO.getName())
+                .password(PasswordUtil.hashPassword(userDTO.getPassword()))
+                .build());
     }
 
+    public Optional<User> findByName(String name) {
+        return userRepository.findByName(name);
+    }
 
     public UserDTO toDTO(User user) {
         return UserDTO.builder().id(user.getId()).name(user.getName())
-                .avatarList(user.getAvatarList().stream()
+                .avatarList(user.getAvatarList() == null ? List.of() : user.getAvatarList().stream()
                         .map(a -> a.getName()).toList())
                 .build();
     }
@@ -37,6 +44,4 @@ public class UserService {
     public User toEntity(UserDTO userDTO) {
         return User.builder().id(userDTO.getId()).name(userDTO.getName()).build();
     }
-
-
 }

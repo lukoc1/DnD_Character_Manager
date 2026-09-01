@@ -1,5 +1,6 @@
 package pl.visa.dndCM.user;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import pl.visa.dndCM.avatar.Avatar;
 import pl.visa.dndCM.avatar.AvatarDTO;
@@ -16,6 +17,7 @@ public class UserDTO {
 
     private Long id;
 //    private UUID uuid;
+    @NotBlank
     private String name;
     private List<String> avatarList;
 }

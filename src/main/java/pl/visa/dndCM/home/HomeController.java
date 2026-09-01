@@ -15,8 +15,16 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String showUserList(Model model) {
-        model.addAttribute("users", userService.findAll());
+    public String loginPage(Model model) {
+        // Keep the login page rendering simple; do not query users here.
         return "index";
+    }
+
+
+
+    @GetMapping("/home")
+    public String homePage(Model model) {
+        model.addAttribute("users", userService.findAll());
+        return "home";
     }
 }

@@ -1,5 +1,6 @@
 package pl.visa.dndCM.user;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter
@@ -10,6 +11,8 @@ import lombok.*;
 
 public class RegisterUserDTO {
 
+    @NotBlank
     private String name;
+    @NotBlank
     private String password;
 }
