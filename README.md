@@ -9,3 +9,7 @@ a tak jak to sa niezmienne dane to mozna zapisac w tabeli/lach (nawet lepiej)
 https://api.open5e.com/v2
 
 avatar == character -> postac grywalna 
+
+## TO DO:
+* UUID zamiast ID
+* Spring security

@@ -13,9 +13,9 @@
 
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h3 m-0">Lista postaci</h1>
-<!--    <a class="btn btn-success" th:href="@{/drink/new}">-->
-<!--      <i class="bi bi-plus-lg"></i> Dodaj nowy-->
-<!--    </a>-->
+    <a class="btn btn-success" th:href="@{/avatar/new}">
+      <i class="bi bi-plus-lg"></i> Dodaj nowy
+    </a>
   </div>
 
   <div class="table-responsive">
@@ -31,7 +31,7 @@
       </thead>
       <tbody>
 
-      <tr th:each="a : ${avatars}">
+      <tr th:each="a : ${avatars}" th:if="${a.userId == 3}">
         <td th:text="${a.id}">1</td>
         <td th:text="${a.name}">Nazwa</td>
 <!--        <td class="text-truncate" style="max-width: 320px" th:text="${d.description}">Opis</td>-->

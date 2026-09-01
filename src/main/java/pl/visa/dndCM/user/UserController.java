@@ -18,27 +18,27 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/adduser")
+    @GetMapping("/add")
     public String showSighUpForm(Model model) {
         model.addAttribute("registerUserDTO", new RegisterUserDTO());
-        return "add-user";
+        return "user/add-user";
     }
 
-    @PostMapping(value = "/adduser", params = "cancel")
+    @PostMapping(value = "/add", params = "cancel")
     public String cancelUserRegistration() {
         return "redirect:/";
     }
 
-    @PostMapping(value = "/adduser", params = "register")
+    @PostMapping(value = "/add", params = "register")
     public String addUser(@Valid RegisterUserDTO userDTO, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            return "add-user";
+            return "user/add-user";
         }
 
         try {
             userService.save(userDTO);
         } catch (IllegalArgumentException ex) {
-            return "add-user";
+            return "user/add-user";
         }
         return "redirect:/";
     }

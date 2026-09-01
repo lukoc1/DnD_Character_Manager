@@ -1,6 +1,8 @@
 package pl.visa.dndCM.avatar;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import pl.visa.dndCM.user.User;
 

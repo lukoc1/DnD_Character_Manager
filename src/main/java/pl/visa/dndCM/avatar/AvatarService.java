@@ -1,6 +1,7 @@
 package pl.visa.dndCM.avatar;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMapping;
 import pl.visa.dndCM.user.*;
 
 import java.util.List;
@@ -27,7 +28,9 @@ public class AvatarService {
     public AvatarDTO toDTO(Avatar avatar) {
         return AvatarDTO.builder()
                 .id(avatar.getId())
-                .name(avatar.getName()).build();
+                .name(avatar.getName())
+                .userId(avatar.getOwner().getId())
+                .build();
     }
 
     public Avatar toEntity(AvatarDTO avatarDTO) {

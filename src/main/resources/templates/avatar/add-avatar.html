@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Register new avatar</title>
+</head>
+<body>
+
+<h1>New avatar</h1>
+
+<form th:action="@{/avatar/add}" th:object="${avatar}" method="post">
+
+    <p> Name:
+        <input type="text" th:field="*{name}"/>
+    </p>
+    <p> Background:
+        <input type="text" th:field="*{background}" />
+    </p>
+    <p>
+        <td><input type="submit" name="register" value="Register" /></td>
+        <td><input type="submit" name="cancel" value="Cancel" /></td>
+    </p>
+</form>
+
+</body>
+</html>

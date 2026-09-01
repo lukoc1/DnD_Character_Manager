@@ -20,11 +20,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    private UUID uuid;
-    @NotBlank
-    @Column(unique = true)
+    private UUID uuid;
     private String name;
-    @NotBlank
     private String password;
 
     @OneToMany(mappedBy = "owner")
