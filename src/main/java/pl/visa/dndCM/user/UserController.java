@@ -43,14 +43,4 @@ public class UserController {
         return "redirect:/";
     }
 
-//    @GetMapping("/login")
-//    public String showHomePage(Model model) {
-//        return "login";
-//    }
-
-//    @GetMapping("/list")
-//    public String list(Model model) {
-//
-////        model.addAttribute("users", userService.fin)
-//    }
 }

@@ -13,9 +13,15 @@
 
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h3 m-0">Lista postaci</h1>
-    <a class="btn btn-success" th:href="@{/avatar/new}">
-      <i class="bi bi-plus-lg"></i> Dodaj nowy
-    </a>
+    <div>
+      <a class="btn btn-success" th:href="@{/avatar/add}">
+        <i class="bi bi-plus-lg"></i> Dodaj nowy
+      </a>
+      <form th:action="@{/logout}" method="post" style="display:inline">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <button type="submit" class="btn btn-outline-secondary">Wyloguj</button>
+      </form>
+    </div>
   </div>
 
   <div class="table-responsive">
@@ -31,9 +37,24 @@
       </thead>
       <tbody>
 
-      <tr th:each="a : ${avatars}" th:if="${a.userId == 3}">
+      <tr th:each="a : ${avatars}">
         <td th:text="${a.id}">1</td>
         <td th:text="${a.name}">Nazwa</td>
+        <td>
+          <a class="btn btn-sm btn-outline-primary" th:href="@{|/avatar/select/${a.id}|}">Choose</a>
+        </td>
+
+<!--        <td>-->
+<!--          <form id = "hotDealForm" th:action = "@{/hot-deal-step-1}"  method="post">-->
+
+<!--            <div class="col-xs-12 col-sm-6 col-md-6">-->
+<!--              This Hot deal-->
+<!--              <br/>-->
+<!--              <input type="button" value="Continue to schedule" class="btn btn-red" />-->
+<!--            </div>-->
+
+<!--          </form>-->
+<!--        </td>-->
 <!--        <td class="text-truncate" style="max-width: 320px" th:text="${d.description}">Opis</td>-->
 <!--        <td class="text-end">-->
 <!--          <a class="btn btn-sm btn-outline-primary" th:href="@{|/drink/${d.id}|}">Podgląd</a>-->

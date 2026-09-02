@@ -7,7 +7,7 @@
 
 <h1>New avatar</h1>
 
-<form th:action="@{/avatar/add}" th:object="${avatar}" method="post">
+<form th:action="@{/avatar/add}" th:object="${avatarDTO}" method="post">
 
     <p> Name:
         <input type="text" th:field="*{name}"/>
@@ -16,7 +16,7 @@
         <input type="text" th:field="*{background}" />
     </p>
     <p>
-        <td><input type="submit" name="register" value="Register" /></td>
+        <td><input type="submit" name="save" value="Save" /></td>
         <td><input type="submit" name="cancel" value="Cancel" /></td>
     </p>
 </form>

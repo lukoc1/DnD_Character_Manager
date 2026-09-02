@@ -16,13 +16,13 @@ public class AvatarDTO {
     private Long id;
     private Long userId;
 
-    private String owner;
+    private String user;
 
     @NotBlank
     @Size(min = 2, max = 30)
     private String name;
     private String background;
-//    private String className;
-//    private String species;
-//    private String subclassName;
+    private String className;
+    private String species;
+    private String subclassName;
 }

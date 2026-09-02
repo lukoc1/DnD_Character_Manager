@@ -1,5 +1,6 @@
 package pl.visa.dndCM.user;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,9 +10,11 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UserDTO> findAll() {
@@ -26,22 +29,15 @@ public class UserService {
         }
         userRepository.save(User.builder()
                 .name(userDTO.getName())
-                .password(PasswordUtil.hashPassword(userDTO.getPassword()))
+                .password(passwordEncoder.encode(userDTO.getPassword()))
                 .build());
     }
 
     public Optional<User> findByName(String name) {
-        Optional<User> user = userRepository.findByName(name);
-
-        System.out.println("found: " + user.isPresent());
-
-        if (user.isPresent()) {
-            System.out.println("id: " + user.get().getId());
-            System.out.println("name: " + user.get().getName());
-        }
-
-        return user;
+        return userRepository.findByName(name);
     }
+
+    // utils
 
     public UserDTO toDTO(User user) {
         return UserDTO.builder().id(user.getId()).name(user.getName())

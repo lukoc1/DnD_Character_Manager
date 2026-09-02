@@ -13,3 +13,4 @@ avatar == character -> postac grywalna
 ## TO DO:
 * UUID zamiast ID
 * Spring security
+

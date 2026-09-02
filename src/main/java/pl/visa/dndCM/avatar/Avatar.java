@@ -20,7 +20,7 @@ public class Avatar {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User owner;
+    private User user;
 
     // // header
     // Basics
