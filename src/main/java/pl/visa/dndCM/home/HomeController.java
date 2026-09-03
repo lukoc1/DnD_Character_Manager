@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import pl.visa.dndCM.avatar.AvatarService;
 import pl.visa.dndCM.user.User;
+import pl.visa.dndCM.user.UserDTO;
 import pl.visa.dndCM.user.UserService;
 
 @Controller
@@ -46,7 +47,7 @@ public class HomeController {
     public String homePage(Model model, Authentication authentication) {
 
         String name = authentication.getName();
-        User currentUser = userService.findByName(name).get();
+        UserDTO currentUser = userService.findByName(name);
 
         model.addAttribute("avatars", avatarService.findAllByUserId(currentUser.getId()));
         return "home";

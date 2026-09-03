@@ -3,6 +3,8 @@ package pl.visa.dndCM.avatar;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
+import pl.visa.dndCM.exception.ErrorCode;
+import pl.visa.dndCM.exception.ResourceNotFoundException;
 import pl.visa.dndCM.user.*;
 
 import java.util.List;
@@ -21,7 +23,9 @@ public class AvatarService {
     /// methods
 
     public AvatarDTO getAvatarById(Long id) {
-        return avatarRepository.findById(id).map(s -> toDTO(s)).orElseThrow(() -> new IllegalArgumentException("Avatar not found"));
+        return avatarRepository.findById(id)
+                .map(s -> toDTO(s))
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", id), ErrorCode.AVATAR_NOT_FOUND));
     }
 
     public List<AvatarDTO> findAll() {
@@ -36,7 +40,8 @@ public class AvatarService {
 
     public void save(AvatarDTO avatarDTO, String userName) {
 
-        User user = userRepository.findByName(userName).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userRepository.findByName(userName)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("User %s not found", userName), ErrorCode.USER_NOT_FOUND));
 
         Avatar avatar = toEntity(avatarDTO);
         avatar.setUser(user);

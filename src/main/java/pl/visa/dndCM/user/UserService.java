@@ -2,6 +2,8 @@ package pl.visa.dndCM.user;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import pl.visa.dndCM.exception.ErrorCode;
+import pl.visa.dndCM.exception.ResourceNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,8 +37,11 @@ public class UserService {
                 .build());
     }
 
-    public Optional<User> findByName(String name) {
-        return userRepository.findByName(name);
+    public UserDTO findByName(String name) {
+        return userRepository.findByName(name).stream()
+                .map(this::toDTO)
+                .findFirst().orElseThrow(() -> new ResourceNotFoundException(String.format("User %s not found", name), ErrorCode.USER_NOT_FOUND));
+
     }
 
     // utils

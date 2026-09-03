@@ -65,7 +65,7 @@ public class AvatarController {
         // current user name
         String name = authentication.getName();
 
-        Long userId = userService.findByName(name).get().getId();
+        Long userId = userService.findByName(name).getId();
         Long avatarOwnerId = avatarService.getAvatarById(id).getUserId();
 
         if (!userId.equals(avatarOwnerId)) {
