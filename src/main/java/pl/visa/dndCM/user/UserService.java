@@ -27,9 +27,11 @@ public class UserService {
         if (userRepository.existsByName(userDTO.getName())) {
             throw new IllegalArgumentException("User already exists");
         }
+
         userRepository.save(User.builder()
                 .name(userDTO.getName())
                 .password(passwordEncoder.encode(userDTO.getPassword()))
+                .role("USER")
                 .build());
     }
 
@@ -47,6 +49,7 @@ public class UserService {
     }
 
     public User toEntity(UserDTO userDTO) {
-        return User.builder().id(userDTO.getId()).name(userDTO.getName()).build();
+        return User.builder().id(userDTO.getId()).name(userDTO.getName()).role("USER")
+                .build();
     }
 }

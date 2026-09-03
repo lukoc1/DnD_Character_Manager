@@ -14,3 +14,4 @@ avatar == character -> postac grywalna
 * UUID zamiast ID
 * Spring security
 
+param.error -> /home?error przykładowo

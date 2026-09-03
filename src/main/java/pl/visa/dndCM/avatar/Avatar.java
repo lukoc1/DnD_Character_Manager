@@ -30,6 +30,7 @@ public class Avatar {
     private String species;
     private String subclassName;
     // // Level
+
 //    private int level;
 //    // Armor
 //    private int armorClass;

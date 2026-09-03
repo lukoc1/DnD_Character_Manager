@@ -14,17 +14,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pl.visa.dndCM.user.User;
 import pl.visa.dndCM.user.UserDTO;
 import pl.visa.dndCM.user.UserRepository;
+import pl.visa.dndCM.user.UserService;
 
 @Controller
 @RequestMapping("/avatar")
 public class AvatarController {
 
     private final AvatarService avatarService;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public AvatarController(AvatarService avatarService, UserRepository userRepository) {
+    public AvatarController(AvatarService avatarService, UserService userService) {
         this.avatarService = avatarService;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @GetMapping("/add")
@@ -59,7 +60,18 @@ public class AvatarController {
 
 
     @GetMapping("/select/{id}")
-    public String selectAvatar(Model model, @PathVariable Long id, RedirectAttributes ra) {
+    public String selectAvatar(Model model, @PathVariable Long id, RedirectAttributes ra, Authentication authentication) {
+
+        // current user name
+        String name = authentication.getName();
+
+        Long userId = userService.findByName(name).get().getId();
+        Long avatarOwnerId = avatarService.getAvatarById(id).getUserId();
+
+        if (!userId.equals(avatarOwnerId)) {
+            ra.addFlashAttribute("message", "Nie posiadasz dostępu do postaci [id = " + id + "]!");
+            return "redirect:/home";
+        }
 
         model.addAttribute("avatar", avatarService.getAvatarById(id));
 

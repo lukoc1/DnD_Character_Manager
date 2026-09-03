@@ -1,23 +1,25 @@
 package pl.visa.dndCM.apiLoader;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Arrays;
 
 public class Main {
 
     private static final String API_URL
-        = "https://api.open5e.com/v2/classes/?document__key__in=srd-2024";
+        = "https://api.open5e.com/v2/items/{1}";
+    private static final String API_URL_2
+        = "https://www.dnd5eapi.co/api/2024/classes";
 
     public static void main(String[] args) throws Exception {
 
         RestTemplate restTemplate = UnsafeRestTemplate.create();
 
-        ClassesResponseDTO response = restTemplate.getForObject(
-                API_URL,
-                ClassesResponseDTO.class
-        );
+        ResponseEntity<ClassesResponseDTO> responseEntity = restTemplate.getForEntity(API_URL_2, ClassesResponseDTO.class);
 
-        if (response != null && response.getResults() != null) {
-            response.getResults().forEach(System.out::println);
-        }
+        ClassesResponseDTO response = responseEntity.getBody();
+
+        response.getResults().forEach(System.out::println);
     }
 }
