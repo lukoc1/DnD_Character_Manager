@@ -10,8 +10,9 @@ https://api.open5e.com/v2
 
 avatar == character -> postac grywalna 
 
-## TO DO:
-* UUID zamiast ID
-* Spring security
 
 param.error -> /home?error przykładowo
+
+## TO DO:
+* UUID zamiast ID
+* może przy tworzeniu usera podwójnie wpisywane haslo?
