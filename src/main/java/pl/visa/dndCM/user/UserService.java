@@ -4,6 +4,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.visa.dndCM.exception.ErrorCode;
 import pl.visa.dndCM.exception.ResourceNotFoundException;
+import pl.visa.dndCM.exception.UserAlreadyExistException;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +28,8 @@ public class UserService {
     public void save(RegisterUserDTO userDTO) {
 
         if (userRepository.existsByName(userDTO.getName())) {
-            throw new IllegalArgumentException("User already exists");
+            throw new UserAlreadyExistException(userDTO.getName());
+//            throw new IllegalArgumentException("User already exists");
         }
 
         userRepository.save(User.builder()

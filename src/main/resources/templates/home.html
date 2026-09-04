@@ -19,11 +19,6 @@
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h3 m-0">Lista postaci</h1>
 
-    <div th:if="${message}" class="alert alert-danger alert-dismissible fade show" role="alert">
-      <span th:text="${message}"></span>
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
-    </div>
-
     <div>
       <a class="btn btn-success" th:href="@{/avatar/add}">
         <i class="bi bi-plus-lg"></i> Dodaj nowy
@@ -33,6 +28,12 @@
         <button type="submit" class="btn btn-outline-secondary">Wyloguj</button>
       </form>
     </div>
+
+  </div>
+
+  <div th:if="${message}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <span th:text="${message}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
   </div>
 
   <div class="table-responsive">

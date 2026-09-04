@@ -7,6 +7,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/user")
@@ -31,15 +32,13 @@ public class UserController {
 
     @PostMapping(value = "/register", params = "register")
     public String addUser(@Valid RegisterUserDTO userDTO, BindingResult result, Model model) {
+
         if (result.hasErrors()) {
             return "user/register-user";
         }
 
-        try { 
-            userService.save(userDTO);
-        } catch (IllegalArgumentException ex) {
-            return "user/register-user";
-        }
+        userService.save(userDTO);
+
         return "redirect:/";
     }
 

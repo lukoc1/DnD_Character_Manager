@@ -16,3 +16,4 @@ param.error -> /home?error przykładowo
 ## TO DO:
 * UUID zamiast ID
 * może przy tworzeniu usera podwójnie wpisywane haslo?
+* usunac pole ROLE u usera
