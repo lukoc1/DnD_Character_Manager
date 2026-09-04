@@ -4,7 +4,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import pl.visa.dndCM.equipmentItem.EquipmentItem;
 import pl.visa.dndCM.user.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Setter
@@ -19,7 +23,6 @@ public class Avatar {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
     private User user;
 
     // // header
@@ -30,6 +33,10 @@ public class Avatar {
     private String species;
     private String subclassName;
     // // Level
+
+    @OneToMany(mappedBy = "avatar")
+    private List<EquipmentItem> itemList = new ArrayList<>();
+
 
 //    private int level;
 //    // Armor
