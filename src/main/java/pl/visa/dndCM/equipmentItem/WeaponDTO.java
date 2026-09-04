@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class EquipmentItemDTO {
+public class WeaponDTO {
 
     private Long id;
 
@@ -23,5 +23,6 @@ public class EquipmentItemDTO {
     private int quantity;
 
     private String damage;
-    private String properties;
+    private String twoHandedDamage;
+//    private String properties;
 }

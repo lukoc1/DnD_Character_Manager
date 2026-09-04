@@ -5,13 +5,12 @@ import lombok.*;
 import pl.visa.dndCM.avatar.Avatar;
 import pl.visa.dndCM.equipmentItem.damageType.DamageType;
 
-@Entity
+@MappedSuperclass
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class EquipmentItem {
+public abstract class EquipmentItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,20 +18,6 @@ public class EquipmentItem {
 
     private String apiIndex;
     private String name;
-    private String primaryCategory;
+    private String category;
 
-    private int quantity;
-//    private Double weight;
-
-//    private String cost;
-    private String damage;
-    private String twoHandedDamage;
-
-    @ManyToOne
-    private DamageType damageType;
-
-    private String properties;
-
-    @ManyToOne
-    private Avatar avatar;
 }

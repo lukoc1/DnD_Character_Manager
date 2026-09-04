@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import pl.visa.dndCM.equipmentItem.AvatarWeapon;
 import pl.visa.dndCM.equipmentItem.EquipmentItem;
+import pl.visa.dndCM.equipmentItem.Weapon;
 import pl.visa.dndCM.user.User;
 
 import java.util.ArrayList;
@@ -35,7 +37,14 @@ public class Avatar {
     // // Level
 
     @OneToMany(mappedBy = "avatar")
-    private List<EquipmentItem> itemList = new ArrayList<>();
+    private List<AvatarWeapon> weaponList = new ArrayList<>();
+
+
+//    @ManyToMany
+//    @JoinTable(name = "avatar_weapon",
+//            joinColumns = @JoinColumn(name = "avatar_id"),
+//            inverseJoinColumns = @JoinColumn(name = "weapon_id"))
+//    private List<Weapon> weaponList = new ArrayList<>();
 
 
 //    private int level;
