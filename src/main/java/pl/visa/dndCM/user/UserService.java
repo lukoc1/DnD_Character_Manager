@@ -1,6 +1,10 @@
 package pl.visa.dndCM.user;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import pl.visa.dndCM.exception.ErrorCode;
+import pl.visa.dndCM.exception.ResourceNotFoundException;
+import pl.visa.dndCM.exception.UserAlreadyExistException;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,9 +13,11 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UserDTO> findAll() {
@@ -22,26 +28,25 @@ public class UserService {
     public void save(RegisterUserDTO userDTO) {
 
         if (userRepository.existsByName(userDTO.getName())) {
-            throw new IllegalArgumentException("User already exists");
+            throw new UserAlreadyExistException(userDTO.getName());
+//            throw new IllegalArgumentException("User already exists");
         }
+
         userRepository.save(User.builder()
                 .name(userDTO.getName())
-                .password(PasswordUtil.hashPassword(userDTO.getPassword()))
+                .password(passwordEncoder.encode(userDTO.getPassword()))
+                .role("USER")
                 .build());
     }
 
-    public Optional<User> findByName(String name) {
-        Optional<User> user = userRepository.findByName(name);
+    public UserDTO findByName(String name) {
+        return userRepository.findByName(name).stream()
+                .map(this::toDTO)
+                .findFirst().orElseThrow(() -> new ResourceNotFoundException(String.format("User %s not found", name), ErrorCode.USER_NOT_FOUND));
 
-        System.out.println("found: " + user.isPresent());
-
-        if (user.isPresent()) {
-            System.out.println("id: " + user.get().getId());
-            System.out.println("name: " + user.get().getName());
-        }
-
-        return user;
     }
+
+    // utils
 
     public UserDTO toDTO(User user) {
         return UserDTO.builder().id(user.getId()).name(user.getName())
@@ -51,6 +56,7 @@ public class UserService {
     }
 
     public User toEntity(UserDTO userDTO) {
-        return User.builder().id(userDTO.getId()).name(userDTO.getName()).build();
+        return User.builder().id(userDTO.getId()).name(userDTO.getName()).role("USER")
+                .build();
     }
 }

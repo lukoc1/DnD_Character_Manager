@@ -1,0 +1,7 @@
+.slider .container{
+    display: none;
+}
+
+.slider .container.visible{
+    display: block;
+}

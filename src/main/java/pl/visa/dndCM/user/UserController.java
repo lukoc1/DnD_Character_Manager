@@ -7,6 +7,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/user")
@@ -18,39 +19,27 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/add")
+    @GetMapping("/register")
     public String showSighUpForm(Model model) {
         model.addAttribute("registerUserDTO", new RegisterUserDTO());
-        return "user/add-user";
+        return "user/register-user";
     }
 
-    @PostMapping(value = "/add", params = "cancel")
+    @PostMapping(value = "/register", params = "cancel")
     public String cancelUserRegistration() {
         return "redirect:/";
     }
 
-    @PostMapping(value = "/add", params = "register")
+    @PostMapping(value = "/register", params = "register")
     public String addUser(@Valid RegisterUserDTO userDTO, BindingResult result, Model model) {
+
         if (result.hasErrors()) {
-            return "user/add-user";
+            return "user/register-user";
         }
 
-        try {
-            userService.save(userDTO);
-        } catch (IllegalArgumentException ex) {
-            return "user/add-user";
-        }
+        userService.save(userDTO);
+
         return "redirect:/";
     }
 
-//    @GetMapping("/login")
-//    public String showHomePage(Model model) {
-//        return "login";
-//    }
-
-//    @GetMapping("/list")
-//    public String list(Model model) {
-//
-////        model.addAttribute("users", userService.fin)
-//    }
 }

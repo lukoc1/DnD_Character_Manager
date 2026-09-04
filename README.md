@@ -10,6 +10,10 @@ https://api.open5e.com/v2
 
 avatar == character -> postac grywalna 
 
+
+param.error -> /home?error przykładowo
+
 ## TO DO:
 * UUID zamiast ID
-* Spring security
+* może przy tworzeniu usera podwójnie wpisywane haslo?
+* usunac pole ROLE u usera

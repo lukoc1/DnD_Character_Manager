@@ -1,25 +1,42 @@
 <!DOCTYPE HTML>
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
-    <title>Register new avatar</title>
+    <title>DnD Character Manager</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 </head>
 <body>
 
-<h1>New avatar</h1>
+<!-- TOP NAVBAR -->
+<nav class="navbar navbar-light mb-2" style="background-color: #B0BE00;" data-bs-theme="dark">
+    <div class="container">
+        <a class="navbar-brand text-black" th:href="@{/login}">DnD Character Manager</a>
+    </div>
+</nav>
 
-<form th:action="@{/avatar/add}" th:object="${avatar}" method="post">
 
-    <p> Name:
-        <input type="text" th:field="*{name}"/>
-    </p>
-    <p> Background:
-        <input type="text" th:field="*{background}" />
-    </p>
-    <p>
-        <td><input type="submit" name="register" value="Register" /></td>
-        <td><input type="submit" name="cancel" value="Cancel" /></td>
-    </p>
-</form>
+<div class="container">
+
+    <div class="d-flex justify-content-between align-items-right mb-3">
+        <h1 class="h3 m-0">New avatar</h1>
+    </div>
+
+    <form th:action="@{/avatar/add}" th:object="${avatarDTO}" method="post">
+
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" th:field="*{name}"/>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Background</label>
+            <input type="text" class="form-control" th:field="*{background}"/>
+        </div>
+
+        <button type="submit" name="save" class="btn btn-primary">Save</button>
+        <button type="submit" name="cancel" class="btn btn-primary">Cancel</button>
+
+    </form>
+
+</div>
 
 </body>
 </html>
