@@ -2,15 +2,15 @@ package pl.visa.dndCM.equipmentItem;
 
 import jakarta.persistence.*;
 import lombok.*;
-import pl.visa.dndCM.avatar.Avatar;
 import pl.visa.dndCM.equipmentItem.damageType.DamageType;
 
-@MappedSuperclass
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class EquipmentItem {
+@Builder
+public class EquipmentItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +18,14 @@ public abstract class EquipmentItem {
 
     private String apiIndex;
     private String name;
-    private String category;
+
+    @Enumerated(EnumType.STRING)
+    private EquipmentCategory category;
+
+    private String damage;
+    private String twoHandedDamage;
+
+    @ManyToOne
+    private DamageType damageType;
 
 }

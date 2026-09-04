@@ -8,7 +8,7 @@ import pl.visa.dndCM.avatar.Avatar;
 @Entity
 @Setter
 @Getter
-public class AvatarWeapon {
+public class AvatarEquipmentItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,8 +18,8 @@ public class AvatarWeapon {
     private Avatar avatar;
 
     @ManyToOne
-    @JoinColumn(name = "weapon_id")
-    private Weapon weapon;
+    @JoinColumn(name = "equipment_item_id")
+    private EquipmentItem equipmentItem;
 
     private int quantity;
 }
