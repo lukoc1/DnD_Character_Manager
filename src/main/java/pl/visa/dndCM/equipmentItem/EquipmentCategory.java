@@ -1,8 +1,11 @@
 package pl.visa.dndCM.equipmentItem;
 
+import java.util.Arrays;
+
 public enum EquipmentCategory {
     COINS,
     WEAPONS,
+    AMMUNITION,
     ARMOR,
     TOOLS,
     ADVENTURING_GEAR,

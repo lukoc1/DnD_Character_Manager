@@ -6,6 +6,7 @@ import lombok.Setter;
 import pl.visa.dndCM.avatar.Avatar;
 
 @Entity
+@Table(name = "avatar_equipment_item")
 @Setter
 @Getter
 public class AvatarEquipmentItem {

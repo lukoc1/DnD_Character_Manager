@@ -49,6 +49,10 @@ public class AvatarService {
         avatarRepository.save(avatar);
     }
 
+    public void deleteAvatarById(Long id) {
+        avatarRepository.deleteById(id);
+    }
+
 
     /// utils
 

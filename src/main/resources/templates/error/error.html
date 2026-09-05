@@ -39,7 +39,10 @@
         </div>
 
         <div class="card-footer text-end">
-            <a th:href="@{/}" class="btn btn-light">Back to home page</a>
+            <!-- Wyświetla się tylko dla braku użytkownika -->
+            <a th:if="${isUserNotFound}" th:href="@{/login}" class="btn btn-light">Go to login page</a>
+
+            <a th:unless="${isUserNotFound}" th:href="@{/home}" class="btn btn-light">Back to home page</a>
         </div>
 
     </div>

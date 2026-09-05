@@ -5,6 +5,7 @@ import lombok.*;
 import pl.visa.dndCM.equipmentItem.damageType.DamageType;
 
 @Entity
+@Table(name = "equipment_item_api")
 @Getter
 @Setter
 @NoArgsConstructor

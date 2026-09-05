@@ -1,15 +1,11 @@
-package pl.visa.dndCM.equipmentItem.damageType;
+package pl.visa.dndCM.avatar.dndClass;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.net.http.HttpHeaders;
-import java.util.List;
 
 @Repository
-public interface DamageTypeRepository extends JpaRepository<DamageType, Long> {
-
+public interface DndClassRepository extends JpaRepository<DndClass, Long> {
     boolean existsByApiIndex(String apiIndex);
-
-    List<DamageType> findByApiIndex(String apiIndex);
 }

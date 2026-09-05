@@ -86,4 +86,14 @@ public class AvatarController {
         return "avatar/avatar-card";
     }
 
+    @GetMapping("/delete/{id}")
+    public String deleteAvatarById(@PathVariable Long id) {
+        avatarService.deleteAvatarById(id);
+
+        return "redirect:/home";
+    }
+
+
+
+
 }
