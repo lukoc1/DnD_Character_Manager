@@ -1,8 +1,8 @@
-package pl.visa.dndCM.equipmentItem;
+package pl.visa.dndCM.gameData.equipmentItem;
 
 import jakarta.persistence.*;
 import lombok.*;
-import pl.visa.dndCM.equipmentItem.damageType.DamageType;
+import pl.visa.dndCM.gameData.equipmentItem.damageType.DamageType;
 
 @Entity
 @Table(name = "equipment_item_api")

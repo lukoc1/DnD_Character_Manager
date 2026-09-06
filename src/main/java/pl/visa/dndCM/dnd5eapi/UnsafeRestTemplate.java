@@ -1,4 +1,4 @@
-package pl.visa.dndCM.apiLoader;
+package pl.visa.dndCM.dnd5eapi;
 
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;

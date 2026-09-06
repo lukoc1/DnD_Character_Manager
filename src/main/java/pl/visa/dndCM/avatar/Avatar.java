@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 import lombok.*;
 
-import pl.visa.dndCM.equipmentItem.AvatarEquipmentItem;
+import pl.visa.dndCM.gameData.dndClass.DndClass;
 import pl.visa.dndCM.user.User;
 
 import java.util.ArrayList;
@@ -29,7 +29,11 @@ public class Avatar {
     // Basics
     private String name;
     private String background;
-    private String className;
+
+    @ManyToOne
+    @JoinColumn(name = "dnd_class_id")
+    private DndClass dndClass;
+
     private String species;
     private String subclassName;
     // // Level

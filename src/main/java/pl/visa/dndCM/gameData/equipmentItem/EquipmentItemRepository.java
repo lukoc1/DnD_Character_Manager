@@ -1,4 +1,4 @@
-package pl.visa.dndCM.equipmentItem;
+package pl.visa.dndCM.gameData.equipmentItem;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

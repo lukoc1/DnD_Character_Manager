@@ -1,10 +1,9 @@
-package pl.visa.dndCM.apiLoader;
+package pl.visa.dndCM.gameData.dndClass;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.visa.dndCM.avatar.dndClass.DndClass;
-import pl.visa.dndCM.avatar.dndClass.DndClassListDTO;
-import pl.visa.dndCM.avatar.dndClass.DndClassRepository;
+import pl.visa.dndCM.dnd5eapi.ApiClient;
+import pl.visa.dndCM.dnd5eapi.ApiListDTO;
 
 @Service
 @AllArgsConstructor
@@ -15,7 +14,7 @@ public class DndClassLoader {
 
     public void loadDndClasses() {
 
-        DndClassListDTO data = apiClient.getDndClasses();
+        ApiListDTO data = apiClient.getDndClasses();
 
         data.getResults().stream()
                 .filter(d -> !dndClassRepository.existsByApiIndex(d.getIndex()))

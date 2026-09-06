@@ -30,6 +30,27 @@
             <label class="form-label">Background</label>
             <input type="text" class="form-control" th:field="*{background}"/>
         </div>
+        <div class="mb-3">
+            <label class="form-label">Class</label>
+
+            <select class="form-select" th:field="*{dndClassId}">
+                <option value="">-- choose class --</option>
+
+                <!-- klasy grywalne -->
+                <option th:each="c : ${dndClasses}"
+                        th:if="${c.apiIndex == 'barbarian' or c.apiIndex == 'wizard'}"
+                        th:value="${c.id}"
+                        th:text="${c.name}"></option>
+
+                <!-- klasy jeszcze nie wprowadzone -->
+                <option th:each="c : ${dndClasses}"
+                        th:if="${c.apiIndex != 'barbarian' and c.apiIndex != 'wizard'}"
+                        th:value="${c.id}"
+                        th:text="${c.name + ' (soon)'}"
+                        disabled></option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('dndClassId')}" th:errors="*{dndClassId}"></div>
+        </div>
 
         <button type="submit" name="save" class="btn btn-primary">Save</button>
         <button type="submit" name="cancel" class="btn btn-primary">Cancel</button>

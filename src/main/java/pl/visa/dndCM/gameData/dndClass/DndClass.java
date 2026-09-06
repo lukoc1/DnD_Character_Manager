@@ -1,7 +1,11 @@
-package pl.visa.dndCM.avatar.dndClass;
+package pl.visa.dndCM.gameData.dndClass;
 
 import jakarta.persistence.*;
 import lombok.*;
+import pl.visa.dndCM.avatar.Avatar;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -19,4 +23,7 @@ public class DndClass {
 
     private String apiIndex;
     private String name;
+
+    @OneToMany(mappedBy = "dndClass")
+    private List<Avatar> avatars = new ArrayList<>();
 }

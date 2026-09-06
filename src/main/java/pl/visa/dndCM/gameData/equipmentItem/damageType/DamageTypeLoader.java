@@ -1,11 +1,9 @@
-package pl.visa.dndCM.apiLoader;
+package pl.visa.dndCM.gameData.equipmentItem.damageType;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.visa.dndCM.equipmentItem.damageType.DamageType;
-import pl.visa.dndCM.equipmentItem.damageType.DamageTypeDTO;
-import pl.visa.dndCM.equipmentItem.damageType.DamageTypeListDTO;
-import pl.visa.dndCM.equipmentItem.damageType.DamageTypeRepository;
+import pl.visa.dndCM.dnd5eapi.ApiClient;
+import pl.visa.dndCM.dnd5eapi.ApiListDTO;
 
 @Service
 @AllArgsConstructor
@@ -16,7 +14,7 @@ public class DamageTypeLoader {
 
     public void loadDamageTypes() {
 
-        DamageTypeListDTO data = apiClient.getDamageTypes();
+        ApiListDTO data = apiClient.getDamageTypes();
 
         data.getResults().stream()
                 .filter(d -> !damageTypeRepository.existsByApiIndex(d.getIndex()))

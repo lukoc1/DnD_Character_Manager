@@ -37,7 +37,9 @@ public class UserController {
             return "user/register-user";
         }
 
+        System.out.println("Przed zapis");
         userService.save(userDTO);
+        System.out.println("Po zapis");
 
         return "redirect:/";
     }

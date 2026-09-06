@@ -1,4 +1,4 @@
-package pl.visa.dndCM.equipmentItem.damageType;
+package pl.visa.dndCM.gameData.equipmentItem.damageType;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

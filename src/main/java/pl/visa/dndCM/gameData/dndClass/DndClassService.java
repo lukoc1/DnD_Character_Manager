@@ -1,6 +1,8 @@
-package pl.visa.dndCM.avatar.dndClass;
+package pl.visa.dndCM.gameData.dndClass;
 
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class DndClassService {
@@ -9,6 +11,10 @@ public class DndClassService {
 
     public DndClassService(DndClassRepository dndClassRepository) {
         this.dndClassRepository = dndClassRepository;
+    }
+
+    public List<DndClass> findAll() {
+        return dndClassRepository.findAll();
     }
 
 }

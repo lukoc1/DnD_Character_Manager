@@ -1,10 +1,9 @@
 package pl.visa.dndCM.avatar;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import pl.visa.dndCM.user.User;
 
 @Setter
 @Getter
@@ -18,11 +17,18 @@ public class AvatarDTO {
 
     private String user;
 
+    // wybrana klasa (id z formularza)
+    @NotNull
+    private Long dndClassId;
+
     @NotBlank
     @Size(min = 2, max = 30)
     private String name;
     private String background;
+
+    // tylko do wyświetlania
     private String className;
+
     private String species;
     private String subclassName;
 }

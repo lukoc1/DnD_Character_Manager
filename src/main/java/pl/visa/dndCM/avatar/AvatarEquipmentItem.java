@@ -1,9 +1,9 @@
-package pl.visa.dndCM.equipmentItem;
+package pl.visa.dndCM.avatar;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import pl.visa.dndCM.avatar.Avatar;
+import pl.visa.dndCM.gameData.equipmentItem.EquipmentItem;
 
 @Entity
 @Table(name = "avatar_equipment_item")

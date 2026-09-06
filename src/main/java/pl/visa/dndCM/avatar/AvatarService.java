@@ -3,6 +3,8 @@ package pl.visa.dndCM.avatar;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
+import pl.visa.dndCM.gameData.dndClass.DndClass;
+import pl.visa.dndCM.gameData.dndClass.DndClassRepository;
 import pl.visa.dndCM.exception.ErrorCode;
 import pl.visa.dndCM.exception.ResourceNotFoundException;
 import pl.visa.dndCM.user.*;
@@ -14,10 +16,12 @@ import java.util.Optional;
 public class AvatarService {
     private final AvatarRepository avatarRepository;
     private final UserRepository userRepository;
+    private final DndClassRepository dndClassRepository;
 
-    public AvatarService(AvatarRepository avatarRepository, UserRepository userRepository) {
+    public AvatarService(AvatarRepository avatarRepository, UserRepository userRepository, DndClassRepository dndClassRepository) {
         this.avatarRepository = avatarRepository;
         this.userRepository = userRepository;
+        this.dndClassRepository = dndClassRepository;
     }
 
     /// methods
@@ -57,11 +61,13 @@ public class AvatarService {
     /// utils
 
     public AvatarDTO toDTO(Avatar avatar) {
+
         return AvatarDTO.builder()
                 .id(avatar.getId())
                 .name(avatar.getName())
                 .background(avatar.getBackground())
-                .className(avatar.getClassName())
+                .dndClassId(avatar.getDndClass().getId())
+                .className(avatar.getDndClass().getName())
                 .species(avatar.getSpecies())
                 .subclassName(avatar.getSubclassName())
                 .userId(avatar.getUser().getId())
@@ -73,10 +79,19 @@ public class AvatarService {
                 .id(avatarDTO.getId())
                 .name(avatarDTO.getName())
                 .background(avatarDTO.getBackground())
-                .className(avatarDTO.getClassName())
+                .dndClass(findDndClass(avatarDTO.getDndClassId()))
                 .species(avatarDTO.getSpecies())
                 .subclassName(avatarDTO.getSubclassName())
                 .build();
+    }
+
+    private DndClass findDndClass(Long dndClassId) {
+        if (dndClassId == null) {
+            return null;
+        }
+
+        return dndClassRepository.findById(dndClassId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("DndClass id=%s not found", dndClassId), ErrorCode.DND_CLASS_NOT_FOUND));
     }
 
 }

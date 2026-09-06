@@ -1,4 +1,4 @@
-package pl.visa.dndCM.equipmentItem.damageType;
+package pl.visa.dndCM.gameData.equipmentItem.damageType;
 
 import jakarta.persistence.*;
 import lombok.*;

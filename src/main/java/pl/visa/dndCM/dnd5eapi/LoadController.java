@@ -1,17 +1,20 @@
-package pl.visa.dndCM.apiLoader;
+package pl.visa.dndCM.dnd5eapi;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.visa.dndCM.avatar.dndClass.DndClass;
-import pl.visa.dndCM.avatar.dndClass.DndClassRepository;
-import pl.visa.dndCM.equipmentItem.EquipmentCategory;
-import pl.visa.dndCM.equipmentItem.EquipmentItem;
-import pl.visa.dndCM.equipmentItem.EquipmentItemRepository;
-import pl.visa.dndCM.equipmentItem.damageType.DamageType;
-import pl.visa.dndCM.equipmentItem.damageType.DamageTypeRepository;
+import pl.visa.dndCM.gameData.dndClass.DndClass;
+import pl.visa.dndCM.gameData.dndClass.DndClassLoader;
+import pl.visa.dndCM.gameData.dndClass.DndClassRepository;
+import pl.visa.dndCM.gameData.equipmentItem.EquipmentCategory;
+import pl.visa.dndCM.gameData.equipmentItem.EquipmentItem;
+import pl.visa.dndCM.gameData.equipmentItem.EquipmentItemLoader;
+import pl.visa.dndCM.gameData.equipmentItem.EquipmentItemRepository;
+import pl.visa.dndCM.gameData.equipmentItem.damageType.DamageType;
+import pl.visa.dndCM.gameData.equipmentItem.damageType.DamageTypeLoader;
+import pl.visa.dndCM.gameData.equipmentItem.damageType.DamageTypeRepository;
 
 import java.util.List;
 
@@ -30,16 +33,16 @@ public class LoadController {
     private final DndClassRepository dndClassRepository;
 
 
-
     // Damage types
+
     @GetMapping("/load/damage-types")
     public String loadDamageTypes() {
         damageTypeLoader.loadDamageTypes();
         return "Damage types loaded";
     }
 
-    @GetMapping("/show/damage-types")
-    public List<DamageType> showDamageTypes() {
+    @GetMapping("/damage-types")
+    public List<DamageType> getDamageTypes() {
         return damageTypeRepository.findAll();
     }
 
@@ -52,31 +55,29 @@ public class LoadController {
         return "Equipment items loaded";
     }
 
-
     // TRZEBA NA DTO
-    @GetMapping("/show/equipment")
-    public List<EquipmentItem> showEquipment() {
+    @GetMapping("/equipment")
+    public List<EquipmentItem> getEquipment() {
         return equipmentItemRepository.findAll();
     }
 
-    @GetMapping("/show/equipment/{category}")
+    @GetMapping("/equipment/{category}")
     public List<EquipmentItem> getEquipmentByCategory(@PathVariable EquipmentCategory category) {
         return equipmentItemRepository.findByCategory(category);
     }
+
 
     // Classes
 
     @GetMapping("/load/classes")
     public String loadClasses() {
         dndClassLoader.loadDndClasses();
-        return "Dnd classses loaded";
+        return "Dnd classes loaded";
     }
 
-    @GetMapping("show/classes")
-    public List<DndClass> showClasses() {
+    @GetMapping("/classes")
+    public List<DndClass> getClasses() {
         return dndClassRepository.findAll();
     }
-
-
 
 }
