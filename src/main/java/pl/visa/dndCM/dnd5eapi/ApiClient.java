@@ -2,6 +2,7 @@ package pl.visa.dndCM.dnd5eapi;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import pl.visa.dndCM.gameData.background.Background;
 import pl.visa.dndCM.gameData.equipmentItem.EquipmentItemDTO;
 
 @Service
@@ -38,4 +39,8 @@ public class ApiClient {
         return restTemplate.getForObject(BASE_URL + "/classes", ApiListDTO.class);
     }
 
+    // Backgrounds
+    public ApiListDTO getBackgrounds() {
+        return restTemplate.getForObject(BASE_URL + "/backgrounds", ApiListDTO.class);
+    }
 }

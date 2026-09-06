@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * Odpowiedź z {@code /equipment/{index}} na dnd5eapi.co – tylko surowe pola.
- * Mapowanie na encję robi {@link EquipmentItemLoader}, a kategorię wylicza
+ * Mapowanie na encję robi {@link EquipmentItemImporter}, a kategorię wylicza
  * {@link EquipmentCategory#fromApiCategories(List)}.
  */
 @Getter

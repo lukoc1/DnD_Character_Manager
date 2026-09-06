@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import pl.visa.dndCM.gameData.background.BackgroundService;
 import pl.visa.dndCM.gameData.dndClass.DndClassService;
 import pl.visa.dndCM.user.User;
 import pl.visa.dndCM.user.UserDTO;
@@ -24,17 +25,20 @@ public class AvatarController {
     private final AvatarService avatarService;
     private final UserService userService;
     private final DndClassService dndClassService;
+    private final BackgroundService backgroundService;
 
-    public AvatarController(AvatarService avatarService, UserService userService, DndClassService dndClassService) {
+    public AvatarController(AvatarService avatarService, UserService userService, DndClassService dndClassService, BackgroundService backgroundService) {
         this.avatarService = avatarService;
         this.userService = userService;
         this.dndClassService = dndClassService;
+        this.backgroundService = backgroundService;
     }
 
     @GetMapping("/add")
     public String showAddAvatarForm(Model model) {
         model.addAttribute("avatarDTO", new AvatarDTO());
         model.addAttribute("dndClasses", dndClassService.findAll());
+        model.addAttribute("backgrounds", backgroundService.findAll());
         return "avatar/add-avatar";
     }
 

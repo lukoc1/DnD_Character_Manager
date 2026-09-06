@@ -21,13 +21,18 @@ public class AvatarDTO {
     @NotNull
     private Long dndClassId;
 
+    @NotNull
+    private Long backgroundId;
+
     @NotBlank
     @Size(min = 2, max = 30)
     private String name;
-    private String background;
+
+    private Long level;
 
     // tylko do wyświetlania
     private String className;
+    private String backgroundName;
 
     private String species;
     private String subclassName;

@@ -22,14 +22,32 @@
 
     <form th:action="@{/avatar/add}" th:object="${avatarDTO}" method="post">
 
+<!--        Name-->
         <div class="mb-3">
             <label class="form-label">Name</label>
             <input type="text" class="form-control" th:field="*{name}"/>
         </div>
+<!--        Background-->
         <div class="mb-3">
             <label class="form-label">Background</label>
-            <input type="text" class="form-control" th:field="*{background}"/>
+            <select class="form-select" aria-label="Default select example" th:field="*{backgroundId}">
+                <option value="" selected>-- choose background --</option>
+
+                <option th:each="b : ${backgrounds}"
+                        th:value="${b.id}"
+                        th:text="${b.name}"></option>
+
+<!--                bacgroundy nie wprowadzone jeszcze-->
+<!--                <option th:each="c : ${dndClasses}"-->
+<!--                        th:if="${c.apiIndex != 'barbarian' and c.apiIndex != 'wizard'}"-->
+<!--                        th:value="${c.id}"-->
+<!--                        th:text="${c.name + ' (soon)'}"-->
+<!--                        disabled></option>-->
+
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('backgroundId')}" th:errors="*{backgroundId}"></div>
         </div>
+<!--        Class-->
         <div class="mb-3">
             <label class="form-label">Class</label>
 

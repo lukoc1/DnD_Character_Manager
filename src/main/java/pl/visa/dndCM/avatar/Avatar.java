@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import lombok.*;
 
+import pl.visa.dndCM.gameData.background.Background;
 import pl.visa.dndCM.gameData.dndClass.DndClass;
 import pl.visa.dndCM.user.User;
 
@@ -28,7 +29,10 @@ public class Avatar {
     // // header
     // Basics
     private String name;
-    private String background;
+
+    @ManyToOne
+    @JoinColumn(name = "background_id")
+    private Background background;
 
     @ManyToOne
     @JoinColumn(name = "dnd_class_id")
@@ -36,7 +40,9 @@ public class Avatar {
 
     private String species;
     private String subclassName;
+
     // // Level
+    private Long level;
 
     @OneToMany(mappedBy = "avatar")
     private List<AvatarEquipmentItem> equipmentItems = new ArrayList<>();

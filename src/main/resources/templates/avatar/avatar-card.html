@@ -35,24 +35,28 @@
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <label class="form-label text-muted mb-0">Nazwa Postaci 1</label>
+                        <label class="form-label text-muted mb-0">Avatar name</label>
                         <h2 class="m-0 fw-bold" th:text="${avatar.name}">Hero Name</h2>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label text-muted mb-0">Klasa & Poziom</label>
-                        <div class="fw-bold" th:text="${avatar.className != null ? avatar.className : 'Brak'}">Fighter 1</div>
+                        <label class="form-label text-muted mb-0">Class</label>
+                        <div class="fw-bold" th:text="${avatar.className}">Fighter</div>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label text-muted mb-0">Rasa / Species</label>
+                        <label class="form-label text-muted mb-0">Level</label>
+                        <div class="fw-bold" th:text="${avatar.level}">1</div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label text-muted mb-0">Species</label>
                         <div class="fw-bold" th:text="${avatar.species != null ? avatar.species : 'Human'}">Human</div>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label text-muted mb-0">Podklasa</label>
+                        <label class="form-label text-muted mb-0">Subclass</label>
                         <div class="fw-bold" th:text="${avatar.subclassName != null ? avatar.subclassName : '-'}">-</div>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label text-muted mb-0">Tło (Background)</label>
-                        <div class="fw-bold" th:text="${avatar.background != null ? avatar.background : 'Soldier'}">Soldier</div>
+                        <label class="form-label text-muted mb-0">Background</label>
+                        <div class="fw-bold" th:text="${avatar.backgroundName}">Soldier</div>
                     </div>
                 </div>
             </div>
@@ -67,23 +71,23 @@
                     <div class="col-md-4">
                         <label class="form-label text-muted mb-0">Nazwa Postaci 2</label>
                         <h2 class="m-0 fw-bold" th:text="${avatar.name}">Hero Name</h2>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label text-muted mb-0">Klasa & Poziom</label>
-                        <div class="fw-bold" th:text="${avatar.className != null ? avatar.className : 'Brak'}">Fighter 1</div>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label text-muted mb-0">Rasa / Species</label>
-                        <div class="fw-bold" th:text="${avatar.species != null ? avatar.species : 'Human'}">Human</div>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label text-muted mb-0">Podklasa</label>
-                        <div class="fw-bold" th:text="${avatar.subclassName != null ? avatar.subclassName : '-'}">-</div>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label text-muted mb-0">Tło (Background)</label>
-                        <div class="fw-bold" th:text="${avatar.background != null ? avatar.background : 'Soldier'}">Soldier</div>
-                    </div>
+<!--                    </div>-->
+<!--                    <div class="col-md-2">-->
+<!--                        <label class="form-label text-muted mb-0">Klasa & Poziom</label>-->
+<!--                        <div class="fw-bold" th:text="${avatar.className != null ? avatar.className : 'Brak'}">Fighter 1</div>-->
+<!--                    </div>-->
+<!--                    <div class="col-md-2">-->
+<!--                        <label class="form-label text-muted mb-0">Rasa / Species</label>-->
+<!--                        <div class="fw-bold" th:text="${avatar.species != null ? avatar.species : 'Human'}">Human</div>-->
+<!--                    </div>-->
+<!--                    <div class="col-md-2">-->
+<!--                        <label class="form-label text-muted mb-0">Podklasa</label>-->
+<!--                        <div class="fw-bold" th:text="${avatar.subclassName != null ? avatar.subclassName : '-'}">-</div>-->
+<!--                    </div>-->
+<!--                    <div class="col-md-2">-->
+<!--                        <label class="form-label text-muted mb-0">Tło (Background)</label>-->
+<!--                        <div class="fw-bold" th:text="${avatar.background != null ? avatar.background : 'Soldier'}">Soldier</div>-->
+<!--                    </div>-->
                 </div>
             </div>
         </div>

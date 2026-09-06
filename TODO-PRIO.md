@@ -1,0 +1,1 @@
+* w api backgrounds są duże braki, trzebaby uzupełnić ręcznie

@@ -14,13 +14,13 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class EquipmentItemLoader {
+public class EquipmentItemImporter {
 
     private final ApiClient apiClient;
     private final EquipmentItemRepository equipmentItemRepository;
     private final DamageTypeRepository damageTypeRepository;
 
-    public void loadEquipmentItems() {
+    public void importEquipmentItems() {
 
         ApiListDTO data = apiClient.getEquipmentItems();
 

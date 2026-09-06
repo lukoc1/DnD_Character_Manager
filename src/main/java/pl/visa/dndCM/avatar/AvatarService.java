@@ -1,14 +1,18 @@
 package pl.visa.dndCM.avatar;
 
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.data.repository.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
+import pl.visa.dndCM.gameData.background.Background;
+import pl.visa.dndCM.gameData.background.BackgroundRepository;
 import pl.visa.dndCM.gameData.dndClass.DndClass;
 import pl.visa.dndCM.gameData.dndClass.DndClassRepository;
 import pl.visa.dndCM.exception.ErrorCode;
 import pl.visa.dndCM.exception.ResourceNotFoundException;
 import pl.visa.dndCM.user.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,11 +21,13 @@ public class AvatarService {
     private final AvatarRepository avatarRepository;
     private final UserRepository userRepository;
     private final DndClassRepository dndClassRepository;
+    private final BackgroundRepository backgroundRepository;
 
-    public AvatarService(AvatarRepository avatarRepository, UserRepository userRepository, DndClassRepository dndClassRepository) {
+    public AvatarService(AvatarRepository avatarRepository, UserRepository userRepository, DndClassRepository dndClassRepository, BackgroundRepository backgroundRepository) {
         this.avatarRepository = avatarRepository;
         this.userRepository = userRepository;
         this.dndClassRepository = dndClassRepository;
+        this.backgroundRepository = backgroundRepository;
     }
 
     /// methods
@@ -65,11 +71,13 @@ public class AvatarService {
         return AvatarDTO.builder()
                 .id(avatar.getId())
                 .name(avatar.getName())
-                .background(avatar.getBackground())
+                .backgroundName(avatar.getBackground().getName())
+                .backgroundId(avatar.getBackground().getId())
                 .dndClassId(avatar.getDndClass().getId())
                 .className(avatar.getDndClass().getName())
                 .species(avatar.getSpecies())
                 .subclassName(avatar.getSubclassName())
+                .level(avatar.getLevel())
                 .userId(avatar.getUser().getId())
                 .build();
     }
@@ -78,10 +86,11 @@ public class AvatarService {
         return Avatar.builder()
                 .id(avatarDTO.getId())
                 .name(avatarDTO.getName())
-                .background(avatarDTO.getBackground())
+                .background(findBackground(avatarDTO.getBackgroundId()))
                 .dndClass(findDndClass(avatarDTO.getDndClassId()))
                 .species(avatarDTO.getSpecies())
                 .subclassName(avatarDTO.getSubclassName())
+                .level(avatarDTO.getLevel())
                 .build();
     }
 
@@ -92,6 +101,15 @@ public class AvatarService {
 
         return dndClassRepository.findById(dndClassId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("DndClass id=%s not found", dndClassId), ErrorCode.DND_CLASS_NOT_FOUND));
+    }
+
+    private Background findBackground(Long backgroundId) {
+        if (backgroundId == null) {
+            return null;
+        }
+
+        return backgroundRepository.findById(backgroundId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Background id=%s not found", backgroundId), ErrorCode.BACKGROUND_NOT_FOUND));
     }
 
 }
