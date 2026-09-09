@@ -1,5 +1,7 @@
 package pl.visa.dndCM.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -22,9 +24,12 @@ public class User {
 
 //    private UUID uuid;
     private String name;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Avatar> avatarList;
 }

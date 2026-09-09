@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>DnD Character Manager</title>
@@ -8,11 +8,7 @@
 <body>
 
 <!-- TOP NAVBAR -->
-<nav class="navbar navbar-light mb-2" style="background-color: #B0BE00;" data-bs-theme="dark">
-  <div class="container">
-    <a class="navbar-brand text-black">DnD Character Manager</a>
-  </div>
-</nav>
+<nav th:replace="fragments/header :: header"></nav>
 
 <div class="container">
 

@@ -1,4 +1,4 @@
-package pl.visa.dndCM.gameData.dndClass;
+package pl.visa.dndCM.gameData.specie;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -6,8 +6,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface DndClassRepository extends JpaRepository<DndClass, Long> {
+public interface SpecieRepository extends JpaRepository<Specie, Long> {
     boolean existsByApiIndex(String apiIndex);
 
-    Optional<DndClass> findByApiIndex(String apiIndex);
+    Optional<Specie> findByApiIndex(String apiIndex);
 }

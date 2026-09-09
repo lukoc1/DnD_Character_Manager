@@ -1,5 +1,6 @@
 package pl.visa.dndCM.avatar;
 
+import lombok.AllArgsConstructor;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.data.repository.Repository;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,8 @@ import pl.visa.dndCM.gameData.dndClass.DndClass;
 import pl.visa.dndCM.gameData.dndClass.DndClassRepository;
 import pl.visa.dndCM.exception.ErrorCode;
 import pl.visa.dndCM.exception.ResourceNotFoundException;
+import pl.visa.dndCM.gameData.specie.Specie;
+import pl.visa.dndCM.gameData.specie.SpecieRepository;
 import pl.visa.dndCM.user.*;
 
 import java.time.LocalDateTime;
@@ -17,18 +20,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class AvatarService {
     private final AvatarRepository avatarRepository;
     private final UserRepository userRepository;
     private final DndClassRepository dndClassRepository;
     private final BackgroundRepository backgroundRepository;
-
-    public AvatarService(AvatarRepository avatarRepository, UserRepository userRepository, DndClassRepository dndClassRepository, BackgroundRepository backgroundRepository) {
-        this.avatarRepository = avatarRepository;
-        this.userRepository = userRepository;
-        this.dndClassRepository = dndClassRepository;
-        this.backgroundRepository = backgroundRepository;
-    }
+    private final SpecieRepository specieRepository;
 
     /// methods
 
@@ -55,6 +53,7 @@ public class AvatarService {
 
         Avatar avatar = toEntity(avatarDTO);
         avatar.setUser(user);
+        avatar.setLevel(1);
 
         avatarRepository.save(avatar);
     }
@@ -75,10 +74,28 @@ public class AvatarService {
                 .backgroundId(avatar.getBackground().getId())
                 .dndClassId(avatar.getDndClass().getId())
                 .className(avatar.getDndClass().getName())
-                .species(avatar.getSpecies())
+                .specieName(avatar.getSpecie().getName())
+                .specieId(avatar.getSpecie().getId())
                 .subclassName(avatar.getSubclassName())
                 .level(avatar.getLevel())
                 .userId(avatar.getUser().getId())
+                .armorClass(avatar.getArmorClass())
+                .maxHP(avatar.getMaxHP())
+                .currentHP(avatar.getCurrentHP())
+                .tempHP(avatar.getTempHP())
+                .proficiencyBonus(avatar.getProficiencyBonus())
+                .strMod(avatar.getStrMod())
+                .strSco(avatar.getStrSco())
+                .dexMod(avatar.getDexMod())
+                .dexSco(avatar.getDexSco())
+                .consMod(avatar.getConsMod())
+                .consSco(avatar.getConsSco())
+                .intMod(avatar.getIntMod())
+                .intSco(avatar.getIntSco())
+                .wisMod(avatar.getWisMod())
+                .wisSco(avatar.getWisSco())
+                .charMod(avatar.getCharMod())
+                .charSco(avatar.getCharSco())
                 .build();
     }
 
@@ -88,7 +105,7 @@ public class AvatarService {
                 .name(avatarDTO.getName())
                 .background(findBackground(avatarDTO.getBackgroundId()))
                 .dndClass(findDndClass(avatarDTO.getDndClassId()))
-                .species(avatarDTO.getSpecies())
+                .specie(findSpecie(avatarDTO.getSpecieId()))
                 .subclassName(avatarDTO.getSubclassName())
                 .level(avatarDTO.getLevel())
                 .build();
@@ -110,6 +127,15 @@ public class AvatarService {
 
         return backgroundRepository.findById(backgroundId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Background id=%s not found", backgroundId), ErrorCode.BACKGROUND_NOT_FOUND));
+    }
+
+    private Specie findSpecie(Long specieId) {
+        if (specieId == null) {
+            return null;
+        }
+
+        return specieRepository.findById(specieId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Specie id=%s not found", specieId), ErrorCode.SPECIE_NOT_FOUND));
     }
 
 }

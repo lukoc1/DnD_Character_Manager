@@ -1,11 +1,9 @@
-package pl.visa.dndCM.gameData.equipmentItem;
+package pl.visa.dndCM.gameData.dndSubclass;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import pl.visa.dndCM.dnd5eapi.ApiReferenceDTO;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -13,16 +11,11 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class EquipmentItemDTO {
+public class DndSubclassDTO {
 
     private String index;
     private String name;
 
-    @JsonProperty("equipment_categories")
-    private List<ApiReferenceDTO> equipmentCategories;
-
-    private DamageDTO damage;
-
-    @JsonProperty("two_handed_damage")
-    private DamageDTO twoHandedDamage;
+    @JsonProperty("class")
+    private ApiReferenceDTO dndClass;
 }

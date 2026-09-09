@@ -1,4 +1,4 @@
-package pl.visa.dndCM.gameData.background;
+package pl.visa.dndCM.gameData.specie;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -8,14 +8,15 @@ import pl.visa.dndCM.avatar.Avatar;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Entity
-@Table(name = "background_api")
+@Table(name = "species_api")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Background {
+public class Specie {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +25,7 @@ public class Background {
     private String apiIndex;
     private String name;
 
-    @OneToMany(mappedBy = "background")
+    @OneToMany(mappedBy = "specie")
     @JsonIgnore
     private List<Avatar> avatars = new ArrayList<>();
 }

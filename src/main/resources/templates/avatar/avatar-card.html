@@ -11,53 +11,37 @@
 </head>
 <body>
 
-<!-- TOP NAVBAR -->
-<nav class="navbar navbar-light mb-2" style="background-color: #B0BE00;" data-bs-theme="dark">
-    <div class="container">
-        <a class="navbar-brand text-black" th:href="@{/login}">DnD Character Sheet</a>
-        <a th:href="@{|/avatar/select/${avatar.id}}" class="btn btn-outline-light btn-sm">Back</a>
-    </div>
-</nav>
+<!-- TOP NAVBAR-->
+<nav th:replace="fragments/header :: header"></nav>
 
-<!--<nav class="navbar navbar-dark bg-primary mb-4">-->
-<!--    <div class="container d-flex justify-content-between">-->
-<!--        <a class="navbar-brand fw-bold" th:href="@{/home}">D&D Character Sheet</a>-->
-<!--        <a th:href="@{|/avatar/select/${avatar.id}}" class="btn btn-outline-light btn-sm">Back</a>-->
-<!--    </div>-->
-<!--</nav>-->
 
 <div class="slider">
 
     <div class="container mb-5">
 
         <!-- NAGŁÓWEK POSTACI -->
+        <div class="card shadow-sm mb-2">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div th:replace="~{fragments/card-textbox :: card-textbox(title='Character name', value=${avatar.name}, valueClass='fs-2')}"></div>
+                    <div th:replace="~{fragments/card-textbox :: card-textbox(title='Background', value=${avatar.backgroundName})}"></div>
+                    <div th:replace="~{fragments/card-textbox :: card-textbox(title='Class', value=${avatar.className})}"></div>
+                    <div th:replace="~{fragments/card-textbox :: card-textbox(title='Species', value=${avatar.specieName})}"></div>
+                    <div th:replace="~{fragments/card-textbox :: card-textbox(title='Subclass', value=${avatar.subclassName} ?: '-')}"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAGŁÓWEK POSTACI -->
         <div class="card shadow-sm mb-4">
             <div class="card-body">
                 <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label text-muted mb-0">Avatar name</label>
-                        <h2 class="m-0 fw-bold" th:text="${avatar.name}">Hero Name</h2>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label text-muted mb-0">Class</label>
-                        <div class="fw-bold" th:text="${avatar.className}">Fighter</div>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label text-muted mb-0">Level</label>
-                        <div class="fw-bold" th:text="${avatar.level}">1</div>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label text-muted mb-0">Species</label>
-                        <div class="fw-bold" th:text="${avatar.species != null ? avatar.species : 'Human'}">Human</div>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label text-muted mb-0">Subclass</label>
-                        <div class="fw-bold" th:text="${avatar.subclassName != null ? avatar.subclassName : '-'}">-</div>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label text-muted mb-0">Background</label>
-                        <div class="fw-bold" th:text="${avatar.backgroundName}">Soldier</div>
-                    </div>
+                    <div th:replace="~{fragments/card-textbox :: card-textbox(title='Level', value=${avatar.level})}"></div>
+                    <div th:replace="~{fragments/card-textbox :: card-textbox(title='Armor class', value=${avatar.level})}"></div>
+                    <div th:replace="~{fragments/card-textbox :: card-textbox(title='Hitpoints', value=${avatar.level})}"></div>
+<!--                    current temp and max-->
+                    <div th:replace="~{fragments/card-textbox :: card-textbox(title='Hit Dice', value=${avatar.level})}"></div>
+                    <div th:replace="~{fragments/card-textbox :: card-textbox(title='Death saves', value=${avatar.level})}"></div>
                 </div>
             </div>
         </div>
@@ -70,24 +54,7 @@
                 <div class="row g-3">
                     <div class="col-md-4">
                         <label class="form-label text-muted mb-0">Nazwa Postaci 2</label>
-                        <h2 class="m-0 fw-bold" th:text="${avatar.name}">Hero Name</h2>
-<!--                    </div>-->
-<!--                    <div class="col-md-2">-->
-<!--                        <label class="form-label text-muted mb-0">Klasa & Poziom</label>-->
-<!--                        <div class="fw-bold" th:text="${avatar.className != null ? avatar.className : 'Brak'}">Fighter 1</div>-->
-<!--                    </div>-->
-<!--                    <div class="col-md-2">-->
-<!--                        <label class="form-label text-muted mb-0">Rasa / Species</label>-->
-<!--                        <div class="fw-bold" th:text="${avatar.species != null ? avatar.species : 'Human'}">Human</div>-->
-<!--                    </div>-->
-<!--                    <div class="col-md-2">-->
-<!--                        <label class="form-label text-muted mb-0">Podklasa</label>-->
-<!--                        <div class="fw-bold" th:text="${avatar.subclassName != null ? avatar.subclassName : '-'}">-</div>-->
-<!--                    </div>-->
-<!--                    <div class="col-md-2">-->
-<!--                        <label class="form-label text-muted mb-0">Tło (Background)</label>-->
-<!--                        <div class="fw-bold" th:text="${avatar.background != null ? avatar.background : 'Soldier'}">Soldier</div>-->
-<!--                    </div>-->
+                    </div>
                 </div>
             </div>
         </div>

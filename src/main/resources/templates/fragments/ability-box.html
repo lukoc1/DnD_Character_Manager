@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="ability-box" class="border border-2 border-dark rounded-3 p-2">
+    <div class="ability">
+        <div class="ability__label" th:text="${label}">Strength</div>
+        <div class="ability__modifier" th:text="${modifier}"></div>
+        <div class="ability__score" th:text="${score}">10</div>
+    </div>
+
+    <ul class="prof-list mb-0">
+        <li th:each="row : ${skills}">
+            <input type="checkbox" disabled th:checked="${false}"/>
+            <span class="prof-list__value"></span>
+            <span class="prof-list__name" th:text="${row}">Saving Throw</span>
+        </li>
+    </ul>
+</div>
+
+</body>
+</html>

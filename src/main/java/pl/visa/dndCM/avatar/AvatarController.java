@@ -1,6 +1,7 @@
 package pl.visa.dndCM.avatar;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -13,12 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pl.visa.dndCM.gameData.background.BackgroundService;
 import pl.visa.dndCM.gameData.dndClass.DndClassService;
+import pl.visa.dndCM.gameData.specie.SpecieService;
 import pl.visa.dndCM.user.User;
 import pl.visa.dndCM.user.UserDTO;
 import pl.visa.dndCM.user.UserRepository;
 import pl.visa.dndCM.user.UserService;
 
 @Controller
+@AllArgsConstructor
 @RequestMapping("/avatar")
 public class AvatarController {
 
@@ -26,20 +29,20 @@ public class AvatarController {
     private final UserService userService;
     private final DndClassService dndClassService;
     private final BackgroundService backgroundService;
+    private final SpecieService specieService;
 
-    public AvatarController(AvatarService avatarService, UserService userService, DndClassService dndClassService, BackgroundService backgroundService) {
-        this.avatarService = avatarService;
-        this.userService = userService;
-        this.dndClassService = dndClassService;
-        this.backgroundService = backgroundService;
-    }
 
     @GetMapping("/add")
     public String showAddAvatarForm(Model model) {
         model.addAttribute("avatarDTO", new AvatarDTO());
+        addFormOptions(model);
+        return "avatar/add-avatar";
+    }
+
+    private void addFormOptions(Model model) {
         model.addAttribute("dndClasses", dndClassService.findAll());
         model.addAttribute("backgrounds", backgroundService.findAll());
-        return "avatar/add-avatar";
+        model.addAttribute("species", specieService.findAll());
     }
 
     @PostMapping(value = "/add", params = "cancel")
@@ -51,7 +54,7 @@ public class AvatarController {
     public String saveAvatar(@Valid AvatarDTO avatarDTO, BindingResult result, Model model, Authentication authentication, RedirectAttributes ra) {
 
         if (result.hasErrors()) {
-            model.addAttribute("dndClasses", dndClassService.findAll());
+            addFormOptions(model);
             return "avatar/add-avatar";
         }
 
@@ -61,7 +64,7 @@ public class AvatarController {
         try {
             avatarService.save(avatarDTO, name);
         } catch (IllegalArgumentException ex) {
-            model.addAttribute("dndClasses", dndClassService.findAll());
+            addFormOptions(model);
             return "avatar/add-avatar";
         }
 //        ra.addFlashAttribute("message", "Avatar utworzony");
@@ -93,7 +96,8 @@ public class AvatarController {
 
         model.addAttribute("avatar", avatarService.getAvatarById(id));
 
-        return "avatar/avatar-card";
+//        return "avatar/avatar-card"
+        return "avatar/avatar-sheet";
     }
 
     @GetMapping("/delete/{id}")

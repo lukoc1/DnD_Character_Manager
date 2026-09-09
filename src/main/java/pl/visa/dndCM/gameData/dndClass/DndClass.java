@@ -1,5 +1,6 @@
 package pl.visa.dndCM.gameData.dndClass;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import pl.visa.dndCM.avatar.Avatar;
@@ -25,5 +26,6 @@ public class DndClass {
     private String name;
 
     @OneToMany(mappedBy = "dndClass")
+    @JsonIgnore
     private List<Avatar> avatars = new ArrayList<>();
 }
