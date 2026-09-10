@@ -6,6 +6,9 @@ import lombok.*;
 import pl.visa.dndCM.gameData.dndClass.DndClass;
 import pl.visa.dndCM.gameData.dndSubclass.DndSubclass;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "class_feature_api")
 @Getter
@@ -23,11 +26,12 @@ public class DndClassFeature {
 
     private String name;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    private int level;
+    // levels the feature is gained at (open5e "gained_at" - can be several, e.g. 4/8/12/16)
+    @OneToMany(mappedBy = "feature")
+    private List<DndClassFeatureLevel> levelsGained = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "dnd_class_id")

@@ -10,8 +10,9 @@
     </div>
 
     <ul class="prof-list mb-0">
-        <li th:each="row : ${skills}">
-            <input type="checkbox" disabled th:checked="${false}"/>
+        <li th:each="row : ${skills}"
+            th:with="checked=${row == 'Saving Throw' ? savingThrowAbilities.contains(label) : proficiencies.contains(row)}">
+            <input type="checkbox" class="pe-none" th:checked="${checked}"/>
             <span class="prof-list__value"></span>
             <span class="prof-list__name" th:text="${row}">Saving Throw</span>
         </li>

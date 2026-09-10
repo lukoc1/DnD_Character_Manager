@@ -27,4 +27,7 @@ public class Background {
     @OneToMany(mappedBy = "background")
     @JsonIgnore
     private List<Avatar> avatars = new ArrayList<>();
+
+    @OneToMany(mappedBy = "background")
+    private List<BackgroundBenefit> benefits = new ArrayList<>();
 }

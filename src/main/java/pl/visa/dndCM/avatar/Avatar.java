@@ -53,7 +53,26 @@ public class Avatar {
     // // Level
     private int level;
 
-    @OneToMany(mappedBy = "avatar")
+    // still going through the creation wizard - hidden from listings, wiped when a new one starts
+    private boolean draft;
+
+    // class step choices
+    @OneToMany(mappedBy = "avatar", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AvatarSkillProficiency> skillProficiencies = new ArrayList<>();
+
+    // "A" / "B" chosen in the class step
+    private String startingEquipmentChoice;
+
+    // raw text of the picked option, kept per source (also resolved into equipmentItems + gold)
+    @Column(columnDefinition = "TEXT")
+    private String startingEquipmentClass;
+
+    @Column(columnDefinition = "TEXT")
+    private String startingEquipmentBackground;
+
+    private int gold;
+
+    @OneToMany(mappedBy = "avatar", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AvatarEquipmentItem> equipmentItems = new ArrayList<>();
 
 

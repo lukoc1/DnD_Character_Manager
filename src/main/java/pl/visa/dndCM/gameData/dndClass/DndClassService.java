@@ -17,4 +17,8 @@ public class DndClassService {
         return dndClassRepository.findAll();
     }
 
+    public DndClass findById(Long id) {
+        return dndClassRepository.findById(id).orElseThrow();
+    }
+
 }

@@ -25,6 +25,11 @@ public class Specie {
     private String apiIndex;
     private String name;
 
+    // parent species when this is a subspecies (e.g. High Elf -> Elf), from open5e "subspecies_of"
+    @ManyToOne
+    @JoinColumn(name = "parent_specie_id")
+    private Specie parentSpecie;
+
     @OneToMany(mappedBy = "specie")
     @JsonIgnore
     private List<Avatar> avatars = new ArrayList<>();

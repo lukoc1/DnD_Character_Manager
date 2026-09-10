@@ -27,3 +27,4 @@ param.error -> /home?error przykładowo
 * jakoś inaczej odczytywać te dane o itemach bo to fest dużo dziwnego kodu
 * W LOAD CONTROLLER TRZEBA W SERVISY I DTO ZAMIAST ENCJI
   http://localhost:8080/api/show/equipment/WEAPONS
+  http://localhost:8080/swagger-ui/index.html
