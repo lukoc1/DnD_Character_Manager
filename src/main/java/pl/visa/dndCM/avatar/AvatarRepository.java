@@ -11,4 +11,8 @@ public interface AvatarRepository extends JpaRepository<Avatar, Long> {
 
     List<Avatar> findAllByUser_Id(Long id);
 
+    List<Avatar> findAllByUser_IdAndDraftFalse(Long id);
+
+    List<Avatar> findAllByDraftTrue();
+
 }

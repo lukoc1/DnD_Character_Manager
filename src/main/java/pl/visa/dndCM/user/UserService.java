@@ -35,7 +35,6 @@ public class UserService {
         userRepository.save(User.builder()
                 .name(userDTO.getName())
                 .password(passwordEncoder.encode(userDTO.getPassword()))
-                .role("USER")
                 .build());
     }
 
@@ -44,6 +43,12 @@ public class UserService {
                 .map(this::toDTO)
                 .findFirst().orElseThrow(() -> new ResourceNotFoundException(String.format("User %s not found", name), ErrorCode.USER_NOT_FOUND));
 
+    }
+
+    public Optional<UserDTO> findByNameOptional(String name) {
+        return userRepository.findByName(name).stream()
+                .map(this::toDTO)
+                .findFirst();
     }
 
     // utils
@@ -56,7 +61,7 @@ public class UserService {
     }
 
     public User toEntity(UserDTO userDTO) {
-        return User.builder().id(userDTO.getId()).name(userDTO.getName()).role("USER")
+        return User.builder().id(userDTO.getId()).name(userDTO.getName())
                 .build();
     }
 }

@@ -1,0 +1,105 @@
+/* Bloczek cechy: okrągły modifier + przylegający prostokątny score */
+.ability {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.ability__label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+.ability__modifier {
+    width: 64px;
+    height: 64px;
+    border: 2px solid #111;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    background: #fff;
+}
+.ability__score {
+    margin-top: -12px;          /* przyleganie do koła */
+    min-width: 44px;
+    border: 2px solid #111;
+    border-radius: 6px;
+    padding: 2px 8px;
+    text-align: center;
+    font-weight: 700;
+    background: #fff;
+}
+
+/* Lista pod cechą: kwadratowy "select" + linia na wpis + nazwa */
+.prof-list {
+    list-style: none;
+    margin: 0.75rem 0 0;
+    padding: 0;
+}
+.prof-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-bottom: 0.35rem;
+}
+
+.prof-list li:first-child {
+    border-bottom: 1px solid #adb5bd;
+    padding-bottom: 0.35rem;
+    margin-bottom: 0.5rem;
+}
+
+/* proficiency box: empty with black border, solid black when checked (no tick) */
+.prof-list input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    flex: 0 0 auto;
+    width: 13px;
+    height: 13px;
+    margin: 0;
+    border: 1.5px solid #111;
+    border-radius: 3px;
+    background: #fff;
+}
+.prof-list input[type="checkbox"]:checked {
+    background: #111;
+}
+
+
+.prof-list__value {
+    display: inline-block;
+    width: 20px;
+    border-bottom: 1px solid #111;
+    text-align: center;
+    font-weight: 700;
+}
+
+.prof-list__name {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* wspólny bloczek statystyki: obramowana ramka z wyśrodkowaną zawartością (Level, Initiative, Class features, ...) */
+.stat-box {
+    border: 2px solid #111;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.shield {
+    height: 210px;
+    width: 110px;
+    border: 2px solid #111;
+    border-radius: 50% 50% 50% 50% / 12% 12% 88% 88%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

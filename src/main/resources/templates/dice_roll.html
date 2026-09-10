@@ -1,0 +1,155 @@
+<div style="display:flex; flex-direction:column; align-items:center; padding:2rem 0; gap:1.5rem;">
+  <div style="display:flex; align-items:center; gap:10px;">
+    <label for="diceType" style="font-size:14px; color:var(--text-secondary);">Rodzaj kości</label>
+    <select id="diceType" style="width:100px;">
+      <option value="4">k4</option>
+      <option value="6" selected>k6</option>
+      <option value="8">k8</option>
+      <option value="10">k10</option>
+      <option value="12">k12</option>
+      <option value="20">k20</option>
+    </select>
+  </div>
+
+  <div id="scene" style="position:relative; width:220px; height:220px;">
+    <svg id="dice" viewBox="0 0 60 60" width="60" height="60" style="position:absolute; left:80px; top:-70px; transition: none; overflow:visible;">
+      <g id="shape"></g>
+      <g id="pips" fill="var(--text-primary)"></g>
+      <text id="numLabel" x="30" y="36" text-anchor="middle" font-size="18" font-weight="500" fill="var(--text-primary)" style="display:none;"></text>
+    </svg>
+    <svg viewBox="0 0 220 140" width="220" height="140" style="position:absolute; bottom:0; left:0;">
+      <path d="M20 40 L110 60 L200 40" fill="none" stroke="var(--border-strong)" stroke-width="2"/>
+      <path d="M20 40 L20 100 L110 120 L110 60 Z" fill="var(--c-coral-100, #F5C4B3)" stroke="var(--border-strong)" stroke-width="2"/>
+      <path d="M200 40 L200 100 L110 120 L110 60 Z" fill="var(--c-coral-200, #F0997B)" stroke="var(--border-strong)" stroke-width="2"/>
+    </svg>
+    <div id="resultBox" style="position:absolute; left:0; right:0; top:35px; text-align:center; opacity:0; font-size:28px; font-weight:500; color:var(--text-primary);"></div>
+  </div>
+  <button id="throwBtn" style="min-width:160px;">Rzuć kością</button>
+</div>
+
+<script>
+  const diceSvg = document.getElementById('dice');
+  const shapeG = document.getElementById('shape');
+  const pips = document.getElementById('pips');
+  const numLabel = document.getElementById('numLabel');
+  const resultBox = document.getElementById('resultBox');
+  const btn = document.getElementById('throwBtn');
+  const diceType = document.getElementById('diceType');
+
+  const pipPositions = {
+    1: [[30,30]],
+    2: [[18,18],[42,42]],
+    3: [[18,18],[30,30],[42,42]],
+    4: [[18,18],[42,18],[18,42],[42,42]],
+    5: [[18,18],[42,18],[30,30],[18,42],[42,42]],
+    6: [[18,14],[42,14],[18,30],[42,30],[18,46],[42,46]]
+  };
+
+  const shapeConfig = {
+    4:  { poly: 3, rotate: -90 },
+    6:  { rect: true },
+    8:  { poly: 4, rotate: -45 },
+    10: { poly: 5, rotate: -90 },
+    12: { poly: 6, rotate: -90 },
+    20: { poly: 8, rotate: -90 }
+  };
+
+  function polygonPoints(n, rotateDeg, r, cx, cy) {
+    const pts = [];
+    for (let i = 0; i < n; i++) {
+      const a = (rotateDeg + i * 360 / n) * Math.PI / 180;
+      pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]);
+    }
+    return pts.map(p => p.join(',')).join(' ');
+  }
+
+  function drawShape(sides) {
+    shapeG.innerHTML = '';
+    const cfg = shapeConfig[sides];
+    if (cfg.rect) {
+      const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+      rect.setAttribute('x', 2); rect.setAttribute('y', 2);
+      rect.setAttribute('width', 56); rect.setAttribute('height', 56);
+      rect.setAttribute('rx', 8);
+      rect.setAttribute('fill', 'var(--surface-2)');
+      rect.setAttribute('stroke', 'var(--border-strong)');
+      rect.setAttribute('stroke-width', 2);
+      shapeG.appendChild(rect);
+    } else {
+      const poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      poly.setAttribute('points', polygonPoints(cfg.poly, cfg.rotate, 27, 30, 30));
+      poly.setAttribute('fill', 'var(--surface-2)');
+      poly.setAttribute('stroke', 'var(--border-strong)');
+      poly.setAttribute('stroke-width', 2);
+      poly.setAttribute('stroke-linejoin', 'round');
+      shapeG.appendChild(poly);
+    }
+  }
+
+  function drawFace(n, sides) {
+    if (sides === 6) {
+      numLabel.style.display = 'none';
+      pips.style.display = '';
+      pips.innerHTML = '';
+      pipPositions[n].forEach(([cx,cy]) => {
+        const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        c.setAttribute('cx', cx);
+        c.setAttribute('cy', cy);
+        c.setAttribute('r', 4.5);
+        pips.appendChild(c);
+      });
+    } else {
+      pips.style.display = 'none';
+      numLabel.style.display = '';
+      numLabel.textContent = n;
+    }
+  }
+
+  drawShape(6);
+  drawFace(1, 6);
+
+  diceType.addEventListener('change', () => {
+    const sides = parseInt(diceType.value, 10);
+    drawShape(sides);
+    drawFace(1, sides);
+  });
+
+  function throwDice() {
+    const sides = parseInt(diceType.value, 10);
+    btn.disabled = true;
+    resultBox.style.opacity = 0;
+    resultBox.textContent = '';
+    drawShape(sides);
+    diceSvg.style.transition = 'none';
+    diceSvg.style.transform = 'translate(0,0) rotate(0deg)';
+    diceSvg.style.opacity = 1;
+    diceSvg.style.top = '-70px';
+
+    let spinInterval = setInterval(() => {
+      drawFace(1 + Math.floor(Math.random()*sides), sides);
+    }, 80);
+
+    requestAnimationFrame(() => {
+      diceSvg.style.transition = 'top 0.5s cubic-bezier(.5,0,1,.5), transform 0.5s linear';
+      diceSvg.style.top = '55px';
+      diceSvg.style.transform = 'rotate(540deg)';
+    });
+
+    setTimeout(() => {
+      diceSvg.style.transition = 'opacity 0.15s';
+      diceSvg.style.opacity = 0;
+    }, 480);
+
+    setTimeout(() => {
+      clearInterval(spinInterval);
+      const finalValue = 1 + Math.floor(Math.random()*sides);
+      drawFace(finalValue, sides);
+      resultBox.textContent = finalValue;
+      resultBox.style.transition = 'opacity 0.3s';
+      resultBox.style.opacity = 1;
+      btn.disabled = false;
+    }, 900);
+  }
+
+  btn.addEventListener('click', throwDice);
+</script>

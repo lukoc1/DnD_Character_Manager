@@ -17,3 +17,14 @@ param.error -> /home?error przykładowo
 * UUID zamiast ID
 * może przy tworzeniu usera podwójnie wpisywane haslo?
 * usunac pole ROLE u usera
+
+* następnym krokiem będzie:
+  * zczytanie z api przedmiotów
+  * opcja przypisania przedmiotu do avatara
+  * w sumie to my z damage-type tylko zczytujemyu jak sie nazywa, ale to wystarcza
+    przy innych api nie będzie wystarczać
+
+* jakoś inaczej odczytywać te dane o itemach bo to fest dużo dziwnego kodu
+* W LOAD CONTROLLER TRZEBA W SERVISY I DTO ZAMIAST ENCJI
+  http://localhost:8080/api/show/equipment/WEAPONS
+  http://localhost:8080/swagger-ui/index.html

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="card-textbox" class="col-md-2">
+    <label class="form-label text-muted mb-0" th:text="${title}">Character name</label>
+    <div class="fw-bold" th:classappend="${valueClass != null ? valueClass : 'fs-6'}"
+         th:text="${value}">Hero Name
+    </div>
+</div>
+
+</body>
+</html>
+
+
+

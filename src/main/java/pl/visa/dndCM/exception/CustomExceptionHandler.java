@@ -12,9 +12,14 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public String handleEntityNotFound(ResourceNotFoundException ex, Model model) {
+
         model.addAttribute("timestamp", LocalDateTime.now());
         model.addAttribute("errorMessage", ex.getMessage());
         model.addAttribute("errorCode", ex.getErrorCode().name());
+
+        if (ex.getErrorCode() == ErrorCode.USER_NOT_FOUND) {
+            model.addAttribute("isUserNotFound", true);
+        }
 
         return "error/error";
     }

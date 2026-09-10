@@ -8,11 +8,7 @@
 
 
 <!-- TOP NAVBAR -->
-<nav class="navbar navbar-light mb-2" style="background-color: #B0BE00;" data-bs-theme="dark">
-    <div class="container">
-        <a class="navbar-brand text-black" th:href="@{/login}">DnD Character Manager</a>
-    </div>
-</nav>
+<nav th:replace="fragments/header :: header"></nav>
 
 
 <div class="container">
@@ -32,7 +28,6 @@
     </div>
 
     <form th:action="@{/login}" method="post">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
         <div class="mb-3">
             <label class="form-label">Username</label>
