@@ -15,11 +15,7 @@ import pl.visa.dndCM.gameData.specie.Specie;
 import pl.visa.dndCM.gameData.specie.SpecieRepository;
 import pl.visa.dndCM.user.*;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -36,6 +32,8 @@ public class AvatarService {
     private final AvatarFeatRepository avatarFeatRepository;
     private final AvatarEquipmentItemRepository avatarEquipmentItemRepository;
     private final EquipmentItemRepository equipmentItemRepository;
+
+    private static final Random RANDOM = new Random();
 
     private static final Pattern GOLD = Pattern.compile("^(\\d+)\\s*GP$", Pattern.CASE_INSENSITIVE);
     private static final Pattern QUANTITY = Pattern.compile("^(\\d+)\\s+(.*)$");
@@ -113,9 +111,7 @@ public class AvatarService {
 
         DndClass dndClass = avatar.getDndClass();
         avatar.setStartingEquipmentChoice(equipmentChoice);
-        String equipmentText = "B".equals(equipmentChoice)
-                ? dndClass.getStartingEquipmentB()
-                : dndClass.getStartingEquipmentA();
+        String equipmentText = "B".equals(equipmentChoice) ? dndClass.getStartingEquipmentB() : dndClass.getStartingEquipmentA();
         avatar.setStartingEquipmentClass(equipmentText);
 
         avatarEquipmentItemRepository.deleteByAvatar(avatar);
@@ -310,9 +306,13 @@ public class AvatarService {
                 .level(avatar.getLevel())
                 .userId(avatar.getUser().getId())
                 .armorClass(avatar.getArmorClass())
+
                 .maxHP(avatar.getMaxHP())
                 .currentHP(avatar.getCurrentHP())
                 .tempHP(avatar.getTempHP())
+                .hitDiceSpent(avatar.getHitDiceSpent())
+                .hitDieSize(avatar.getDndClass().getHitDiceValue())
+
                 .proficiencyBonus(avatar.getProficiencyBonus())
                 .strMod(avatar.getStrMod())
                 .strSco(avatar.getStrSco())
@@ -376,6 +376,27 @@ public class AvatarService {
                 .anyMatch(p -> "Perception".equals(p.getName()));
 
         return 10 + avatar.getWisMod() + (proficientInPerception ? avatar.getProficiencyBonus() : 0);
+    }
+
+    public void spendHitDie(Long avatarId) {
+        Avatar avatar = avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+
+        // hit dice amount to spent == avatar level
+        if (avatar.getHitDiceSpent() >= avatar.getLevel()) {
+            return;
+        }
+
+        int roll = RANDOM.nextInt(avatar.getDndClass().getHitDiceValue()) + 1
+                + avatar.getConsMod();
+        int heal = Math.max(roll, 0);
+
+        int newCurrentHp = Math.min(avatar.getMaxHP(), avatar.getCurrentHP() + heal);
+
+        avatar.setHitDiceSpent(avatar.getHitDiceSpent() + 1);
+        avatar.setCurrentHP(newCurrentHp);
+
+        avatarRepository.save(avatar);
     }
 
 }

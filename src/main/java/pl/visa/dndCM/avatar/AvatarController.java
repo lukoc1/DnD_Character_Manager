@@ -52,4 +52,11 @@ public class AvatarController {
 
         return "redirect:/home";
     }
+
+    @GetMapping("/{id}/hit-dice/spend")
+    public String spendHitDie(@PathVariable Long id) {
+        avatarService.spendHitDie(id);
+
+        return "redirect:/avatar/select/" + id + "/showcard";
+    }
 }

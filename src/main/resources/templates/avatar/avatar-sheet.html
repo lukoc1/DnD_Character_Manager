@@ -17,7 +17,7 @@
 
 
 <div class="container-fluid p-3" style="max-width: 1100px;">
-        <!--BASICS + LVL + ARMOR + HIT POINTS-->
+        <!--BASICS + LVL + ARMOR + HIT POINTS + HIT DICE-->
         <div class="d-flex flex-wrap gap-3">
 
             <!-- Blok 1 -->
@@ -78,14 +78,29 @@
                 <div class="small fw-bold text-uppercase mb-2">Hit points</div>
                 <div class="row g-0">
                     <div class="col border-end border-dark">
-                        <div class="fs-5 fw-bold" th:text="${avatar.currentHP}">10</div>
-                        <div class="small text-uppercase">Current</div>
+                        <div class="fs-5 fw-bold border-bottom border-dark mt-3 me-2" th:text="${avatar.currentHP}">10</div>
+                        <div class="small text-uppercase me-2">Current</div>
                     </div>
                     <div class="col">
-                        <div class="fs-6 fw-bold" th:text="${avatar.tempHP}">5</div>
-                        <div class="small text-uppercase">temp</div>
-                        <div class="fs-6 fw-bold mt-1" th:text="${avatar.maxHP}">5</div>
+                        <div class="fs-6 fw-bold border-bottom border-dark ms-2" th:text="${avatar.tempHP}">5</div>
+                        <div class="small text-uppercase ms-2">temp</div>
+                        <div class="fs-6 fw-bold border-bottom border-dark mt-1 ms-2" th:text="${avatar.maxHP}">5</div>
+                        <div class="small text-uppercase ms-2">max</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blok 5: Hit dice-->
+            <div class="border border-2 border-dark rounded-3 px-3 py-2 text-center flex-shrink-0 d-flex flex-column justify-content-center" style="width: 120px;">
+                <div class="small fw-bold text-uppercase mb-2" th:text="'Hit die' + ' (D' + ${avatar.hitDieSize} + ')'">Hit die</div>
+                <div class="row g-0">
+                    <div class="col">
+                        <div class="fs-6 fw-bold border-bottom border-dark" th:text="${avatar.hitDiceSpent}">5</div>
+                        <div class="small text-uppercase ">spent</div>
+                        <div class="fs-6 fw-bold border-bottom border-dark mt-1" th:text="${avatar.level}">5</div>
                         <div class="small text-uppercase">max</div>
+                        <a th:if="${avatar.hitDiceSpent < avatar.level}" th:href="@{/avatar/{id}/hit-dice/spend(id=${avatar.id})}"
+                           class="btn btn-sm btn-outline-secondary">Spend Hit Die</a>
                     </div>
                 </div>
             </div>

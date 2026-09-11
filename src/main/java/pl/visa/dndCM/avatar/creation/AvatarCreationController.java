@@ -1,4 +1,4 @@
-package pl.visa.dndCM.avatar.card;
+package pl.visa.dndCM.avatar.creation;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -25,7 +25,7 @@ import java.util.List;
 @Controller
 @AllArgsConstructor
 @RequestMapping("/avatar")
-public class CardController {
+public class AvatarCreationController {
 
     private final AvatarService avatarService;
     private final DndClassService dndClassService;

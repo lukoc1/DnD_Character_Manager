@@ -94,6 +94,8 @@ public class Avatar {
     private int maxHP;
     private int currentHP;
     private int tempHP;
+
+    private int hitDiceSpent;
 //    // Stats
     private int proficiencyBonus;
 //

@@ -46,6 +46,9 @@ public class AvatarDTO {
     private int maxHP;
     private int currentHP;
     private int tempHP;
+
+    private int hitDiceSpent;
+    private int hitDieSize; // "e.g. D12 -> 12
     //    // Stats
     private int proficiencyBonus;
     //
