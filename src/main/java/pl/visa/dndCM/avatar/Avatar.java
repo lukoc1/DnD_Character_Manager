@@ -75,6 +75,10 @@ public class Avatar {
     @OneToMany(mappedBy = "avatar", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AvatarEquipmentItem> equipmentItems = new ArrayList<>();
 
+    // feats the avatar has (for now just the origin feat from the background)
+    @OneToMany(mappedBy = "avatar", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AvatarFeat> feats = new ArrayList<>();
+
 
 //    @ManyToMany
 //    @JoinTable(name = "avatar_weapon",

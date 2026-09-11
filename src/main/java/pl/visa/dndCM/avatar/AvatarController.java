@@ -41,6 +41,7 @@ public class AvatarController {
         model.addAttribute("avatar", avatarService.getAvatarById(id));
         model.addAttribute("proficiencies", avatarService.getSkillProficiencyNames(id));
         model.addAttribute("savingThrowAbilities", avatarService.getSavingThrowAbilities(id));
+        model.addAttribute("passivePerception", avatarService.getPassivePerception(id));
 
         return "avatar/avatar-sheet";
     }

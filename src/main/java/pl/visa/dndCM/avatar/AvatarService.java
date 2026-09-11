@@ -3,6 +3,7 @@ package pl.visa.dndCM.avatar;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.visa.dndCM.gameData.background.Background;
+import pl.visa.dndCM.gameData.background.BackgroundBenefit;
 import pl.visa.dndCM.gameData.background.BackgroundRepository;
 import pl.visa.dndCM.gameData.dndClass.DndClass;
 import pl.visa.dndCM.gameData.dndClass.DndClassRepository;
@@ -14,6 +15,7 @@ import pl.visa.dndCM.gameData.specie.Specie;
 import pl.visa.dndCM.gameData.specie.SpecieRepository;
 import pl.visa.dndCM.user.*;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +33,7 @@ public class AvatarService {
     private final BackgroundRepository backgroundRepository;
     private final SpecieRepository specieRepository;
     private final AvatarSkillProficiencyRepository skillProficiencyRepository;
+    private final AvatarFeatRepository avatarFeatRepository;
     private final AvatarEquipmentItemRepository avatarEquipmentItemRepository;
     private final EquipmentItemRepository equipmentItemRepository;
 
@@ -137,14 +140,90 @@ public class AvatarService {
 
         avatar.setProficiencyBonus(2);
 
-        // abilities step is currently the last one - avatar is now finished
-        avatar.setDraft(false);
+        avatarRepository.save(avatar);
+    }
 
+    /**
+     * Persists the background-step choices: fixed skill proficiencies, origin feat, chosen
+     * equipment package and the ability score increase. This is the last step, so the avatar
+     * stops being a draft here.
+     *
+     * @param abilityMode  "split" -> +2 to plus2Ability and +1 to plus1Ability;
+     *                     "all"   -> +1 to each of the background's three abilities
+     */
+    public void saveBackgroundStep(Long avatarId, String abilityMode, String plus2Ability,
+                                   String plus1Ability, String equipmentChoice) {
+
+        Avatar avatar = avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+
+        Background background = avatar.getBackground();
+
+        // fixed skill proficiencies - added on top of the ones picked in the class step
+        BackgroundBenefit skillBenefit = background.getBenefit("skill_proficiency");
+        if (skillBenefit != null) {
+            for (String skill : splitList(skillBenefit.getDescription())) {
+                skillProficiencyRepository.save(AvatarSkillProficiency.builder().avatar(avatar).name(skill).build());
+            }
+        }
+
+        // origin feat
+        avatarFeatRepository.deleteByAvatar(avatar);
+        BackgroundBenefit featBenefit = background.getBenefit("feat");
+        if (featBenefit != null) {
+            avatarFeatRepository.save(AvatarFeat.builder().avatar(avatar).name(featBenefit.getDescription()).build());
+        }
+
+        // equipment package - added on top of the class equipment, plus its raw text
+        String equipmentText = "B".equals(equipmentChoice) && background.getEquipmentOptionB() != null
+                ? background.getEquipmentOptionB()
+                : background.getEquipmentOptionA();
+        if (equipmentText != null) {
+            avatar.setStartingEquipmentBackground(equipmentText);
+            applyEquipmentList(avatar, equipmentText);
+        }
+
+        // ability score increase
+        if ("all".equals(abilityMode)) {
+            background.getAbilityScoreOptions().forEach(ability -> addAbilityScore(avatar, ability, 1));
+        } else {
+            addAbilityScore(avatar, plus2Ability, 2);
+            addAbilityScore(avatar, plus1Ability, 1);
+        }
+
+        avatar.setDraft(false);
         avatarRepository.save(avatar);
     }
 
     private static int abilityModifier(int score) {
         return Math.floorDiv(score - 10, 2);
+    }
+
+    /** Adds delta to one ability score (capped at 20) and refreshes its modifier. */
+    private void addAbilityScore(Avatar avatar, String ability, int delta) {
+        if (ability == null) {
+            return;
+        }
+        switch (ability) {
+            case "Strength" -> { int v = Math.min(20, avatar.getStrSco() + delta); avatar.setStrSco(v); avatar.setStrMod(abilityModifier(v)); }
+            case "Dexterity" -> { int v = Math.min(20, avatar.getDexSco() + delta); avatar.setDexSco(v); avatar.setDexMod(abilityModifier(v)); }
+            case "Constitution" -> { int v = Math.min(20, avatar.getConsSco() + delta); avatar.setConsSco(v); avatar.setConsMod(abilityModifier(v)); }
+            case "Intelligence" -> { int v = Math.min(20, avatar.getIntSco() + delta); avatar.setIntSco(v); avatar.setIntMod(abilityModifier(v)); }
+            case "Wisdom" -> { int v = Math.min(20, avatar.getWisSco() + delta); avatar.setWisSco(v); avatar.setWisMod(abilityModifier(v)); }
+            case "Charisma" -> { int v = Math.min(20, avatar.getCharSco() + delta); avatar.setCharSco(v); avatar.setCharMod(abilityModifier(v)); }
+            default -> { /* unknown ability name - ignore */ }
+        }
+    }
+
+    /** "Insight and Religion" / "Insight, Religion" -> ["Insight", "Religion"]. */
+    private static List<String> splitList(String text) {
+        if (text == null) {
+            return List.of();
+        }
+        return Arrays.stream(text.split(",|\\band\\b"))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
     }
 
     /**
@@ -280,6 +359,16 @@ public class AvatarService {
 
         return specieRepository.findById(specieId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Specie id=%s not found", specieId), ErrorCode.SPECIE_NOT_FOUND));
+    }
+
+    public int getPassivePerception(Long avatarId) {
+        Avatar avatar = avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+
+        boolean proficientInPerception = skillProficiencyRepository.findByAvatar_Id(avatarId).stream()
+                .anyMatch(p -> "Perception".equals(p.getName()));
+
+        return 10 + avatar.getWisMod() + (proficientInPerception ? avatar.getProficiencyBonus() : 0);
     }
 
 }

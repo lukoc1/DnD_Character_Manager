@@ -14,53 +14,59 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3 m-0">
             <span th:text="${avatar.name}">Hero</span> &mdash;
-            <span th:text="${dndClass.name}">Barbarian</span>
+            <span th:text="${background.name}">Acolyte</span>
         </h1>
     </div>
 
     <div th:if="${error}" class="alert alert-danger" th:text="${error}">error</div>
 
-    <form th:action="@{/avatar/{id}/create/class(id=${avatar.id})}" method="post">
+    <form th:action="@{/avatar/{id}/create/background(id=${avatar.id})}" method="post">
 
-        <!-- what the class gives (read-only) -->
+        <!-- what the background gives (read-only) -->
         <div class="border border-2 border-dark rounded-3 p-3 mb-3">
             <div class="row g-2">
-                <div class="col-md-4">
-                    <div class="small text-uppercase text-secondary">Primary ability</div>
-                    <div class="fw-bold" th:text="${dndClass.primaryAbility}">Strength</div>
+                <div class="col-md-6">
+                    <div class="small text-uppercase text-secondary">Origin feat</div>
+                    <div class="fw-bold" th:text="${background.getBenefit('feat')?.description} ?: '-'">Magic Initiate (Cleric)</div>
                 </div>
-                <div class="col-md-4">
-                    <div class="small text-uppercase text-secondary">Hit point die</div>
-                    <div class="fw-bold" th:text="${dndClass.hitDice} + ' per ' + ${dndClass.name} + ' level'">D12 per Barbarian level</div>
-                </div>
-                <div class="col-md-4">
-                    <div class="small text-uppercase text-secondary">Saving throw proficiencies</div>
-                    <div class="fw-bold" th:text="${savingThrows}">Strength, Constitution</div>
-                </div>
-                <div class="col-md-4">
-                    <div class="small text-uppercase text-secondary">Weapon proficiencies</div>
-                    <div class="fw-bold" th:text="${dndClass.weaponProficiencies}">Simple and Martial weapons</div>
-                </div>
-                <div class="col-md-4">
-                    <div class="small text-uppercase text-secondary">Armor training</div>
-                    <div class="fw-bold" th:text="${dndClass.armorTraining}">Light and Medium armor and Shields</div>
+                <div class="col-md-6">
+                    <div class="small text-uppercase text-secondary">Skill proficiencies</div>
+                    <div class="fw-bold" th:text="${background.getBenefit('skill_proficiency')?.description} ?: '-'">Insight and Religion</div>
                 </div>
             </div>
         </div>
 
-        <!-- skill proficiencies (choose N) -->
+        <!-- ability score increase -->
         <div class="border border-2 border-dark rounded-3 p-3 mb-3">
             <div class="small text-uppercase text-secondary mb-2">
-                Skill proficiencies &mdash; choose <span th:text="${dndClass.skillChoiceCount}">2</span>
+                Ability score increase &mdash;
+                <span th:text="${#strings.listJoin(background.abilityScoreOptions, ', ')}">Intelligence, Wisdom, Charisma</span>
             </div>
-            <div class="row">
-                <div class="col-md-4" th:each="opt : ${dndClass.skillOptions}">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="skills"
-                               th:value="${opt.name}" th:id="${'skill-' + opt.id}"/>
-                        <label class="form-check-label" th:for="${'skill-' + opt.id}" th:text="${opt.name}">Athletics</label>
-                    </div>
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="abilityMode" value="split" id="mode-split" checked/>
+                <label class="form-check-label" for="mode-split">Raise one by +2 and another by +1</label>
+            </div>
+            <div class="row g-2 my-1 ps-4">
+                <div class="col-sm-6">
+                    <label class="small text-secondary" for="plus2">+2 to</label>
+                    <select class="form-select" name="plus2" id="plus2">
+                        <option value="">-</option>
+                        <option th:each="a : ${background.abilityScoreOptions}" th:value="${a}" th:text="${a}">Intelligence</option>
+                    </select>
                 </div>
+                <div class="col-sm-6">
+                    <label class="small text-secondary" for="plus1">+1 to</label>
+                    <select class="form-select" name="plus1" id="plus1">
+                        <option value="">-</option>
+                        <option th:each="a : ${background.abilityScoreOptions}" th:value="${a}" th:text="${a}">Wisdom</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="abilityMode" value="all" id="mode-all"/>
+                <label class="form-check-label" for="mode-all">Raise all three by +1</label>
             </div>
         </div>
 
@@ -70,18 +76,18 @@
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="equipment" value="A" id="eq-a" checked/>
                 <label class="form-check-label" for="eq-a">
-                    <strong>A.</strong> <span th:text="${dndClass.startingEquipmentA}">Greataxe, 4 Handaxes, ...</span>
+                    <strong>A.</strong> <span th:text="${background.equipmentOptionA}">... 8 GP</span>
                 </label>
             </div>
-            <div class="form-check" th:if="${dndClass.startingEquipmentB != null}">
+            <div class="form-check" th:if="${background.equipmentOptionB != null}">
                 <input class="form-check-input" type="radio" name="equipment" value="B" id="eq-b"/>
                 <label class="form-check-label" for="eq-b">
-                    <strong>B.</strong> <span th:text="${dndClass.startingEquipmentB}">75 GP</span>
+                    <strong>B.</strong> <span th:text="${background.equipmentOptionB}">50 GP</span>
                 </label>
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Next</button>
+        <button type="submit" class="btn btn-primary">Finish</button>
 
     </form>
 

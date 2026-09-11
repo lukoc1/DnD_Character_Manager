@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import pl.visa.dndCM.avatar.AvatarDTO;
 import pl.visa.dndCM.avatar.AvatarService;
+import pl.visa.dndCM.gameData.background.Background;
 import pl.visa.dndCM.gameData.background.BackgroundService;
 import pl.visa.dndCM.gameData.dndClass.DndClass;
 import pl.visa.dndCM.gameData.dndClass.DndClassService;
@@ -117,7 +118,7 @@ public class CardController {
 
         avatarService.saveAbilitiesStep(id, str, dex, con, intel, wis, cha);
 
-        return "redirect:/avatar/select/" + id;
+        return "redirect:/avatar/" + id + "/create/background";
     }
 
     private void addClassStepAttributes(Model model, Long avatarId) {
@@ -127,5 +128,46 @@ public class CardController {
         model.addAttribute("avatar", avatar);
         model.addAttribute("dndClass", dndClass);
         model.addAttribute("savingThrows", String.join(", ", dndClass.getSavingThrowAbilities()));
+    }
+
+
+    // Step 4 - what the background gives + ability score increase + equipment choice (last step)
+
+    @GetMapping("/{id}/create/background")
+    public String showBackgroundStep(@PathVariable Long id, Model model) {
+        addBackgroundStepAttributes(model, id);
+        return "avatar/add-avatar/create-background";
+    }
+
+    @PostMapping("/{id}/create/background")
+    public String saveBackgroundStep(@PathVariable Long id,
+                                     @RequestParam(name = "abilityMode", defaultValue = "split") String abilityMode,
+                                     @RequestParam(name = "plus2", required = false) String plus2Ability,
+                                     @RequestParam(name = "plus1", required = false) String plus1Ability,
+                                     @RequestParam(name = "equipment", defaultValue = "A") String equipment,
+                                     Model model) {
+
+        Background background = backgroundService.findById(avatarService.getAvatarById(id).getBackgroundId());
+        List<String> options = background.getAbilityScoreOptions();
+
+        boolean validSplit = options.contains(plus2Ability) && options.contains(plus1Ability)
+                && !plus2Ability.equals(plus1Ability);
+        if (!"all".equals(abilityMode) && !validSplit) {
+            addBackgroundStepAttributes(model, id);
+            model.addAttribute("error", "Pick two different abilities from the list.");
+            return "avatar/add-avatar/create-background";
+        }
+
+        avatarService.saveBackgroundStep(id, abilityMode, plus2Ability, plus1Ability, equipment);
+
+        return "redirect:/avatar/select/" + id;
+    }
+
+    private void addBackgroundStepAttributes(Model model, Long avatarId) {
+        AvatarDTO avatar = avatarService.getAvatarById(avatarId);
+        Background background = backgroundService.findById(avatar.getBackgroundId());
+
+        model.addAttribute("avatar", avatar);
+        model.addAttribute("background", background);
     }
 }

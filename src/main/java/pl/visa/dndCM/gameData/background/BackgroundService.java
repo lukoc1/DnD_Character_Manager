@@ -14,4 +14,8 @@ public class BackgroundService {
     public List<Background> findAll() {
         return backgroundRepository.findAll();
     }
+
+    public Background findById(Long id) {
+        return backgroundRepository.findById(id).orElseThrow();
+    }
 }
