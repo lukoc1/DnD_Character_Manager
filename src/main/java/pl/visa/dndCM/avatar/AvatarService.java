@@ -191,6 +191,13 @@ public class AvatarService {
             addAbilityScore(avatar, plus1Ability, 1);
         }
 
+        // setting hit points
+        // level 1: class hit dice + con modifier
+        int maxHp = avatar.getDndClass().getHitDiceValue() + avatar.getConsMod();
+        avatar.setMaxHP(maxHp);
+        avatar.setCurrentHP(maxHp);
+        avatar.setTempHP(0);
+
         avatar.setDraft(false);
         avatarRepository.save(avatar);
     }

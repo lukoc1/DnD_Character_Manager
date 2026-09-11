@@ -31,7 +31,7 @@
                 </div>
                 <div class="col-md-4">
                     <div class="small text-uppercase text-secondary">Hit point die</div>
-                    <div class="fw-bold" th:text="${dndClass.hitDice} + ' per ' + ${dndClass.name} + ' level'">D12 per Barbarian level</div>
+                    <div class="fw-bold" th:text="'D' + ${dndClass.hitDiceValue} + ' per ' + ${dndClass.name} + ' level'">D12 per Barbarian level</div>
                 </div>
                 <div class="col-md-4">
                     <div class="small text-uppercase text-secondary">Saving throw proficiencies</div>

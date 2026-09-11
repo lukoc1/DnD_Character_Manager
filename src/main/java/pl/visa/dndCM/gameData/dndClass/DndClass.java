@@ -25,8 +25,8 @@ public class DndClass {
     private String apiIndex;
     private String name;
 
-    // hit die e.g. "D12", from open5e "hit_dice"
-    private String hitDice;
+    // hit die e.g. "D12" -> 12
+    private int hitDiceValue;
 
     // "NONE" / "FULL" / "HALF"
     private String casterType;

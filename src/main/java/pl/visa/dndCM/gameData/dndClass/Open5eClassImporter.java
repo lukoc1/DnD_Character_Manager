@@ -49,7 +49,7 @@ public class Open5eClassImporter {
         DndClass dndClass = dndClassRepository.findByApiIndex(dto.getKey()).orElseGet(DndClass::new);
         dndClass.setApiIndex(dto.getKey());
         dndClass.setName(dto.getName());
-        dndClass.setHitDice(dto.getHitDice());
+        dndClass.setHitDiceValue(parseHitDie(dto.getHitDice()));
         dndClass.setCasterType(dto.getCasterType());
         applySavingThrows(dndClass, dto.getSavingThrows());
         List<String> skillNames = applyCoreTraits(dndClass, dto.getFeatures());
@@ -262,4 +262,13 @@ public class Open5eClassImporter {
 
         levelTableEntryRepository.saveAll(rows);
     }
+
+    private int parseHitDie(String hitDice) {
+        if (hitDice == null) {
+            return 0;
+        }
+        return Integer.parseInt(hitDice.replace("D", ""));
+
+    }
+
 }
