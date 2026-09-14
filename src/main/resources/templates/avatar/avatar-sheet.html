@@ -140,16 +140,16 @@
                         <!-- Kolumna 1: Strength + Dexterity + Constitution -->
                         <div class="d-flex flex-column gap-3 flex-shrink-0">
                             <!-- Strength -->
-                            <div th:replace="~{fragments/ability-box :: ability-box(label='Strength', modifier=${avatar.strMod}, score=${avatar.strSco}, skills=${ {'Saving Throw','Athletics'} })}"></div>
+                            <div th:replace="~{fragments/ability-box :: ability-box(label='Strength', modifier=${avatar.strMod}, score=${avatar.strSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw','Athletics'} })}"></div>
 
                             <!-- Dexterity -->
-                            <div th:replace="~{fragments/ability-box :: ability-box(label='Dexterity', modifier=${avatar.dexMod}, score=${avatar.dexSco}, skills=${ {'Saving Throw','Acrobatics','Sleight of Hand','Stealth'} })}"></div>
+                            <div th:replace="~{fragments/ability-box :: ability-box(label='Dexterity', modifier=${avatar.dexMod}, score=${avatar.dexSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw','Acrobatics','Sleight of Hand','Stealth'} })}"></div>
 
                             <!-- Constitution -->
 <!--                            <div th:replace="~{fragments/ability-box :: ability-box(label='Constitution', modifier=${avatar.consMod}, score=${avatar.consSco}, skills=${ {'Saving Throw'} })}"></div>-->
 
                             <!-- Charisma -->
-                            <div th:replace="~{fragments/ability-box :: ability-box(label='Charisma', modifier=${avatar.charMod}, score=${avatar.charSco}, skills=${ {'Saving Throw','Deception','Intimidation','Performance','Persuasion'} })}"></div>
+                            <div th:replace="~{fragments/ability-box :: ability-box(label='Charisma', modifier=${avatar.charMod}, score=${avatar.charSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw','Deception','Intimidation','Performance','Persuasion'} })}"></div>
 
 
                             <!-- Heroic Inspiration -->
@@ -162,13 +162,13 @@
                         <!-- Kolumna 2: Intelligence + Wisdom + Charisma -->
                         <div class="d-flex flex-column gap-3 flex-shrink-0">
                             <!-- Intelligence -->
-                            <div th:replace="~{fragments/ability-box :: ability-box(label='Intelligence', modifier=${avatar.intMod}, score=${avatar.intSco}, skills=${ {'Saving Throw','Arcana','History','Investigation','Nature','Religion'} })}"></div>
+                            <div th:replace="~{fragments/ability-box :: ability-box(label='Intelligence', modifier=${avatar.intMod}, score=${avatar.intSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw','Arcana','History','Investigation','Nature','Religion'} })}"></div>
 
                             <!-- Wisdom -->
-                            <div th:replace="~{fragments/ability-box :: ability-box(label='Wisdom', modifier=${avatar.wisMod}, score=${avatar.wisSco}, skills=${ {'Saving Throw','Animal Handling','Insight','Medicine','Perception','Survival'} })}"></div>
+                            <div th:replace="~{fragments/ability-box :: ability-box(label='Wisdom', modifier=${avatar.wisMod}, score=${avatar.wisSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw','Animal Handling','Insight','Medicine','Perception','Survival'} })}"></div>
 
                             <!-- Constitution -->
-                            <div th:replace="~{fragments/ability-box :: ability-box(label='Constitution', modifier=${avatar.consMod}, score=${avatar.consSco}, skills=${ {'Saving Throw'} })}"></div>
+                            <div th:replace="~{fragments/ability-box :: ability-box(label='Constitution', modifier=${avatar.consMod}, score=${avatar.consSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw'} })}"></div>
 
 
                             <!-- Charisma -->
@@ -249,23 +249,18 @@
 
                         <hr class="w-100 border-dark border-2 opacity-100 my-1">
 
-                        <div class="row g-2 w-100">
-                            <div class="col">
-                                <table class="table table-bordered mb-0">
-                                    <tbody>
-                                    <tr><td>Feature 1</td></tr>
-                                    <tr><td>Feature 2</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="col">
-                                <table class="table table-bordered mb-0">
-                                    <tbody>
-                                    <tr><td>Feature 3</td></tr>
-                                    <tr><td>Feature 4</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <table class="table table-bordered mb-0">
+                            <tbody id="classFeaturesBody" class="paginated-body" data-page-size="5">
+                            <tr th:each="f : ${avatar.classFeatures}" class="paginated-row">
+                                <td class="text-start" th:text="${f.name}">Feature name</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary paginated-prev" data-target="classFeaturesBody">&lt;</button>
+                            <span class="small paginated-label" data-target="classFeaturesBody"></span>
+                            <button type="button" class="btn btn-sm btn-outline-secondary paginated-next" data-target="classFeaturesBody">&gt;</button>
                         </div>
                     </div>
                 </div>
@@ -280,11 +275,18 @@
 
                             <div class="col w-100">
                                 <table class="table table-bordered mb-0">
-                                    <tbody>
-                                    <tr><td>Feature 1</td></tr>
-                                    <tr><td>Feature 2</td></tr>
+                                    <tbody id="specieTraitsBody" class="paginated-body" data-page-size="5">
+                                    <tr th:each="t : ${avatar.specieTraits}" class="paginated-row">
+                                        <td class="text-start" th:text="${t.name}">Trait name</td>
+                                    </tr>
                                     </tbody>
                                 </table>
+
+                                <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary paginated-prev" data-target="specieTraitsBody">&lt;</button>
+                                    <span class="small paginated-label" data-target="specieTraitsBody"></span>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary paginated-next" data-target="specieTraitsBody">&gt;</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -295,11 +297,18 @@
 
                             <div class="col w-100">
                                 <table class="table table-bordered mb-0">
-                                    <tbody>
-                                    <tr><td>Feature 1</td></tr>
-                                    <tr><td>Feature 2</td></tr>
+                                    <tbody id="featsBody" class="paginated-body" data-page-size="5">
+                                    <tr th:each="feat : ${avatar.feats}" class="paginated-row">
+                                        <td class="text-start" th:text="${feat}">Feat name</td>
+                                    </tr>
                                     </tbody>
                                 </table>
+
+                                <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary paginated-prev" data-target="featsBody">&lt;</button>
+                                    <span class="small paginated-label" data-target="featsBody"></span>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary paginated-next" data-target="featsBody">&gt;</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -315,5 +324,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/cardSheet.js}"></script>
+<script th:src="@{/js/pagination.js}"></script>
 </body>
 </html>

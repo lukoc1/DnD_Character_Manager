@@ -13,9 +13,12 @@ import pl.visa.dndCM.gameData.equipmentItem.EquipmentItem;
 import pl.visa.dndCM.gameData.equipmentItem.EquipmentItemProperty;
 import pl.visa.dndCM.gameData.equipmentItem.EquipmentItemPropertyRepository;
 import pl.visa.dndCM.gameData.equipmentItem.EquipmentItemRepository;
+import pl.visa.dndCM.gameData.feature.DndClassFeature;
+import pl.visa.dndCM.gameData.feature.DndClassFeatureLevel;
+import pl.visa.dndCM.gameData.feature.FeatureRepository;
 import pl.visa.dndCM.gameData.specie.Specie;
 import pl.visa.dndCM.gameData.specie.SpecieRepository;
-import pl.visa.dndCM.gameData.specie.SpecieTrait;
+import pl.visa.dndCM.gameData.specie.SpecieTraitRepository;
 import pl.visa.dndCM.user.*;
 
 import java.util.*;
@@ -34,6 +37,8 @@ public class AvatarService {
     private final AvatarEquipmentItemRepository avatarEquipmentItemRepository;
     private final EquipmentItemRepository equipmentItemRepository;
     private final EquipmentItemPropertyRepository equipmentItemPropertyRepository;
+    private final FeatureRepository featureRepository;
+    private final SpecieTraitRepository specieTraitRepository;
 
     private static final Random RANDOM = new Random();
 
@@ -415,20 +420,60 @@ public class AvatarService {
                 .charMod(avatar.getCharMod())
                 .charSco(avatar.getCharSco())
 
-                .equipment(avatar.getEquipmentItems().stream()
-                        .map(e -> AvatarEquipmentItemDTO.builder()
-                                .name(e.getEquipmentItem().getName())
-                                .quantity(e.getQuantity())
-                                .category(e.getEquipmentItem().getCategory())
-                                .damageDice(e.getEquipmentItem().getDamageDice())
-                                .damageType(e.getEquipmentItem().getDamageType() != null
-                                        ? e.getEquipmentItem().getDamageType().getName()
-                                        : null)
-                                .atkBonus(weaponAtkBonus(avatar, e.getEquipmentItem()))
-                                .build())
-                        .toList())
+                .equipment(toEquipmentDTOs(avatar))
+                .classFeatures(toClassFeatureDTOs(avatar))
+                .specieTraits(toSpecieTraitDTOs(avatar))
+                .feats(toFeatNames(avatar))
 
                 .build();
+    }
+
+    private List<AvatarEquipmentItemDTO> toEquipmentDTOs(Avatar avatar) {
+        return avatar.getEquipmentItems().stream()
+                .map(e -> AvatarEquipmentItemDTO.builder()
+                        .name(e.getEquipmentItem().getName())
+                        .quantity(e.getQuantity())
+                        .category(e.getEquipmentItem().getCategory())
+                        .damageDice(e.getEquipmentItem().getDamageDice())
+                        .damageType(e.getEquipmentItem().getDamageType() != null
+                                ? e.getEquipmentItem().getDamageType().getName()
+                                : null)
+                        .atkBonus(weaponAtkBonus(avatar, e.getEquipmentItem()))
+                        .build())
+                .toList();
+    }
+
+    private List<AvatarClassFeatureDTO> toClassFeatureDTOs(Avatar avatar) {
+        List<DndClassFeature> features = new ArrayList<>(featureRepository.findByDndClass(avatar.getDndClass()));
+        if (avatar.getDndsubclass() != null) {
+            features.addAll(featureRepository.findBySubclass(avatar.getDndsubclass()));
+        }
+
+        return features.stream()
+                .filter(f -> f.getLevelsGained().stream().anyMatch(l -> l.getLevel() <= avatar.getLevel()))
+                .sorted(Comparator.comparing(f -> f.getLevelsGained().stream()
+                        .mapToInt(DndClassFeatureLevel::getLevel).min().orElse(0)))
+                .map(f -> AvatarClassFeatureDTO.builder()
+                        .name(f.getName())
+                        .description(f.getDescription())
+                        .build())
+                .toList();
+    }
+
+    private List<AvatarSpecieTraitDTO> toSpecieTraitDTOs(Avatar avatar) {
+        return specieTraitRepository.findBySpecieOrderByTraitOrder(avatar.getSpecie()).stream()
+                .filter(t -> !"SIZE".equals(t.getType()) && !"SPEED".equals(t.getType()))
+                .map(t -> AvatarSpecieTraitDTO.builder()
+                        .name(t.getName())
+                        .description(t.getDescription())
+                        .build())
+                .toList();
+    }
+
+    private List<String> toFeatNames(Avatar avatar) {
+        return avatarFeatRepository.findByAvatar_Id(avatar.getId()).stream()
+                .map(AvatarFeat::getName)
+                .toList();
     }
 
     public Avatar toEntity(AvatarDTO avatarDTO) {
@@ -501,9 +546,5 @@ public class AvatarService {
         avatarRepository.save(avatar);
     }
 
-//    private static String describeTrait(Specie specie, String type) {
-//        SpecieTrait trait = specie.getTraits().get(type);
-//        return trait != nu
-//    }
 
 }

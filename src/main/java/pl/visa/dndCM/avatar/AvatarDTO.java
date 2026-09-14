@@ -76,4 +76,7 @@ public class AvatarDTO {
     private int currentSpeed;
 
     private List<AvatarEquipmentItemDTO> equipment;
+    private List<AvatarClassFeatureDTO> classFeatures;
+    private List<AvatarSpecieTraitDTO> specieTraits;
+    private List<String> feats;
 }

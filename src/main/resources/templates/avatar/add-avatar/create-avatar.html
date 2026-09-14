@@ -66,13 +66,13 @@
 
                                 <!-- klasy grywalne -->
                                 <option th:each="c : ${dndClasses}"
-                                        th:if="${c.apiIndex == 'srd-2024_barbarian' or c.apiIndex == 'srd-2024_wizard'}"
+                                        th:if="${c.apiIndex == 'srd-2024_barbarian' or c.apiIndex == 'srd-2024_monk'}"
                                         th:value="${c.id}"
                                         th:text="${c.name}"></option>
 
                                 <!-- klasy jeszcze nie wprowadzone -->
                                 <option th:each="c : ${dndClasses}"
-                                        th:if="${c.apiIndex != 'srd-2024_barbarian' and c.apiIndex != 'srd-2024_wizard'}"
+                                        th:if="${c.apiIndex != 'srd-2024_barbarian' and c.apiIndex != 'srd-2024_monk'}"
                                         th:value="${c.id}"
                                         th:text="${c.name + ' (soon)'}"
                                         disabled></option>
