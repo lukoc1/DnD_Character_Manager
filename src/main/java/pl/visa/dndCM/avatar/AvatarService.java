@@ -10,14 +10,15 @@ import pl.visa.dndCM.gameData.dndClass.DndClassRepository;
 import pl.visa.dndCM.exception.ErrorCode;
 import pl.visa.dndCM.exception.ResourceNotFoundException;
 import pl.visa.dndCM.gameData.equipmentItem.EquipmentItem;
+import pl.visa.dndCM.gameData.equipmentItem.EquipmentItemProperty;
+import pl.visa.dndCM.gameData.equipmentItem.EquipmentItemPropertyRepository;
 import pl.visa.dndCM.gameData.equipmentItem.EquipmentItemRepository;
 import pl.visa.dndCM.gameData.specie.Specie;
 import pl.visa.dndCM.gameData.specie.SpecieRepository;
+import pl.visa.dndCM.gameData.specie.SpecieTrait;
 import pl.visa.dndCM.user.*;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,11 +33,9 @@ public class AvatarService {
     private final AvatarFeatRepository avatarFeatRepository;
     private final AvatarEquipmentItemRepository avatarEquipmentItemRepository;
     private final EquipmentItemRepository equipmentItemRepository;
+    private final EquipmentItemPropertyRepository equipmentItemPropertyRepository;
 
     private static final Random RANDOM = new Random();
-
-    private static final Pattern GOLD = Pattern.compile("^(\\d+)\\s*GP$", Pattern.CASE_INSENSITIVE);
-    private static final Pattern QUANTITY = Pattern.compile("^(\\d+)\\s+(.*)$");
 
     /// methods
 
@@ -127,12 +126,23 @@ public class AvatarService {
         Avatar avatar = avatarRepository.findById(avatarId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
 
-        avatar.setStrSco(str);   avatar.setStrMod(abilityModifier(str));
-        avatar.setDexSco(dex);   avatar.setDexMod(abilityModifier(dex));
-        avatar.setConsSco(con);  avatar.setConsMod(abilityModifier(con));
-        avatar.setIntSco(intel); avatar.setIntMod(abilityModifier(intel));
-        avatar.setWisSco(wis);   avatar.setWisMod(abilityModifier(wis));
-        avatar.setCharSco(cha);  avatar.setCharMod(abilityModifier(cha));
+        avatar.setStrSco(str);
+        avatar.setStrMod(abilityModifier(str));
+
+        avatar.setDexSco(dex);
+        avatar.setDexMod(abilityModifier(dex));
+
+        avatar.setConsSco(con);
+        avatar.setConsMod(abilityModifier(con));
+
+        avatar.setIntSco(intel);
+        avatar.setIntMod(abilityModifier(intel));
+
+        avatar.setWisSco(wis);
+        avatar.setWisMod(abilityModifier(wis));
+
+        avatar.setCharSco(cha);
+        avatar.setCharMod(abilityModifier(cha));
 
         avatar.setProficiencyBonus(2);
 
@@ -194,27 +204,53 @@ public class AvatarService {
         avatar.setCurrentHP(maxHp);
         avatar.setTempHP(0);
 
+        avatar.setSize(avatar.getSpecie().getSize());
+        avatar.setCurrentSpeed(avatar.getSpecie().getBaseSpeed());
+
         avatar.setDraft(false);
         avatarRepository.save(avatar);
     }
 
     private static int abilityModifier(int score) {
-        return Math.floorDiv(score - 10, 2);
+        return (int) Math.floor((score - 10) / 2.0);
     }
 
-    /** Adds delta to one ability score (capped at 20) and refreshes its modifier. */
-    private void addAbilityScore(Avatar avatar, String ability, int delta) {
+    private void addAbilityScore(Avatar avatar, String ability, int value) {
         if (ability == null) {
             return;
         }
         switch (ability) {
-            case "Strength" -> { int v = Math.min(20, avatar.getStrSco() + delta); avatar.setStrSco(v); avatar.setStrMod(abilityModifier(v)); }
-            case "Dexterity" -> { int v = Math.min(20, avatar.getDexSco() + delta); avatar.setDexSco(v); avatar.setDexMod(abilityModifier(v)); }
-            case "Constitution" -> { int v = Math.min(20, avatar.getConsSco() + delta); avatar.setConsSco(v); avatar.setConsMod(abilityModifier(v)); }
-            case "Intelligence" -> { int v = Math.min(20, avatar.getIntSco() + delta); avatar.setIntSco(v); avatar.setIntMod(abilityModifier(v)); }
-            case "Wisdom" -> { int v = Math.min(20, avatar.getWisSco() + delta); avatar.setWisSco(v); avatar.setWisMod(abilityModifier(v)); }
-            case "Charisma" -> { int v = Math.min(20, avatar.getCharSco() + delta); avatar.setCharSco(v); avatar.setCharMod(abilityModifier(v)); }
-            default -> { /* unknown ability name - ignore */ }
+            case "Strength" -> {
+                int v = Math.min(20, avatar.getStrSco() + value);
+                avatar.setStrSco(v);
+                avatar.setStrMod(abilityModifier(v));
+            }
+            case "Dexterity" -> {
+                int v = Math.min(20, avatar.getDexSco() + value);
+                avatar.setDexSco(v);
+                avatar.setDexMod(abilityModifier(v));
+            }
+            case "Constitution" -> {
+                int v = Math.min(20, avatar.getConsSco() + value);
+                avatar.setConsSco(v);
+                avatar.setConsMod(abilityModifier(v));
+            }
+            case "Intelligence" -> {
+                int v = Math.min(20, avatar.getIntSco() + value);
+                avatar.setIntSco(v);
+                avatar.setIntMod(abilityModifier(v));
+            }
+            case "Wisdom" -> {
+                int v = Math.min(20, avatar.getWisSco() + value);
+                avatar.setWisSco(v);
+                avatar.setWisMod(abilityModifier(v));
+            }
+            case "Charisma" -> {
+                int v = Math.min(20, avatar.getCharSco() + value);
+                avatar.setCharSco(v);
+                avatar.setCharMod(abilityModifier(v));
+            }
+            default -> {}
         }
     }
 
@@ -223,6 +259,7 @@ public class AvatarService {
         if (text == null) {
             return List.of();
         }
+
         return Arrays.stream(text.split(",|\\band\\b"))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
@@ -245,18 +282,20 @@ public class AvatarService {
                 continue;
             }
 
-            Matcher goldMatch = GOLD.matcher(token);
-            if (goldMatch.matches()) {
-                avatar.setGold(avatar.getGold() + Integer.parseInt(goldMatch.group(1)));
-                continue;
+            if (token.toUpperCase().endsWith("GP")) {
+                String amount = token.substring(0, token.length() - 2).trim();
+                if (!amount.isEmpty() && amount.chars().allMatch(Character::isDigit)) {
+                    avatar.setGold(avatar.getGold() + Integer.parseInt(amount));
+                    continue;
+                }
             }
 
             int quantity = 1;
             String name = token;
-            Matcher quantityMatch = QUANTITY.matcher(token);
-            if (quantityMatch.matches()) {
-                quantity = Integer.parseInt(quantityMatch.group(1));
-                name = quantityMatch.group(2).trim();
+            String[] parts = token.split(" ", 2);
+            if (parts.length == 2 && !parts[0].isEmpty() && parts[0].chars().allMatch(Character::isDigit)) {
+                quantity = Integer.parseInt(parts[0]);
+                name = parts[1].trim();
             }
 
             EquipmentItem item = findEquipmentByName(name);
@@ -288,6 +327,53 @@ public class AvatarService {
         avatarRepository.deleteById(id);
     }
 
+    /**
+     * Attack bonus = ability modifier (Strength, or Dexterity for ranged/finesse weapons - whichever
+     * is higher for finesse) + proficiency bonus, if the avatar's class is proficient with this weapon.
+     */
+    private Integer weaponAtkBonus(Avatar avatar, EquipmentItem item) {
+        if (item == null || !"weapon".equals(item.getCategory())) {
+            return null;
+        }
+
+        List<EquipmentItemProperty> properties = equipmentItemPropertyRepository.findByEquipmentItem(item);
+        boolean finesse = properties.stream().anyMatch(p -> "Finesse".equalsIgnoreCase(p.getName()));
+
+        int abilityMod;
+        if (item.getDistanceUnit() != null) {
+            abilityMod = avatar.getDexMod();
+        } else if (finesse) {
+            abilityMod = Math.max(avatar.getStrMod(), avatar.getDexMod());
+        } else {
+            abilityMod = avatar.getStrMod();
+        }
+
+        int proficiencyBonus = isWeaponProficient(avatar.getDndClass(), item, properties)
+                ? avatar.getProficiencyBonus()
+                : 0;
+
+        return abilityMod + proficiencyBonus;
+    }
+
+    private boolean isWeaponProficient(DndClass dndClass, EquipmentItem item, List<EquipmentItemProperty> itemProperties) {
+        String weaponProficiencies = dndClass == null ? null : dndClass.getWeaponProficiencies();
+        if (weaponProficiencies == null) {
+            return false;
+        }
+        String lower = weaponProficiencies.toLowerCase();
+
+        if (item.isSimple() && lower.contains("simple")) {
+            return true;
+        }
+        if (item.isMartial() && lower.contains("martial")) {
+            if (lower.contains("that have")) {
+                return itemProperties.stream().anyMatch(p -> lower.contains(p.getName().toLowerCase()));
+            }
+            return true;
+        }
+        return false;
+    }
+
 
     /// utils
 
@@ -312,6 +398,8 @@ public class AvatarService {
                 .tempHP(avatar.getTempHP())
                 .hitDiceSpent(avatar.getHitDiceSpent())
                 .hitDieSize(avatar.getDndClass().getHitDiceValue())
+                .size(avatar.getSize())
+                .currentSpeed(avatar.getCurrentSpeed())
 
                 .proficiencyBonus(avatar.getProficiencyBonus())
                 .strMod(avatar.getStrMod())
@@ -326,6 +414,20 @@ public class AvatarService {
                 .wisSco(avatar.getWisSco())
                 .charMod(avatar.getCharMod())
                 .charSco(avatar.getCharSco())
+
+                .equipment(avatar.getEquipmentItems().stream()
+                        .map(e -> AvatarEquipmentItemDTO.builder()
+                                .name(e.getEquipmentItem().getName())
+                                .quantity(e.getQuantity())
+                                .category(e.getEquipmentItem().getCategory())
+                                .damageDice(e.getEquipmentItem().getDamageDice())
+                                .damageType(e.getEquipmentItem().getDamageType() != null
+                                        ? e.getEquipmentItem().getDamageType().getName()
+                                        : null)
+                                .atkBonus(weaponAtkBonus(avatar, e.getEquipmentItem()))
+                                .build())
+                        .toList())
+
                 .build();
     }
 
@@ -398,5 +500,10 @@ public class AvatarService {
 
         avatarRepository.save(avatar);
     }
+
+//    private static String describeTrait(Specie specie, String type) {
+//        SpecieTrait trait = specie.getTraits().get(type);
+//        return trait != nu
+//    }
 
 }

@@ -96,6 +96,9 @@ public class Avatar {
     private int tempHP;
 
     private int hitDiceSpent;
+
+    private String size;
+    private int currentSpeed;
 //    // Stats
     private int proficiencyBonus;
 //

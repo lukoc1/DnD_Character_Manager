@@ -187,21 +187,21 @@
                     <div class="col">
                         <div class="stat-box px-3 py-2 text-center w-100">
                             <div class="small text-uppercase">Initiative</div>
-                            <div class="fs-5 fw-bold" th:text="${avatar.proficiencyBonus}">+2</div>
+                            <div class="fs-5 fw-bold" th:text="${avatar.dexMod}">+2</div>
                         </div>
                     </div>
 
                     <div class="col">
                         <div class="stat-box px-3 py-2 text-center w-100">
                             <div class="small text-uppercase">Speed</div>
-                            <div class="fs-5 fw-bold" th:text="${avatar.proficiencyBonus}">+2</div>
+                            <div class="fs-5 fw-bold" th:text="${avatar.currentSpeed}">+2</div>
                         </div>
                     </div>
 
                     <div class="col">
                         <div class="stat-box px-3 py-2 text-center w-100">
                             <div class="small text-uppercase">Size</div>
-                            <div class="fs-5 fw-bold" th:text="${avatar.proficiencyBonus}">+2</div>
+                            <div class="fs-5 fw-bold" th:text="${avatar.size}">+2</div>
                         </div>
                     </div>
 
@@ -217,7 +217,7 @@
                 <!--  WEAPONS & DAMAGE CANTRIPS  -->
                 <div class="mb-3">
                     <div class="stat-box px-3 py-2 text-center">
-                        <div class="small text-uppercase">Weapons & Damage Cantrips </div>
+                        <div class="small text-uppercase">Weapons & Damage Cantrips</div>
 
                         <hr class="w-100 border-dark border-2 opacity-100 my-1">
 
@@ -230,11 +230,10 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-<!--                                ...-->
-                            </tr>
-                            <tr>
-<!--                                ...-->
+                            <tr th:each="w : ${avatar.equipment}" th:if="${w.category == 'weapon'}">
+                                <td th:text="${w.name}">Longsword</td>
+                                <td th:text="${w.atkBonus}">+5</td>
+                                <td th:text="${w.damageDice != null} ? ${w.damageDice} + ' ' + ${w.damageType} : '-'">1d8 Slashing</td>
                             </tr>
                             </tbody>
                         </table>

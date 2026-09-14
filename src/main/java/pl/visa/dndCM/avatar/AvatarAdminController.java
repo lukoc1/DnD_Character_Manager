@@ -12,7 +12,6 @@ public class AvatarAdminController {
 
     private final AvatarService avatarService;
 
-    /** Removes every avatar still stuck as a draft in the creation wizard. */
     @GetMapping("/delete-drafts")
     public String deleteDrafts() {
         avatarService.deleteAllDrafts();

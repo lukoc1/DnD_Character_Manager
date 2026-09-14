@@ -57,12 +57,26 @@ public class DndClass {
     /** Ability names this class grants saving throw proficiency in, e.g. ["Strength", "Constitution"]. */
     public List<String> getSavingThrowAbilities() {
         List<String> abilities = new ArrayList<>();
-        if (strSavingThrow) abilities.add("Strength");
-        if (dexSavingThrow) abilities.add("Dexterity");
-        if (consSavingThrow) abilities.add("Constitution");
-        if (intSavingThrow) abilities.add("Intelligence");
-        if (wisSavingThrow) abilities.add("Wisdom");
-        if (chaSavingThrow) abilities.add("Charisma");
+
+        if (strSavingThrow) {
+            abilities.add("Strength");
+        }
+        if (dexSavingThrow) {
+            abilities.add("Dexterity");
+        }
+        if (consSavingThrow) {
+            abilities.add("Constitution");
+        }
+        if (intSavingThrow) {
+            abilities.add("Intelligence");
+        }
+        if (wisSavingThrow) {
+            abilities.add("Wisdom");
+        }
+        if (chaSavingThrow) {
+            abilities.add("Charisma");
+        }
+
         return abilities;
     }
 }
