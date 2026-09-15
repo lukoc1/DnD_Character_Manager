@@ -17,7 +17,7 @@
     </div>
 
     <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <span th:text="${errorMessage}"></span>
+        <span th:text="${errorMessage}" style="white-space: pre-line;"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
     </div>
 
@@ -25,8 +25,16 @@
     <form th:action="@{/user/register}" th:object="${registerUserDTO}" method="post">
 
         <div class="mb-3">
-            <label class="form-label">Username</label>
-            <input type="text" class="form-control" th:field="*{name}"/>
+            <label class="form-label">First name</label>
+            <input type="text" class="form-control" th:field="*{firstName}"/>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Last name</label>
+            <input type="text" class="form-control" th:field="*{lastName}"/>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" th:field="*{email}"/>
         </div>
         <div class="mb-3">
             <label class="form-label">Password</label>

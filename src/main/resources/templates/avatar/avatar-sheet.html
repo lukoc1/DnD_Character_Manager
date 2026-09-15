@@ -175,6 +175,50 @@
 <!--                            <div th:replace="~{fragments/ability-box :: ability-box(label='Charisma', modifier=${avatar.charMod}, score=${avatar.charSco}, skills=${ {'Saving Throw','Deception','Intimidation','Performance','Persuasion'} })}"></div>-->
                         </div>
                     </div>
+                    <div class="mb-3">
+                        <div class="stat-box px-3 py-2 text-center">
+                            <div class="small text-uppercase fw-bold">EQUIPMENT TRAINING & PROFICIENCIES</div>
+
+                            <hr class="w-100 border-dark border-2 opacity-100 my-1">
+<!--                            // ARMOR TRAINING-->
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-1">
+                                <span class="small text-uppercase text-start" style="max-width: 75px; white-space: normal;">Armor training</span>
+
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="checkbox" class="pe-none" th:checked="${avatar.armorTraining != null and avatar.armorTraining.contains('Light')}"/>
+                                    <span class="prof-list__name">Light</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="checkbox" class="pe-none" th:checked="${avatar.armorTraining != null and avatar.armorTraining.contains('Medium')}"/>
+                                    <span class="prof-list__name">Medium</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="checkbox" class="pe-none" th:checked="${avatar.armorTraining != null and avatar.armorTraining.contains('Heavy')}"/>
+                                    <span class="prof-list__name">Heavy</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="checkbox" class="pe-none" th:checked="${avatar.armorTraining != null and avatar.armorTraining.contains('Shield')}"/>
+                                    <span class="prof-list__name">Shields</span>
+                                </div>
+                            </div>
+<!--                            // WEAPONS-->
+                            <hr class="w-100 border-dark border-2 opacity-100 my-1">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap text-start gap-1 w-100">
+                                <span class="small text-uppercase">Weapons</span>
+
+                            </div>
+
+                            <hr class="w-100 border-dark border-2 opacity-100 my-1">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap text-start gap-1 w-100">
+                                <span class="small text-uppercase">Tools</span>
+
+                            </div>
+
+
+                            <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- lewa część KONIEC -->
@@ -229,8 +273,8 @@
                                 <th scope="col">Damage & Type</th>
                             </tr>
                             </thead>
-                            <tbody>
-                            <tr th:each="w : ${avatar.equipment}" th:if="${w.category == 'weapon'}">
+                            <tbody id="weaponsBody" class="paginated-body" data-page-size="5">
+                            <tr th:each="w : ${avatar.weapons}" class="paginated-row">
                                 <td th:text="${w.name}">Longsword</td>
                                 <td th:text="${w.atkBonus}">+5</td>
                                 <td th:text="${w.damageDice != null} ? ${w.damageDice} + ' ' + ${w.damageType} : '-'">1d8 Slashing</td>
@@ -238,6 +282,11 @@
                             </tbody>
                         </table>
 
+                        <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary paginated-prev" data-target="weaponsBody">&lt;</button>
+                            <span class="small paginated-label" data-target="weaponsBody"></span>
+                            <button type="button" class="btn btn-sm btn-outline-secondary paginated-next" data-target="weaponsBody">&gt;</button>
+                        </div>
                     </div>
                 </div>
                 <!--  WEAPONS & DAMAGE CANTRIPS KONIEC  -->
@@ -314,12 +363,21 @@
                     </div>
                 </div>
                 <!--   SPECIES TRAITS + FEATS KONIEC  -->
-
-
             </div>
             <!-- prawa część KONIEC -->
 
         </div>
+
+    <!-- Linia + "Dungeons & Dragons" na środku + przycisk kości + linia -->
+    <div class="d-flex align-items-center my-3">
+        <hr class="flex-grow-1 border-dark border-2 opacity-100">
+        <span class="mx-3 fw-bold text-uppercase" style="letter-spacing: .15em; white-space: nowrap;">
+                Dungeons &amp; Dragons
+            </span>
+        <hr class="flex-grow-1 border-dark border-2 opacity-100 ms-1">
+    </div>
+
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

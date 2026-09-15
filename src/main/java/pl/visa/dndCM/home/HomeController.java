@@ -48,9 +48,9 @@ public class HomeController {
     @GetMapping("/home")
     public String homePage(Model model, Authentication authentication, HttpServletRequest request) {
 
-        String name = authentication.getName();
+        String email = authentication.getName();
 
-        Optional<UserDTO> userOptional = userService.findByNameOptional(name);
+        Optional<UserDTO> userOptional = userService.findByEmailOptional(email);
 
         // Dodane bo był przypadek że w sesji zalogowany
         // był user a ręcznie usunąłem tego usera

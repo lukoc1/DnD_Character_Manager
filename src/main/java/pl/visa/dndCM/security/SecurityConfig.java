@@ -23,6 +23,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(a ->
                 a.requestMatchers("/user/register", "/login").permitAll()
                         .requestMatchers("/favicon.ico").permitAll()
+                        .requestMatchers("/api/**", "/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
         )
 

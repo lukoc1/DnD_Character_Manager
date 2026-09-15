@@ -27,26 +27,29 @@ public class UserService {
 
     public void save(RegisterUserDTO userDTO) {
 
-        if (userRepository.existsByName(userDTO.getName())) {
-            throw new UserAlreadyExistException(userDTO.getName());
-//            throw new IllegalArgumentException("User already exists");
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            throw new UserAlreadyExistException(
+                    String.format("Email '%s' already exist.", userDTO.getEmail()), ErrorCode.USER_ALREADY_EXIST);
         }
 
         userRepository.save(User.builder()
-                .name(userDTO.getName())
                 .password(passwordEncoder.encode(userDTO.getPassword()))
+                .firstName(userDTO.getFirstName())
+                .lastName(userDTO.getLastName())
+                .email(userDTO.getEmail())
+                .role(Role.USER)
                 .build());
     }
 
-    public UserDTO findByName(String name) {
-        return userRepository.findByName(name).stream()
+    public UserDTO findByEmail(String email) {
+        return userRepository.findByEmail(email).stream()
                 .map(this::toDTO)
-                .findFirst().orElseThrow(() -> new ResourceNotFoundException(String.format("User %s not found", name), ErrorCode.USER_NOT_FOUND));
+                .findFirst().orElseThrow(() -> new ResourceNotFoundException(String.format("User %s not found", email), ErrorCode.USER_NOT_FOUND));
 
     }
 
-    public Optional<UserDTO> findByNameOptional(String name) {
-        return userRepository.findByName(name).stream()
+    public Optional<UserDTO> findByEmailOptional(String email) {
+        return userRepository.findByEmail(email).stream()
                 .map(this::toDTO)
                 .findFirst();
     }
@@ -54,14 +57,20 @@ public class UserService {
     // utils
 
     public UserDTO toDTO(User user) {
-        return UserDTO.builder().id(user.getId()).name(user.getName())
+        return UserDTO.builder().id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
                 .avatarList(user.getAvatarList() == null ? List.of() : user.getAvatarList().stream()
                         .map(a -> a.getName()).toList())
                 .build();
     }
 
     public User toEntity(UserDTO userDTO) {
-        return User.builder().id(userDTO.getId()).name(userDTO.getName())
+        return User.builder().id(userDTO.getId())
+                .firstName(userDTO.getFirstName())
+                .lastName(userDTO.getLastName())
+                .email(userDTO.getEmail())
                 .build();
     }
 }

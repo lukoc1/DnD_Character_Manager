@@ -22,7 +22,7 @@ public class AvatarController {
     @GetMapping("/select/{id}")
     public String selectAvatar(Model model, @PathVariable Long id, RedirectAttributes ra, Authentication authentication) {
 
-        Long userId = userService.findByName(authentication.getName()).getId();
+        Long userId = userService.findByEmail(authentication.getName()).getId();
         Long avatarOwnerId = avatarService.getAvatarById(id).getUserId();
 
         if (!userId.equals(avatarOwnerId)) {

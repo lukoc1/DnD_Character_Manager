@@ -80,10 +80,10 @@ public class AvatarService {
         return new HashSet<>(dndClass.getSavingThrowAbilities());
     }
 
-    public Long save(AvatarDTO avatarDTO, String userName) {
+    public Long save(AvatarDTO avatarDTO, String userEmail) {
 
-        User user = userRepository.findByName(userName)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("User %s not found", userName), ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("User %s not found", userEmail), ErrorCode.USER_NOT_FOUND));
 
         Avatar avatar = toEntity(avatarDTO);
         avatar.setUser(user);
@@ -405,6 +405,7 @@ public class AvatarService {
                 .hitDieSize(avatar.getDndClass().getHitDiceValue())
                 .size(avatar.getSize())
                 .currentSpeed(avatar.getCurrentSpeed())
+                .armorTraining(avatar.getDndClass().getArmorTraining())
 
                 .proficiencyBonus(avatar.getProficiencyBonus())
                 .strMod(avatar.getStrMod())
@@ -421,6 +422,7 @@ public class AvatarService {
                 .charSco(avatar.getCharSco())
 
                 .equipment(toEquipmentDTOs(avatar))
+                .weapons(toWeaponDTOs(avatar))
                 .classFeatures(toClassFeatureDTOs(avatar))
                 .specieTraits(toSpecieTraitDTOs(avatar))
                 .feats(toFeatNames(avatar))
@@ -440,6 +442,12 @@ public class AvatarService {
                                 : null)
                         .atkBonus(weaponAtkBonus(avatar, e.getEquipmentItem()))
                         .build())
+                .toList();
+    }
+
+    private List<AvatarEquipmentItemDTO> toWeaponDTOs(Avatar avatar) {
+        return toEquipmentDTOs(avatar).stream()
+                .filter(w -> "weapon".equals(w.getCategory()))
                 .toList();
     }
 
