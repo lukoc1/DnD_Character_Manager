@@ -27,6 +27,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
         )
 
+                // umożliwia usunięcie
+        .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+
         .formLogin(f -> f.loginPage("/login").defaultSuccessUrl("/home")
                 .permitAll()
         )

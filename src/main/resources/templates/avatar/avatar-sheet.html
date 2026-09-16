@@ -13,367 +13,401 @@
 <body>
 
 <!-- TOP NAVBAR-->
-<nav th:replace="fragments/header :: header"></nav>
+<nav class="navbar navbar-light mb-2" style="background-color: #B0BE00;" data-bs-theme="dark">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a class="navbar-brand text-black m-0" th:href="@{/home}">DnD Character Manager</a>
 
-
-<div class="container-fluid p-3" style="max-width: 1100px;">
-        <!--BASICS + LVL + ARMOR + HIT POINTS + HIT DICE-->
-        <div class="d-flex flex-wrap gap-3">
-
-            <!-- Blok 1 -->
-            <div class="border border-2 border-dark rounded-3 px-3 py-2 flex-fill" style="min-width: 320px;">
-
-                <!-- wiersz 1: character name -->
-                <div class="row g-0">
-                    <div class="col px-2 py-1">
-                        <div class="fs-5 fw-bold border-bottom border-dark" th:text="${avatar.name}">Hero</div>
-                        <div class="small text-uppercase text-secondary">Character name</div>
-                    </div>
-                </div>
-
-                <!-- wiersz 2: background + class -->
-                <div class="row g-0">
-                    <div class="col px-2 py-1">
-                        <div class="fs-5 fw-bold border-bottom border-dark" th:text="${avatar.backgroundName}">Acolyte</div>
-                        <div class="small text-uppercase text-secondary">Background</div>
-                    </div>
-                    <div class="col px-2 py-1">
-                        <div class="fs-5 fw-bold border-bottom border-dark" th:text="${avatar.className}">Fighter</div>
-                        <div class="small text-uppercase text-secondary">Class</div>
-                    </div>
-                </div>
-
-                <!-- wiersz 3: species + subclass -->
-                <div class="row g-0">
-                    <div class="col px-2 py-1">
-                        <div class="fs-5 fw-bold border-bottom border-dark" th:text="${avatar.specieName}">Human</div>
-                        <div class="small text-uppercase text-secondary">Species</div>
-                    </div>
-                    <div class="col px-2 py-1">
-                        <div class="fs-5 fw-bold border-bottom border-dark" th:text="${avatar.subclassName} ?: '-'">-</div>
-                        <div class="small text-uppercase text-secondary">Subclass</div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Blok 2: Level -->
-            <div class="stat-box px-3 text-center" style="width: 110px;">
-                <div class="small text-uppercase">Level</div>
-                <div class="fs-5 fw-bold" th:text="${avatar.level}">1</div>
-            </div>
-
-            <!-- Blok 3: Armor class -->
-            <div class="shield text-center">
-                <div class="small text-uppercase">Armor class</div>
-                <div class="fs-5 fw-bold" th:text="${avatar.armorClass}">10</div>
-                <div class="d-flex align-items-center gap-1">
-                    <input type="checkbox" disabled>
-                    <span class="prof-list__name">Shield</span>
-                </div>
-            </div>
-
-            <!-- Blok 4: Hit points -->
-            <div class="border border-2 border-dark rounded-3 px-3 py-2 text-center flex-shrink-0 d-flex flex-column justify-content-center" style="width: 160px;">
-                <div class="small fw-bold text-uppercase mb-2">Hit points</div>
-                <div class="row g-0">
-                    <div class="col border-end border-dark">
-                        <div class="fs-5 fw-bold border-bottom border-dark mt-3 me-2" th:text="${avatar.currentHP}">10</div>
-                        <div class="small text-uppercase me-2">Current</div>
-                    </div>
-                    <div class="col">
-                        <div class="fs-6 fw-bold border-bottom border-dark ms-2" th:text="${avatar.tempHP}">5</div>
-                        <div class="small text-uppercase ms-2">temp</div>
-                        <div class="fs-6 fw-bold border-bottom border-dark mt-1 ms-2" th:text="${avatar.maxHP}">5</div>
-                        <div class="small text-uppercase ms-2">max</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Blok 5: Hit dice-->
-            <div class="border border-2 border-dark rounded-3 px-3 py-2 text-center flex-shrink-0 d-flex flex-column justify-content-center" style="width: 120px;">
-                <div class="small fw-bold text-uppercase mb-2" th:text="'Hit die' + ' (D' + ${avatar.hitDieSize} + ')'">Hit die</div>
-                <div class="row g-0">
-                    <div class="col">
-                        <div class="fs-6 fw-bold border-bottom border-dark" th:text="${avatar.hitDiceSpent}">5</div>
-                        <div class="small text-uppercase ">spent</div>
-                        <div class="fs-6 fw-bold border-bottom border-dark mt-1" th:text="${avatar.level}">5</div>
-                        <div class="small text-uppercase">max</div>
-                        <a th:if="${avatar.hitDiceSpent < avatar.level}" th:href="@{/avatar/{id}/hit-dice/spend(id=${avatar.id})}"
-                           class="btn btn-sm btn-outline-secondary">Spend Hit Die</a>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-
-
-        <!-- Linia + "Dungeons & Dragons" na środku + przycisk kości + linia -->
-        <div class="d-flex align-items-center my-3">
-            <hr class="flex-grow-1 border-dark border-2 opacity-100">
-            <span class="mx-3 fw-bold text-uppercase" style="letter-spacing: .15em; white-space: nowrap;">
-                Dungeons &amp; Dragons
-            </span>
-            <button type="button" class="btn btn-sm btn-dark d-flex align-items-center justify-content-center p-1"
-                    title="Dice roll">
-                <i class="bi bi-dice-6-fill"></i>
+        <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-success" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                <i class="bi bi-pencil"></i> Edit
             </button>
-            <hr class="flex-grow-1 border-dark border-2 opacity-100 ms-3">
+            <a class="btn btn-success" th:href="@{|/avatar/select/${avatar.id}|}">
+                Back
+            </a>
         </div>
+    </div>
+</nav>
+
+<!-- SIDE MENU -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvasRightLabel" id="sideMenuLabel">Edit sheet Menu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/home}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{|/avatar/select/${avatar.id}|}">Back to avatar</a>
+            </li>
+        </ul>
+    </div>
+</div>
 
 
-        <!-- Blok z podziałem 1 : 3 -->
-        <div class="d-flex flex-wrap gap-2 my-3">
-            <!-- lewa część (1) -->
-            <div class="border border-2 border-dark rounded-3 p-3" style="flex: 1 1 330px; min-width: 400px;">
-                <div class="d-flex flex-column align-items-center gap-3">
-
-                    <!-- Proficiency bonus - bloczek jak Level -->
-                    <div class="stat-box px-3 py-2 text-center" style="width: 130px;">
-                        <div class="small text-uppercase">Proficiency bonus</div>
-                        <div class="fs-5 fw-bold" th:text="${avatar.proficiencyBonus}">+2</div>
-                    </div>
-
-                    <div class="d-flex flex-row justify-content-center gap-3">
-
-                        <!-- Kolumna 1: Strength + Dexterity + Constitution -->
-                        <div class="d-flex flex-column gap-3 flex-shrink-0">
-                            <!-- Strength -->
-                            <div th:replace="~{fragments/ability-box :: ability-box(label='Strength', modifier=${avatar.strMod}, score=${avatar.strSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw','Athletics'} })}"></div>
-
-                            <!-- Dexterity -->
-                            <div th:replace="~{fragments/ability-box :: ability-box(label='Dexterity', modifier=${avatar.dexMod}, score=${avatar.dexSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw','Acrobatics','Sleight of Hand','Stealth'} })}"></div>
-
-                            <!-- Constitution -->
-<!--                            <div th:replace="~{fragments/ability-box :: ability-box(label='Constitution', modifier=${avatar.consMod}, score=${avatar.consSco}, skills=${ {'Saving Throw'} })}"></div>-->
-
-                            <!-- Charisma -->
-                            <div th:replace="~{fragments/ability-box :: ability-box(label='Charisma', modifier=${avatar.charMod}, score=${avatar.charSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw','Deception','Intimidation','Performance','Persuasion'} })}"></div>
 
 
-                            <!-- Heroic Inspiration -->
-                            <div class="border border-2 border-dark rounded-3 p-3">
-                                <div class="small text-uppercase">Heroic inspiration</div>
-                                <input type="checkbox" disabled>
-                            </div>
-                        </div>
+<!-- KARTA -->
+<div class="p-3 mx-auto" style="max-width: 1100px;">
+    <!--BASICS + LVL + ARMOR + HIT POINTS + HIT DICE-->
+    <div class="d-flex flex-wrap gap-3">
 
-                        <!-- Kolumna 2: Intelligence + Wisdom + Charisma -->
-                        <div class="d-flex flex-column gap-3 flex-shrink-0">
-                            <!-- Intelligence -->
-                            <div th:replace="~{fragments/ability-box :: ability-box(label='Intelligence', modifier=${avatar.intMod}, score=${avatar.intSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw','Arcana','History','Investigation','Nature','Religion'} })}"></div>
+        <!-- Blok 1 -->
+        <div class="border border-2 border-dark rounded-3 px-3 py-2 flex-fill" style="min-width: 320px;">
 
-                            <!-- Wisdom -->
-                            <div th:replace="~{fragments/ability-box :: ability-box(label='Wisdom', modifier=${avatar.wisMod}, score=${avatar.wisSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw','Animal Handling','Insight','Medicine','Perception','Survival'} })}"></div>
-
-                            <!-- Constitution -->
-                            <div th:replace="~{fragments/ability-box :: ability-box(label='Constitution', modifier=${avatar.consMod}, score=${avatar.consSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw'} })}"></div>
-
-
-                            <!-- Charisma -->
-<!--                            <div th:replace="~{fragments/ability-box :: ability-box(label='Charisma', modifier=${avatar.charMod}, score=${avatar.charSco}, skills=${ {'Saving Throw','Deception','Intimidation','Performance','Persuasion'} })}"></div>-->
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="stat-box px-3 py-2 text-center">
-                            <div class="small text-uppercase fw-bold">EQUIPMENT TRAINING & PROFICIENCIES</div>
-
-                            <hr class="w-100 border-dark border-2 opacity-100 my-1">
-<!--                            // ARMOR TRAINING-->
-                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-1">
-                                <span class="small text-uppercase text-start" style="max-width: 75px; white-space: normal;">Armor training</span>
-
-                                <div class="d-flex align-items-center gap-1">
-                                    <input type="checkbox" class="pe-none" th:checked="${avatar.armorTraining != null and avatar.armorTraining.contains('Light')}"/>
-                                    <span class="prof-list__name">Light</span>
-                                </div>
-                                <div class="d-flex align-items-center gap-1">
-                                    <input type="checkbox" class="pe-none" th:checked="${avatar.armorTraining != null and avatar.armorTraining.contains('Medium')}"/>
-                                    <span class="prof-list__name">Medium</span>
-                                </div>
-                                <div class="d-flex align-items-center gap-1">
-                                    <input type="checkbox" class="pe-none" th:checked="${avatar.armorTraining != null and avatar.armorTraining.contains('Heavy')}"/>
-                                    <span class="prof-list__name">Heavy</span>
-                                </div>
-                                <div class="d-flex align-items-center gap-1">
-                                    <input type="checkbox" class="pe-none" th:checked="${avatar.armorTraining != null and avatar.armorTraining.contains('Shield')}"/>
-                                    <span class="prof-list__name">Shields</span>
-                                </div>
-                            </div>
-<!--                            // WEAPONS-->
-                            <hr class="w-100 border-dark border-2 opacity-100 my-1">
-                            <div class="d-flex align-items-center justify-content-between flex-wrap text-start gap-1 w-100">
-                                <span class="small text-uppercase">Weapons</span>
-
-                            </div>
-
-                            <hr class="w-100 border-dark border-2 opacity-100 my-1">
-                            <div class="d-flex align-items-center justify-content-between flex-wrap text-start gap-1 w-100">
-                                <span class="small text-uppercase">Tools</span>
-
-                            </div>
-
-
-                            <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
-                            </div>
-                        </div>
-                    </div>
+            <!-- wiersz 1: character name -->
+            <div class="row g-0">
+                <div class="col px-2 py-1">
+                    <div class="fs-5 fw-bold border-bottom border-dark" th:text="${avatar.name}">Hero</div>
+                    <div class="small text-uppercase text-secondary">Character name</div>
                 </div>
             </div>
-            <!-- lewa część KONIEC -->
 
-            <!-- prawa część (3) -->
-            <div class="border border-2 border-dark rounded-3 p-3" style="flex: 3 1 600px; min-width: 300px;">
-
-                <!--  INITIATIVE SPEED SIZE PASSIVE PERCEPTION  -->
-                <div class="row g-3 mb-3">
-                    <div class="col">
-                        <div class="stat-box px-3 py-2 text-center w-100">
-                            <div class="small text-uppercase">Initiative</div>
-                            <div class="fs-5 fw-bold" th:text="${avatar.dexMod}">+2</div>
-                        </div>
-                    </div>
-
-                    <div class="col">
-                        <div class="stat-box px-3 py-2 text-center w-100">
-                            <div class="small text-uppercase">Speed</div>
-                            <div class="fs-5 fw-bold" th:text="${avatar.currentSpeed}">+2</div>
-                        </div>
-                    </div>
-
-                    <div class="col">
-                        <div class="stat-box px-3 py-2 text-center w-100">
-                            <div class="small text-uppercase">Size</div>
-                            <div class="fs-5 fw-bold" th:text="${avatar.size}">+2</div>
-                        </div>
-                    </div>
-
-                    <div class="col">
-                        <div class="stat-box px-3 py-2 text-center w-100">
-                            <div class="small text-uppercase text-nowrap">Passive perception</div>
-                            <div class="fs-5 fw-bold" th:text="${passivePerception}">+2</div>
-                        </div>
-                    </div>
+            <!-- wiersz 2: background + class -->
+            <div class="row g-0">
+                <div class="col px-2 py-1">
+                    <div class="fs-5 fw-bold border-bottom border-dark" th:text="${avatar.backgroundName}">Acolyte</div>
+                    <div class="small text-uppercase text-secondary">Background</div>
                 </div>
-                <!--  INITIATIVE SPEED SIZE PASSIVE PERCEPTION KONIEC  -->
-
-                <!--  WEAPONS & DAMAGE CANTRIPS  -->
-                <div class="mb-3">
-                    <div class="stat-box px-3 py-2 text-center">
-                        <div class="small text-uppercase">Weapons & Damage Cantrips</div>
-
-                        <hr class="w-100 border-dark border-2 opacity-100 my-1">
-
-                        <table class="table table-bordered">
-                            <thead>
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Atk Bonus / DC</th>
-                                <th scope="col">Damage & Type</th>
-                            </tr>
-                            </thead>
-                            <tbody id="weaponsBody" class="paginated-body" data-page-size="5">
-                            <tr th:each="w : ${avatar.weapons}" class="paginated-row">
-                                <td th:text="${w.name}">Longsword</td>
-                                <td th:text="${w.atkBonus}">+5</td>
-                                <td th:text="${w.damageDice != null} ? ${w.damageDice} + ' ' + ${w.damageType} : '-'">1d8 Slashing</td>
-                            </tr>
-                            </tbody>
-                        </table>
-
-                        <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary paginated-prev" data-target="weaponsBody">&lt;</button>
-                            <span class="small paginated-label" data-target="weaponsBody"></span>
-                            <button type="button" class="btn btn-sm btn-outline-secondary paginated-next" data-target="weaponsBody">&gt;</button>
-                        </div>
-                    </div>
+                <div class="col px-2 py-1">
+                    <div class="fs-5 fw-bold border-bottom border-dark" th:text="${avatar.className}">Fighter</div>
+                    <div class="small text-uppercase text-secondary">Class</div>
                 </div>
-                <!--  WEAPONS & DAMAGE CANTRIPS KONIEC  -->
-
-                <!--  CLASS FEATURES  -->
-                <div class="mb-3">
-                    <div class="stat-box px-3 py-2 text-center">
-                        <div class="small text-uppercase">Class features</div>
-
-                        <hr class="w-100 border-dark border-2 opacity-100 my-1">
-
-                        <table class="table table-bordered mb-0">
-                            <tbody id="classFeaturesBody" class="paginated-body" data-page-size="5">
-                            <tr th:each="f : ${avatar.classFeatures}" class="paginated-row">
-                                <td class="text-start" th:text="${f.name}">Feature name</td>
-                            </tr>
-                            </tbody>
-                        </table>
-
-                        <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary paginated-prev" data-target="classFeaturesBody">&lt;</button>
-                            <span class="small paginated-label" data-target="classFeaturesBody"></span>
-                            <button type="button" class="btn btn-sm btn-outline-secondary paginated-next" data-target="classFeaturesBody">&gt;</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- CLASS FEATURES KONIEC  -->
-
-                <!--  SPECIES TRAITS + FEATS  -->
-                <div class="row g-3 mb-3">
-                    <div class="col">
-                        <div class="stat-box px-3 py-2 text-center h-100">
-                            <div class="small text-uppercase">Species traits</div>
-                            <hr class="w-100 border-dark border-2 opacity-100 my-1">
-
-                            <div class="col w-100">
-                                <table class="table table-bordered mb-0">
-                                    <tbody id="specieTraitsBody" class="paginated-body" data-page-size="5">
-                                    <tr th:each="t : ${avatar.specieTraits}" class="paginated-row">
-                                        <td class="text-start" th:text="${t.name}">Trait name</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-
-                                <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary paginated-prev" data-target="specieTraitsBody">&lt;</button>
-                                    <span class="small paginated-label" data-target="specieTraitsBody"></span>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary paginated-next" data-target="specieTraitsBody">&gt;</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="stat-box px-3 py-2 text-center h-100">
-                            <div class="small text-uppercase">Feats</div>
-                            <hr class="w-100 border-dark border-2 opacity-100 my-1">
-
-                            <div class="col w-100">
-                                <table class="table table-bordered mb-0">
-                                    <tbody id="featsBody" class="paginated-body" data-page-size="5">
-                                    <tr th:each="feat : ${avatar.feats}" class="paginated-row">
-                                        <td class="text-start" th:text="${feat}">Feat name</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-
-                                <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary paginated-prev" data-target="featsBody">&lt;</button>
-                                    <span class="small paginated-label" data-target="featsBody"></span>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary paginated-next" data-target="featsBody">&gt;</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!--   SPECIES TRAITS + FEATS KONIEC  -->
             </div>
-            <!-- prawa część KONIEC -->
+
+            <!-- wiersz 3: species + subclass -->
+            <div class="row g-0">
+                <div class="col px-2 py-1">
+                    <div class="fs-5 fw-bold border-bottom border-dark" th:text="${avatar.specieName}">Human</div>
+                    <div class="small text-uppercase text-secondary">Species</div>
+                </div>
+                <div class="col px-2 py-1">
+                    <div class="fs-5 fw-bold border-bottom border-dark" th:text="${avatar.subclassName} ?: '-'">-</div>
+                    <div class="small text-uppercase text-secondary">Subclass</div>
+                </div>
+            </div>
 
         </div>
+
+        <!-- Blok 2: Level -->
+        <div class="stat-box px-3 text-center" style="width: 110px;">
+            <div class="small text-uppercase">Level</div>
+            <div class="fs-5 fw-bold" th:text="${avatar.level}">1</div>
+        </div>
+
+        <!-- Blok 3: Armor class -->
+        <div class="shield text-center">
+            <div class="small text-uppercase">Armor class</div>
+            <div class="fs-5 fw-bold" th:text="${avatar.armorClass}">10</div>
+            <div class="d-flex align-items-center gap-1">
+                <input type="checkbox" disabled>
+                <span class="prof-list__name">Shield</span>
+            </div>
+        </div>
+
+        <!-- Blok 4: Hit points -->
+        <div class="border border-2 border-dark rounded-3 px-3 py-2 text-center flex-shrink-0 d-flex flex-column justify-content-center" style="width: 160px;">
+            <div class="small fw-bold text-uppercase mb-2">Hit points</div>
+            <div class="row g-0">
+                <div class="col border-end border-dark">
+                    <div class="fs-5 fw-bold border-bottom border-dark mt-3 me-2" th:text="${avatar.currentHP}">10</div>
+                    <div class="small text-uppercase me-2">Current</div>
+                </div>
+                <div class="col">
+                    <div class="fs-6 fw-bold border-bottom border-dark ms-2" th:text="${avatar.tempHP}">5</div>
+                    <div class="small text-uppercase ms-2">temp</div>
+                    <div class="fs-6 fw-bold border-bottom border-dark mt-1 ms-2" th:text="${avatar.maxHP}">5</div>
+                    <div class="small text-uppercase ms-2">max</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blok 5: Hit dice-->
+        <div class="border border-2 border-dark rounded-3 px-3 py-2 text-center flex-shrink-0 d-flex flex-column justify-content-center" style="width: 120px;">
+            <div class="small fw-bold text-uppercase mb-2" th:text="'Hit die' + ' (D' + ${avatar.hitDieSize} + ')'">Hit die</div>
+            <div class="row g-0">
+                <div class="col">
+                    <div class="fs-6 fw-bold border-bottom border-dark" th:text="${avatar.hitDiceSpent}">5</div>
+                    <div class="small text-uppercase ">spent</div>
+                    <div class="fs-6 fw-bold border-bottom border-dark mt-1" th:text="${avatar.level}">5</div>
+                    <div class="small text-uppercase">max</div>
+                    <a th:if="${avatar.hitDiceSpent < avatar.level}" th:href="@{/avatar/{id}/hit-dice/spend(id=${avatar.id})}"
+                       class="btn btn-sm btn-outline-secondary">Spend Hit Die</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
 
     <!-- Linia + "Dungeons & Dragons" na środku + przycisk kości + linia -->
     <div class="d-flex align-items-center my-3">
         <hr class="flex-grow-1 border-dark border-2 opacity-100">
         <span class="mx-3 fw-bold text-uppercase" style="letter-spacing: .15em; white-space: nowrap;">
-                Dungeons &amp; Dragons
-            </span>
+            Dungeons &amp; Dragons
+        </span>
+        <button type="button" class="btn btn-sm btn-dark d-flex align-items-center justify-content-center p-1"
+                title="Dice roll">
+            <i class="bi bi-dice-6-fill"></i>
+        </button>
+        <hr class="flex-grow-1 border-dark border-2 opacity-100 ms-3">
+    </div>
+
+
+    <!-- Blok z podziałem 1 : 3 -->
+    <div class="d-flex flex-wrap gap-2 my-3">
+        <!-- lewa część (1) -->
+        <div class="border border-2 border-dark rounded-3 p-3" style="flex: 1 1 330px; min-width: 400px;">
+            <div class="d-flex flex-column align-items-center gap-3">
+
+                <!-- Proficiency bonus - bloczek jak Level -->
+                <div class="stat-box px-3 py-2 text-center" style="width: 130px;">
+                    <div class="small text-uppercase">Proficiency bonus</div>
+                    <div class="fs-5 fw-bold" th:text="${avatar.proficiencyBonus}">+2</div>
+                </div>
+
+                <div class="d-flex flex-row justify-content-center gap-3">
+
+                    <!-- Kolumna 1: Strength + Dexterity + Constitution -->
+                    <div class="d-flex flex-column gap-3 flex-shrink-0">
+                        <!-- Strength -->
+                        <div th:replace="~{fragments/ability-box :: ability-box(label='Strength', modifier=${avatar.strMod}, score=${avatar.strSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw','Athletics'} })}"></div>
+
+                        <!-- Dexterity -->
+                        <div th:replace="~{fragments/ability-box :: ability-box(label='Dexterity', modifier=${avatar.dexMod}, score=${avatar.dexSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw','Acrobatics','Sleight of Hand','Stealth'} })}"></div>
+
+                        <!-- Constitution -->
+                        <!--                            <div th:replace="~{fragments/ability-box :: ability-box(label='Constitution', modifier=${avatar.consMod}, score=${avatar.consSco}, skills=${ {'Saving Throw'} })}"></div>-->
+
+                        <!-- Charisma -->
+                        <div th:replace="~{fragments/ability-box :: ability-box(label='Charisma', modifier=${avatar.charMod}, score=${avatar.charSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw','Deception','Intimidation','Performance','Persuasion'} })}"></div>
+
+
+                        <!-- Heroic Inspiration -->
+                        <div class="border border-2 border-dark rounded-3 p-3">
+                            <div class="small text-uppercase">Heroic inspiration</div>
+                            <input type="checkbox" disabled>
+                        </div>
+                    </div>
+
+                    <!-- Kolumna 2: Intelligence + Wisdom + Charisma -->
+                    <div class="d-flex flex-column gap-3 flex-shrink-0">
+                        <!-- Intelligence -->
+                        <div th:replace="~{fragments/ability-box :: ability-box(label='Intelligence', modifier=${avatar.intMod}, score=${avatar.intSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw','Arcana','History','Investigation','Nature','Religion'} })}"></div>
+
+                        <!-- Wisdom -->
+                        <div th:replace="~{fragments/ability-box :: ability-box(label='Wisdom', modifier=${avatar.wisMod}, score=${avatar.wisSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw','Animal Handling','Insight','Medicine','Perception','Survival'} })}"></div>
+
+                        <!-- Constitution -->
+                        <div th:replace="~{fragments/ability-box :: ability-box(label='Constitution', modifier=${avatar.consMod}, score=${avatar.consSco}, proficiencyBonus=${avatar.proficiencyBonus}, skills=${ {'Saving Throw'} })}"></div>
+
+
+                        <!-- Charisma -->
+                        <!--                            <div th:replace="~{fragments/ability-box :: ability-box(label='Charisma', modifier=${avatar.charMod}, score=${avatar.charSco}, skills=${ {'Saving Throw','Deception','Intimidation','Performance','Persuasion'} })}"></div>-->
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="stat-box px-3 py-2 text-center">
+                        <div class="small text-uppercase fw-bold">EQUIPMENT TRAINING & PROFICIENCIES</div>
+
+                        <hr class="w-100 border-dark border-2 opacity-100 my-1">
+                        <!--                            // ARMOR TRAINING-->
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 prof-list mt-0">
+                            <span class="small text-uppercase text-start" style="max-width: 75px; white-space: normal;">Armor training</span>
+
+                            <div class="d-flex align-items-center gap-1">
+                                <input type="checkbox" class="pe-none" th:checked="${avatar.armorTraining != null and avatar.armorTraining.contains('Light')}"/>
+                                <span class="prof-list__name">Light</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <input type="checkbox" class="pe-none" th:checked="${avatar.armorTraining != null and avatar.armorTraining.contains('Medium')}"/>
+                                <span class="prof-list__name">Medium</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <input type="checkbox" class="pe-none" th:checked="${avatar.armorTraining != null and avatar.armorTraining.contains('Heavy')}"/>
+                                <span class="prof-list__name">Heavy</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <input type="checkbox" class="pe-none" th:checked="${avatar.armorTraining != null and avatar.armorTraining.contains('Shield')}"/>
+                                <span class="prof-list__name">Shields</span>
+                            </div>
+                        </div>
+                        <!--                            // WEAPONS-->
+                        <hr class="w-100 border-dark border-2 opacity-100 my-1">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap text-start gap-1 w-100">
+                            <span class="small text-uppercase">Weapons</span>
+
+                        </div>
+
+                        <hr class="w-100 border-dark border-2 opacity-100 my-1">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap text-start gap-1 w-100">
+                            <span class="small text-uppercase">Tools</span>
+
+                        </div>
+
+
+                        <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- lewa część KONIEC -->
+
+        <!-- prawa część (3) -->
+        <div class="border border-2 border-dark rounded-3 p-3" style="flex: 3 1 600px; min-width: 300px;">
+
+            <!--  INITIATIVE SPEED SIZE PASSIVE PERCEPTION  -->
+            <div class="row g-3 mb-3">
+                <div class="col">
+                    <div class="stat-box px-3 py-2 text-center w-100">
+                        <div class="small text-uppercase">Initiative</div>
+                        <div class="fs-5 fw-bold" th:text="${avatar.dexMod}">+2</div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="stat-box px-3 py-2 text-center w-100">
+                        <div class="small text-uppercase">Speed</div>
+                        <div class="fs-5 fw-bold" th:text="${avatar.currentSpeed}">+2</div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="stat-box px-3 py-2 text-center w-100">
+                        <div class="small text-uppercase">Size</div>
+                        <div class="fs-5 fw-bold" th:text="${avatar.size}">+2</div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="stat-box px-3 py-2 text-center w-100">
+                        <div class="small text-uppercase text-nowrap">Passive perception</div>
+                        <div class="fs-5 fw-bold" th:text="${passivePerception}">+2</div>
+                    </div>
+                </div>
+            </div>
+            <!--  INITIATIVE SPEED SIZE PASSIVE PERCEPTION KONIEC  -->
+
+            <!--  WEAPONS & DAMAGE CANTRIPS  -->
+            <div class="mb-3">
+                <div class="stat-box px-3 py-2 text-center">
+                    <div class="small text-uppercase">Weapons & Damage Cantrips</div>
+
+                    <hr class="w-100 border-dark border-2 opacity-100 my-1">
+
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Atk Bonus / DC</th>
+                            <th scope="col">Damage & Type</th>
+                        </tr>
+                        </thead>
+                        <tbody id="weaponsBody" class="paginated-body" data-page-size="5">
+                        <tr th:each="w : ${avatar.weapons}" class="paginated-row">
+                            <td th:text="${w.name}">Longsword</td>
+                            <td th:text="${w.atkBonus}">+5</td>
+                            <td th:text="${w.damageDice != null} ? ${w.damageDice} + ' ' + ${w.damageType} : '-'">1d8 Slashing</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary paginated-prev" data-target="weaponsBody">&lt;</button>
+                        <span class="small paginated-label" data-target="weaponsBody"></span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary paginated-next" data-target="weaponsBody">&gt;</button>
+                    </div>
+                </div>
+            </div>
+            <!--  WEAPONS & DAMAGE CANTRIPS KONIEC  -->
+
+            <!--  CLASS FEATURES  -->
+            <div class="mb-3">
+                <div class="stat-box px-3 py-2 text-center">
+                    <div class="small text-uppercase">Class features</div>
+
+                    <hr class="w-100 border-dark border-2 opacity-100 my-1">
+
+                    <table class="table table-bordered mb-0">
+                        <tbody id="classFeaturesBody" class="paginated-body" data-page-size="5">
+                        <tr th:each="f : ${avatar.classFeatures}" class="paginated-row">
+                            <td class="text-start" th:text="${f.name}">Feature name</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary paginated-prev" data-target="classFeaturesBody">&lt;</button>
+                        <span class="small paginated-label" data-target="classFeaturesBody"></span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary paginated-next" data-target="classFeaturesBody">&gt;</button>
+                    </div>
+                </div>
+            </div>
+            <!-- CLASS FEATURES KONIEC  -->
+
+            <!--  SPECIES TRAITS + FEATS  -->
+            <div class="row g-3 mb-3">
+                <div class="col">
+                    <div class="stat-box px-3 py-2 text-center h-100">
+                        <div class="small text-uppercase">Species traits</div>
+                        <hr class="w-100 border-dark border-2 opacity-100 my-1">
+
+                        <div class="col w-100">
+                            <table class="table table-bordered mb-0">
+                                <tbody id="specieTraitsBody" class="paginated-body" data-page-size="5">
+                                <tr th:each="t : ${avatar.specieTraits}" class="paginated-row">
+                                    <td class="text-start" th:text="${t.name}">Trait name</td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary paginated-prev" data-target="specieTraitsBody">&lt;</button>
+                                <span class="small paginated-label" data-target="specieTraitsBody"></span>
+                                <button type="button" class="btn btn-sm btn-outline-secondary paginated-next" data-target="specieTraitsBody">&gt;</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="stat-box px-3 py-2 text-center h-100">
+                        <div class="small text-uppercase">Feats</div>
+                        <hr class="w-100 border-dark border-2 opacity-100 my-1">
+
+                        <div class="col w-100">
+                            <table class="table table-bordered mb-0">
+                                <tbody id="featsBody" class="paginated-body" data-page-size="5">
+                                <tr th:each="feat : ${avatar.feats}" class="paginated-row">
+                                    <td class="text-start" th:text="${feat}">Feat name</td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary paginated-prev" data-target="featsBody">&lt;</button>
+                                <span class="small paginated-label" data-target="featsBody"></span>
+                                <button type="button" class="btn btn-sm btn-outline-secondary paginated-next" data-target="featsBody">&gt;</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--   SPECIES TRAITS + FEATS KONIEC  -->
+        </div>
+        <!-- prawa część KONIEC -->
+
+    </div>
+
+    <!-- Linia + "Dungeons & Dragons" na środku + przycisk kości + linia -->
+    <div class="d-flex align-items-center my-3">
+        <hr class="flex-grow-1 border-dark border-2 opacity-100">
+        <span class="mx-3 fw-bold text-uppercase" style="letter-spacing: .15em; white-space: nowrap;">
+            Dungeons &amp; Dragons
+        </span>
         <hr class="flex-grow-1 border-dark border-2 opacity-100 ms-1">
     </div>
 

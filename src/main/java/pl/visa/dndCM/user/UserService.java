@@ -25,6 +25,19 @@ public class UserService {
                 .stream().map(this::toDTO).toList();
     }
 
+    public UserDTO findByEmail(String email) {
+        return userRepository.findByEmail(email).stream()
+                .map(this::toDTO)
+                .findFirst().orElseThrow(() -> new ResourceNotFoundException(String.format("User %s not found", email), ErrorCode.USER_NOT_FOUND));
+
+    }
+
+    public UserDTO findById(Long id) {
+        return userRepository.findById(id).stream()
+                .map(this::toDTO)
+                .findFirst().orElseThrow(() -> new ResourceNotFoundException(String.format("User %d not found", id), ErrorCode.USER_NOT_FOUND));
+    }
+
     public void save(RegisterUserDTO userDTO) {
 
         if (userRepository.existsByEmail(userDTO.getEmail())) {
@@ -41,17 +54,37 @@ public class UserService {
                 .build());
     }
 
-    public UserDTO findByEmail(String email) {
-        return userRepository.findByEmail(email).stream()
-                .map(this::toDTO)
-                .findFirst().orElseThrow(() -> new ResourceNotFoundException(String.format("User %s not found", email), ErrorCode.USER_NOT_FOUND));
-
-    }
-
     public Optional<UserDTO> findByEmailOptional(String email) {
         return userRepository.findByEmail(email).stream()
                 .map(this::toDTO)
                 .findFirst();
+    }
+
+    public void deleteUserById(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    public void update(String currentEmail, EditUserDTO userDTO) {
+
+        User user = userRepository.findByEmail(currentEmail)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("User %s not found", currentEmail), ErrorCode.USER_NOT_FOUND));
+
+        if (!user.getEmail().equals(userDTO.getEmail()) && userRepository.existsByEmail(userDTO.getEmail())) {
+            throw new UserAlreadyExistException(String.format("Email '%s' already exist.", userDTO.getEmail()), ErrorCode.USER_ALREADY_EXIST);
+        }
+
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setEmail(userDTO.getEmail());
+
+        if (userDTO.getPassword() != null && !userDTO.getPassword().isBlank()) {
+            if (userDTO.getPassword().length() < 7 || userDTO.getPassword().length() > 30) {
+                throw new IllegalArgumentException("Password length must be between 7 and 30 characters.");
+            }
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        }
+
+        userRepository.save(user);
     }
 
     // utils
@@ -61,6 +94,7 @@ public class UserService {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
+                .role(user.getRole())
                 .avatarList(user.getAvatarList() == null ? List.of() : user.getAvatarList().stream()
                         .map(a -> a.getName()).toList())
                 .build();

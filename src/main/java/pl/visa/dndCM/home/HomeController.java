@@ -44,7 +44,6 @@ public class HomeController {
     }
 
 
-
     @GetMapping("/home")
     public String homePage(Model model, Authentication authentication, HttpServletRequest request) {
 
@@ -62,6 +61,7 @@ public class HomeController {
         }
 
         UserDTO currentUser = userOptional.get();
+        model.addAttribute("user", currentUser);
         model.addAttribute("avatars", avatarService.findAllByUserId(currentUser.getId()));
         return "home";
 
