@@ -17,6 +17,7 @@ import pl.visa.dndCM.gameData.background.Background;
 import pl.visa.dndCM.gameData.background.BackgroundService;
 import pl.visa.dndCM.gameData.dndClass.DndClass;
 import pl.visa.dndCM.gameData.dndClass.DndClassService;
+import pl.visa.dndCM.gameData.dndSubclass.DndSubclassService;
 import pl.visa.dndCM.gameData.specie.SpecieService;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class AvatarCreationController {
     private final DndClassService dndClassService;
     private final BackgroundService backgroundService;
     private final SpecieService specieService;
+    private final DndSubclassService dndSubclassService;
 
 
     // Step 1 - name, background, class, species
@@ -169,5 +171,98 @@ public class AvatarCreationController {
 
         model.addAttribute("avatar", avatar);
         model.addAttribute("background", background);
+    }
+
+
+    // SUBCLASS
+
+    @GetMapping("/{id}/level-up/subclass")
+    public String showSubclassStep(@PathVariable Long id, Model model) {
+
+        AvatarDTO avatarDTO = avatarService.getAvatarById(id);
+        model.addAttribute("avatar", avatarDTO);
+        model.addAttribute("subclasses", dndSubclassService.findByClassId(avatarDTO.getDndClassId()));
+
+        return "avatar/add-avatar/create-subclass";
+    }
+
+    @PostMapping("/{id}/level-up/subclass")
+    public String saveSubclassStep(@PathVariable Long id, @RequestParam Long subclassId, Model model) {
+
+        if (subclassId == null) {
+
+            AvatarDTO avatarDTO = avatarService.getAvatarById(id);
+            model.addAttribute("avatar", avatarDTO);
+            model.addAttribute("subclasses", dndSubclassService.findByClassId(avatarDTO.getDndClassId()));
+            model.addAttribute("error", "Pick a subclass.");
+
+            return "avatar/add-avatar/create-subclass";
+
+        }
+        avatarService.chooseSubclass(id, subclassId);
+        return "redirect:/avatar/select/" + id + "/showcard";
+
+    }
+
+
+
+
+
+    // LEVEL UP
+
+    @GetMapping("/{id}/level-up")
+    public String showLevelUpStep(@PathVariable Long id, Model model) {
+        AvatarDTO avatarDTO = avatarService.getAvatarById(id);
+
+        model.addAttribute("avatar", avatarService.getAvatarById(id));
+
+        // do sprawdzenia czy na następnym lvl nie ma zmiany ability scores
+        model.addAttribute("grantsAsi", avatarService.grantsAbilityScoreImprovementAtLevel(id, avatarDTO.getLevel() + 1));
+        return "avatar/add-avatar/level-up";
+    }
+
+    @PostMapping("/{id}/level-up")
+    public String confirmLevelUp(@PathVariable Long id) {
+        avatarService.levelUp(id);
+
+        // dla każdej klasy na lvl 3
+        if (avatarService.canGainSubclass(id)) {
+            return "redirect:/avatar/" + id + "/level-up/subclass";
+        }
+
+        // na różnych levelach dla klas - ale nie na lvl 3
+        if (avatarService.grantsAbilityScoreImprovementAtLevel(id, avatarService.getAvatarById(id).getLevel())) {
+            return "redirect:/avatar/" + id + "/level-up/asi";
+        }
+
+        return "redirect:/avatar/select/" + id + "/showcard";
+    }
+
+    // asi - ability score improvement
+    @GetMapping("/{id}/level-up/asi")
+    public String showAsiStep(@PathVariable Long id, Model model) {
+        model.addAttribute("avatar", avatarService.getAvatarById(id));
+        return "avatar/add-avatar/create-asi";
+    }
+
+    @PostMapping("/{id}/level-up/asi")
+    public String saveAsiStep(@PathVariable Long id,
+                              @RequestParam String mode,
+                              @RequestParam(required = false) String ability1,
+                              @RequestParam(required = false) String ability2,
+                              Model model) {
+
+        boolean invalid = ability1 == null || ability1.isBlank()
+                || ("double".equals(mode) && (ability2 == null || ability2.isBlank() || ability1.equals(ability2)));
+
+        if (invalid) {
+            model.addAttribute("avatar", avatarService.getAvatarById(id));
+            model.addAttribute("error", "Pick two different abilities.");
+            return "avatar/add-avatar/create-asi";
+        }
+
+        avatarService.applyAbilityScoreImprovement(id, mode, ability1, ability2);
+
+        return "redirect:/avatar/select/" + id + "/showcard";
     }
 }

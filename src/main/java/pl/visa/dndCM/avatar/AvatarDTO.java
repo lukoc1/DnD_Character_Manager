@@ -76,7 +76,10 @@ public class AvatarDTO {
     private int currentSpeed;
     private String armorTraining;
 
+    private int gold;
+
     private List<AvatarEquipmentItemDTO> equipment;
+    private List<AvatarEquipmentItemDTO> items; // non weapon
     private List<AvatarEquipmentItemDTO> weapons;
     private List<AvatarClassFeatureDTO> classFeatures;
     private List<AvatarSpecieTraitDTO> specieTraits;

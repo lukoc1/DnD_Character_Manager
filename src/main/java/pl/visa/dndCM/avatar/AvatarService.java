@@ -6,7 +6,10 @@ import pl.visa.dndCM.gameData.background.Background;
 import pl.visa.dndCM.gameData.background.BackgroundBenefit;
 import pl.visa.dndCM.gameData.background.BackgroundRepository;
 import pl.visa.dndCM.gameData.dndClass.DndClass;
+import pl.visa.dndCM.gameData.dndClass.DndClassLevelTableEntryRepository;
 import pl.visa.dndCM.gameData.dndClass.DndClassRepository;
+import pl.visa.dndCM.gameData.dndSubclass.DndSubclass;
+import pl.visa.dndCM.gameData.dndSubclass.DndSubclassRepository;
 import pl.visa.dndCM.exception.ErrorCode;
 import pl.visa.dndCM.exception.ResourceNotFoundException;
 import pl.visa.dndCM.gameData.equipmentItem.EquipmentItem;
@@ -39,6 +42,8 @@ public class AvatarService {
     private final EquipmentItemPropertyRepository equipmentItemPropertyRepository;
     private final FeatureRepository featureRepository;
     private final SpecieTraitRepository specieTraitRepository;
+    private final DndClassLevelTableEntryRepository dndClassLevelTableEntryRepository;
+    private final DndSubclassRepository dndSubclassRepository;
 
     private static final Random RANDOM = new Random();
 
@@ -218,6 +223,11 @@ public class AvatarService {
 
     private static int abilityModifier(int score) {
         return (int) Math.floor((score - 10) / 2.0);
+    }
+
+    /** Parses level table values like "+2" into a plain int. */
+    private static int parseBonus(String value) {
+        return Integer.parseInt(value.replace("+", "").trim());
     }
 
     private void addAbilityScore(Avatar avatar, String ability, int value) {
@@ -423,9 +433,11 @@ public class AvatarService {
 
                 .equipment(toEquipmentDTOs(avatar))
                 .weapons(toWeaponDTOs(avatar))
+                .items(toNonWeaponDTOs(avatar))
                 .classFeatures(toClassFeatureDTOs(avatar))
                 .specieTraits(toSpecieTraitDTOs(avatar))
                 .feats(toFeatNames(avatar))
+                .gold(avatar.getGold())
 
                 .build();
     }
@@ -448,6 +460,12 @@ public class AvatarService {
     private List<AvatarEquipmentItemDTO> toWeaponDTOs(Avatar avatar) {
         return toEquipmentDTOs(avatar).stream()
                 .filter(w -> "weapon".equals(w.getCategory()))
+                .toList();
+    }
+
+    private List<AvatarEquipmentItemDTO> toNonWeaponDTOs(Avatar avatar) {
+        return toEquipmentDTOs(avatar).stream()
+                .filter(w -> !"weapon".equals(w.getCategory()))
                 .toList();
     }
 
@@ -554,5 +572,186 @@ public class AvatarService {
         avatarRepository.save(avatar);
     }
 
+    /** Whether the avatar has reached the subclass level but hasn't picked one yet. */
+    public boolean needsSubclassChoice(Long avatarId) {
+        Avatar avatar = avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+
+        if (avatar.getLevel() < 3 || avatar.getDndsubclass() != null) {
+            return false;
+        }
+
+        return !dndSubclassRepository.findByDndClass_Id(avatar.getDndClass().getId()).isEmpty();
+    }
+
+    public void chooseSubclass(Long avatarId, Long subclassId) {
+        Avatar avatar = avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+
+        DndSubclass subclass = dndSubclassRepository.findById(subclassId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Subclass id=%s not found", subclassId), ErrorCode.RESOURCE_NOT_FOUND));
+
+        avatar.setDndsubclass(subclass);
+        avatar.setSubclassName(subclass.getName());
+
+        avatarRepository.save(avatar);
+    }
+
+    public boolean grantsAbilityScoreImprovementAtLevel(Long avatarId, int level) {
+        Avatar avatar = avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+
+        return featureRepository.findByDndClass(avatar.getDndClass()).stream()
+                .filter(f -> "Ability Score Improvement".equals(f.getName()))
+                .anyMatch(f -> f.getLevelsGained().stream().anyMatch(l -> l.getLevel() == level));
+    }
+
+    public void applyAbilityScoreImprovement(Long avatarId, String mode, String ability1, String ability2) {
+        Avatar avatar = avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+
+        int oldConMod = avatar.getConsMod();
+
+        if ("single".equals(mode)) {
+            addAbilityScore(avatar, ability1, 2);
+        } else {
+            addAbilityScore(avatar, ability1, 1);
+            addAbilityScore(avatar, ability2, 1);
+        }
+
+        int conModGain = avatar.getConsMod() - oldConMod;
+        if (conModGain > 0) {
+            int hpGain = conModGain * avatar.getLevel();
+            avatar.setMaxHP(avatar.getMaxHP() + hpGain);
+            avatar.setCurrentHP(avatar.getCurrentHP() + hpGain);
+        }
+
+        avatarRepository.save(avatar);
+    }
+
+
+    public void levelUp(Long avatarId) {
+        Avatar avatar = avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+
+        int roll = RANDOM.nextInt(avatar.getDndClass().getHitDiceValue()) + 1
+                + avatar.getConsMod();
+        int hpGain = Math.max(roll, 1);
+
+        avatar.setLevel(avatar.getLevel() + 1);
+        avatar.setMaxHP(avatar.getMaxHP() + hpGain);
+        avatar.setCurrentHP(avatar.getCurrentHP() + hpGain);
+
+        dndClassLevelTableEntryRepository.findByDndClassAndColumnName(avatar.getDndClass(), "Proficiency Bonus").stream()
+                .filter(entry -> entry.getLevel() == avatar.getLevel())
+                .findFirst()
+                .ifPresent(entry -> avatar.setProficiencyBonus(parseBonus(entry.getValue())));
+
+        avatarRepository.save(avatar);
+    }
+
+    public List<String> getAllEquipmentItemNames() {
+        return equipmentItemRepository.findAll().stream()
+                .map(EquipmentItem::getName)
+                .sorted()
+                .toList();
+    }
+
+    public void takeDamage(Long avatarId, int amount) {
+        Avatar avatar = avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+
+        int remainingDamage = amount - avatar.getTempHP();
+
+        if (remainingDamage > 0) {
+            avatar.setTempHP(0);
+            avatar.setCurrentHP(Math.max(0, avatar.getCurrentHP() - remainingDamage));
+        } else {
+            avatar.setTempHP(avatar.getTempHP() - amount);
+        }
+
+        avatarRepository.save(avatar);
+    }
+
+    public void heal(Long avatarId, int amount) {
+        Avatar avatar = avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+
+        int newCurrentHp = Math.min(avatar.getMaxHP(), avatar.getCurrentHP() + amount);
+        avatar.setCurrentHP(newCurrentHp);
+
+        avatarRepository.save(avatar);
+    }
+
+    public void addTempHp(Long avatarId, int amount) {
+        Avatar avatar = avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+
+        avatar.setTempHP(amount);
+        avatarRepository.save(avatar);
+    }
+
+    public void addCoins(Long avatarId, int amount) {
+        Avatar avatar = avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+
+        avatar.setGold(avatar.getGold() + amount);
+        avatarRepository.save(avatar);
+    }
+
+    public boolean loseCoins(Long avatarId, int amount) {
+        Avatar avatar = avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+
+        if (avatar.getGold() < amount) {
+            return false;
+        }
+
+        avatar.setGold(avatar.getGold() - amount);
+        avatarRepository.save(avatar);
+        return true;
+    }
+
+    public void addItem(Long avatarId, String itemName) {
+        Avatar avatar = avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+
+        EquipmentItem item = equipmentItemRepository.findByNameIgnoreCase(itemName)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Equipment item '%s' not found", itemName), ErrorCode.EQUIPMENT_ITEM_NOT_FOUND));
+
+        AvatarEquipmentItem avatarItem = avatarEquipmentItemRepository.findByAvatar_IdAndEquipmentItem_Id(avatarId, item.getId())
+                .orElseGet(() -> {
+                    AvatarEquipmentItem newAvatarItem = new AvatarEquipmentItem();
+                    newAvatarItem.setAvatar(avatar);
+                    newAvatarItem.setEquipmentItem(item);
+                    newAvatarItem.setQuantity(0);
+                    return newAvatarItem;
+                });
+
+        avatarItem.setQuantity(avatarItem.getQuantity() + 1);
+        avatarEquipmentItemRepository.save(avatarItem);
+    }
+
+    public void loseItem(Long avatarId, String itemName) {
+        EquipmentItem item = equipmentItemRepository.findByNameIgnoreCase(itemName)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Equipment item '%s' not found", itemName), ErrorCode.EQUIPMENT_ITEM_NOT_FOUND));
+
+        AvatarEquipmentItem avatarItem = avatarEquipmentItemRepository.findByAvatar_IdAndEquipmentItem_Id(avatarId, item.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s does not have item '%s'", avatarId, itemName), ErrorCode.EQUIPMENT_ITEM_NOT_FOUND));
+
+        if (avatarItem.getQuantity() <= 1) {
+            avatarEquipmentItemRepository.delete(avatarItem);
+        } else {
+            avatarItem.setQuantity(avatarItem.getQuantity() - 1);
+            avatarEquipmentItemRepository.save(avatarItem);
+        }
+    }
+
+    public boolean canGainSubclass(Long avatarId) {
+        Avatar avatar = avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+
+        return (avatar.getLevel() >= 3) && (avatar.getDndsubclass() == null);
+    }
 
 }

@@ -28,6 +28,13 @@
     </div>
 </nav>
 
+<div class="container">
+    <div th:if="${message}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
+    </div>
+</div>
+
 <!-- SIDE MENU -->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
     <div class="offcanvas-header">
@@ -35,14 +42,47 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/home}">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{|/avatar/select/${avatar.id}|}">Back to avatar</a>
-            </li>
-        </ul>
+        <form th:action="@{|/avatar/${avatar.id}/edit|}" method="post">
+            <div class="mb-3">
+                <label for="damage" class="form-label">Take damage</label>
+                <input type="number" class="form-control" id="damage" name="damage" min="0" placeholder="0">
+            </div>
+            <div class="mb-3">
+                <label for="heal" class="form-label">Heal</label>
+                <input type="number" class="form-control" id="heal" name="heal" min="0" placeholder="0">
+            </div>
+            <div class="mb-3">
+                <label for="heal" class="form-label">Add temp HP</label>
+                <input type="number" class="form-control" id="tempHP" name="tempHP" min="0" placeholder="0">
+            </div>
+
+            <div class="mb-3">
+                <label for="goldChange" class="form-label">Gold (negative to spend)</label>
+                <input type="number" class="form-control" id="goldChange" name="goldChange" placeholder="0">
+            </div>
+
+
+            <div class="mb-3">
+                <label for="addItem" class="form-label">Add item</label>
+                <input type="text" class="form-control" id="addItem" name="addItem" list="allItemsList" placeholder="Item name" autocomplete="off">
+                <datalist id="allItemsList">
+                    <option th:each="itemName : ${allItemNames}" th:value="${itemName}"></option>
+                </datalist>
+            </div>
+            <div class="mb-3">
+                <label for="loseItem" class="form-label">Lose item</label>
+                <input type="text" class="form-control" id="loseItem" name="loseItem" list="ownedItemsList" placeholder="Item name" autocomplete="off">
+                <datalist id="ownedItemsList">
+                    <option th:each="e : ${avatar.equipment}" th:value="${e.name}"></option>
+                    <option th:each="w : ${avatar.weapons}" th:value="${w.name}"></option>
+                </datalist>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">Accept</button>
+        </form>
+        <hr class="flex-grow-1 border-dark border-2 opacity-100">
+
+        <a class="btn btn-success w-100 mt-3" th:href="@{|/avatar/${avatar.id}/level-up|}">Level up</a>
     </div>
 </div>
 
@@ -250,6 +290,7 @@
 
 
                         <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+
                         </div>
                     </div>
                 </div>
@@ -409,6 +450,75 @@
             Dungeons &amp; Dragons
         </span>
         <hr class="flex-grow-1 border-dark border-2 opacity-100 ms-1">
+    </div>
+
+    <!-- Blok z podziałem 3 : 1 -->
+    <div class="d-flex flex-wrap gap-2 my-3">
+        <!-- lewa część -->
+        <div class="border border-2 border-dark rounded-3 p-3" style="flex: 3 1 600px; min-width: 300px;">
+
+        </div>
+        <!-- lewa część KONIEC -->
+
+        <!-- prawa część -->
+        <div class="border border-2 border-dark rounded-3 p-3" style="flex: 1 1 330px; min-width: 400px;">
+
+            <!--  EQUIPMENT  -->
+            <div class="mb-3">
+                <div class="stat-box px-3 py-2 text-center">
+                    <div class="small fw-bold text-uppercase">Equipment</div>
+
+                    <hr class="w-100 border-dark border-2 opacity-100 my-1">
+
+                    <table class="table table-bordered mb-0">
+                        <tbody id="equipmentBody" class="paginated-body" data-page-size="5">
+                        <tr th:each="i : ${avatar.items}" class="paginated-row">
+                            <td class="text-start" th:text="${i.name}">Equipment item name</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary paginated-prev" data-target="equipmentBody">&lt;</button>
+                        <span class="small paginated-label" data-target="equipmentBody"></span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary paginated-next" data-target="equipmentBody">&gt;</button>
+                    </div>
+                </div>
+            </div>
+            <!--  EQUIPMENT  -->
+
+            <div class="mb-3">
+                <div class="border border-2 border-dark rounded-3 px-3 py-2 text-center flex-shrink-0 d-flex flex-column justify-content-center">
+                    <div class="small fw-bold text-uppercase mb-2">Coins</div>
+                    <div class="row g-0">
+                        <div class="col">
+                            <div class="small text-uppercase">CP</div>
+                            <div class="border border-1 rounded-2 border-dark fs-5 fw-bold border-dark me-2">0</div>
+                        </div>
+                        <div class="col">
+                            <div class="small text-uppercase me-2">SP</div>
+                            <div class="border border-1 rounded-2 border-dark fs-5 fw-bold border-dark me-2">0</div>
+                        </div>
+                        <div class="col">
+                            <div class="small text-uppercase me-2">EP</div>
+                            <div class="border border-1 rounded-2 border-dark fs-5 fw-bold border-dark me-2">0</div>
+                        </div>
+                        <div class="col">
+                            <div class="small text-uppercase me-2">GP</div>
+                            <div class="border border-1 rounded-2 border-dark fs-5 fw-bold border-dark me-2" th:text="${avatar.gold}">10</div>
+                        </div>
+                        <div class="col">
+                            <div class="small text-uppercase me-2">PP</div>
+                            <div class="border border-1 rounded-2 border-dark fs-5 fw-bold border-dark me-2">0</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- prawa część KONIEC -->
+
     </div>
 
 

@@ -6,7 +6,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pl.visa.dndCM.user.UserService;
 
@@ -42,6 +44,7 @@ public class AvatarController {
         model.addAttribute("proficiencies", avatarService.getSkillProficiencyNames(id));
         model.addAttribute("savingThrowAbilities", avatarService.getSavingThrowAbilities(id));
         model.addAttribute("passivePerception", avatarService.getPassivePerception(id));
+        model.addAttribute("allItemNames", avatarService.getAllEquipmentItemNames());
 
         return "avatar/avatar-sheet";
     }
@@ -56,6 +59,43 @@ public class AvatarController {
     @GetMapping("/{id}/hit-dice/spend")
     public String spendHitDie(@PathVariable Long id) {
         avatarService.spendHitDie(id);
+
+        return "redirect:/avatar/select/" + id + "/showcard";
+    }
+
+    @PostMapping("/{id}/edit")
+    public String editAvatar(@PathVariable Long id,
+                              @RequestParam(defaultValue = "0") int damage,
+                              @RequestParam(defaultValue = "0") int heal,
+                              @RequestParam(defaultValue = "0") int tempHP,
+                              @RequestParam(defaultValue = "0") int goldChange,
+                              @RequestParam(required = false) String addItem,
+                              @RequestParam(required = false) String loseItem,
+                              RedirectAttributes ra) {
+        if (heal > 0) {
+            avatarService.heal(id, heal);
+        }
+        if (tempHP > 0) {
+            avatarService.addTempHp(id, tempHP);
+        }
+        if (damage > 0) {
+            avatarService.takeDamage(id, damage);
+        }
+
+
+        if (goldChange > 0) {
+            avatarService.addCoins(id, goldChange);
+        } else if (goldChange < 0 && !avatarService.loseCoins(id, -goldChange)) {
+            ra.addFlashAttribute("message", "Not enough gold!");
+        }
+
+
+        if (!addItem.isEmpty()) {
+            avatarService.addItem(id, addItem);
+        }
+        if (!loseItem.isEmpty()) {
+            avatarService.loseItem(id, loseItem);
+        }
 
         return "redirect:/avatar/select/" + id + "/showcard";
     }
