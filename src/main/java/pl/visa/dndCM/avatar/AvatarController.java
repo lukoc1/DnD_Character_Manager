@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import pl.visa.dndCM.avatar.health.AvatarHealthService;
+import pl.visa.dndCM.avatar.inventory.AvatarInventoryService;
 import pl.visa.dndCM.user.UserService;
 
 @Controller
@@ -18,6 +20,8 @@ import pl.visa.dndCM.user.UserService;
 public class AvatarController {
 
     private final AvatarService avatarService;
+    private final AvatarHealthService avatarHealthService;
+    private final AvatarInventoryService avatarInventoryService;
     private final UserService userService;
 
 
@@ -28,7 +32,7 @@ public class AvatarController {
         Long avatarOwnerId = avatarService.getAvatarById(id).getUserId();
 
         if (!userId.equals(avatarOwnerId)) {
-            ra.addFlashAttribute("message", "Nie posiadasz dostępu do postaci [id = " + id + "]!");
+            ra.addFlashAttribute("message", "You cannot access this character [id = " + id + "]!");
             return "redirect:/home";
         }
 
@@ -44,7 +48,7 @@ public class AvatarController {
         model.addAttribute("proficiencies", avatarService.getSkillProficiencyNames(id));
         model.addAttribute("savingThrowAbilities", avatarService.getSavingThrowAbilities(id));
         model.addAttribute("passivePerception", avatarService.getPassivePerception(id));
-        model.addAttribute("allItemNames", avatarService.getAllEquipmentItemNames());
+        model.addAttribute("allItemNames", avatarInventoryService.getAllEquipmentItemNames());
 
         return "avatar/avatar-sheet";
     }
@@ -58,7 +62,7 @@ public class AvatarController {
 
     @GetMapping("/{id}/hit-dice/spend")
     public String spendHitDie(@PathVariable Long id) {
-        avatarService.spendHitDie(id);
+        avatarHealthService.spendHitDie(id);
 
         return "redirect:/avatar/select/" + id + "/showcard";
     }
@@ -73,28 +77,28 @@ public class AvatarController {
                               @RequestParam(required = false) String loseItem,
                               RedirectAttributes ra) {
         if (heal > 0) {
-            avatarService.heal(id, heal);
+            avatarHealthService.heal(id, heal);
         }
         if (tempHP > 0) {
-            avatarService.addTempHp(id, tempHP);
+            avatarHealthService.addTempHp(id, tempHP);
         }
         if (damage > 0) {
-            avatarService.takeDamage(id, damage);
+            avatarHealthService.takeDamage(id, damage);
         }
 
 
         if (goldChange > 0) {
-            avatarService.addCoins(id, goldChange);
-        } else if (goldChange < 0 && !avatarService.loseCoins(id, -goldChange)) {
+            avatarInventoryService.addCoins(id, goldChange);
+        } else if (goldChange < 0 && !avatarInventoryService.loseCoins(id, -goldChange)) {
             ra.addFlashAttribute("message", "Not enough gold!");
         }
 
 
         if (!addItem.isEmpty()) {
-            avatarService.addItem(id, addItem);
+            avatarInventoryService.addItem(id, addItem);
         }
         if (!loseItem.isEmpty()) {
-            avatarService.loseItem(id, loseItem);
+            avatarInventoryService.loseItem(id, loseItem);
         }
 
         return "redirect:/avatar/select/" + id + "/showcard";

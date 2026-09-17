@@ -4,7 +4,7 @@ document.addEventListener('click', function (event) {
     if (!event.target.closest('.data-confirm')) {
         return;
     }
-    if (!window.confirm('Czy na pewno?')) {
+    if (!window.confirm('Are you sure?')) {
         event.preventDefault();
     }
 });

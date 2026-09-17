@@ -18,17 +18,11 @@
         </h1>
     </div>
 
-    <div th:if="${error}" class="alert alert-danger" th:text="${error}">error</div>
-
     <form th:action="@{/avatar/{id}/create/class(id=${avatar.id})}" method="post">
 
-        <!-- what the class gives (read-only) -->
+        <!-- what the class gives -->
         <div class="border border-2 border-dark rounded-3 p-3 mb-3">
             <div class="row g-2">
-                <div class="col-md-4">
-                    <div class="small text-uppercase text-secondary">Primary ability</div>
-                    <div class="fw-bold" th:text="${dndClass.primaryAbility}">Strength</div>
-                </div>
                 <div class="col-md-4">
                     <div class="small text-uppercase text-secondary">Hit point die</div>
                     <div class="fw-bold" th:text="'D' + ${dndClass.hitDiceValue} + ' per ' + ${dndClass.name} + ' level'">D12 per Barbarian level</div>
@@ -48,17 +42,20 @@
             </div>
         </div>
 
-        <!-- skill proficiencies (choose N) -->
+        <!-- skill proficiencies -->
         <div class="border border-2 border-dark rounded-3 p-3 mb-3">
             <div class="small text-uppercase text-secondary mb-2">
-                Skill proficiencies &mdash; choose <span th:text="${dndClass.skillChoiceCount}">2</span>
+                Skill proficiencies - choose <span th:text="${dndClass.skillChoiceCount}">2</span>
             </div>
+
+            <div class="small text-danger mb-2" th:if="${error}" th:text="${error}">error</div>
+
             <div class="row">
-                <div class="col-md-4" th:each="opt : ${dndClass.skillOptions}">
+                <div class="col-md-4" th:each="s : ${dndClass.skillOptions}">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="skills"
-                               th:value="${opt.name}" th:id="${'skill-' + opt.id}"/>
-                        <label class="form-check-label" th:for="${'skill-' + opt.id}" th:text="${opt.name}">Athletics</label>
+                               th:value="${s.name}" th:id="${'skill-' + s.id}"/>
+                        <label class="form-check-label" th:for="${'skill-' + s.id}" th:text="${s.name}">Athletics</label>
                     </div>
                 </div>
             </div>
@@ -68,15 +65,17 @@
         <div class="border border-2 border-dark rounded-3 p-3 mb-3">
             <div class="small text-uppercase text-secondary mb-2">Starting equipment</div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="equipment" value="A" id="eq-a" checked/>
-                <label class="form-check-label" for="eq-a">
-                    <strong>A.</strong> <span th:text="${dndClass.startingEquipmentA}">Greataxe, 4 Handaxes, ...</span>
+                <input class="form-check-input" type="radio" name="equipment" value="A" id="start-eq-a" checked/>
+                <label class="form-check-label" for="start-eq-a">
+                    <strong>A.</strong>
+                    <span th:text="${dndClass.startingEquipmentA}">Greataxe</span>
                 </label>
             </div>
             <div class="form-check" th:if="${dndClass.startingEquipmentB != null}">
-                <input class="form-check-input" type="radio" name="equipment" value="B" id="eq-b"/>
-                <label class="form-check-label" for="eq-b">
-                    <strong>B.</strong> <span th:text="${dndClass.startingEquipmentB}">75 GP</span>
+                <input class="form-check-input" type="radio" name="equipment" value="B" id="start-eq-b"/>
+                <label class="form-check-label" for="start-eq-b">
+                    <strong>B.</strong>
+                    <span th:text="${dndClass.startingEquipmentB}">75 GP</span>
                 </label>
             </div>
         </div>

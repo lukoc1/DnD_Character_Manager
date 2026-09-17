@@ -1,0 +1,88 @@
+package pl.visa.dndCM.avatar.inventory;
+
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import pl.visa.dndCM.avatar.Avatar;
+import pl.visa.dndCM.avatar.AvatarEquipmentItem;
+import pl.visa.dndCM.avatar.AvatarEquipmentItemRepository;
+import pl.visa.dndCM.avatar.AvatarRepository;
+import pl.visa.dndCM.exception.ErrorCode;
+import pl.visa.dndCM.exception.ResourceNotFoundException;
+import pl.visa.dndCM.gameData.equipmentItem.EquipmentItem;
+import pl.visa.dndCM.gameData.equipmentItem.EquipmentItemRepository;
+
+import java.util.List;
+
+// gold and equipment ownership changes on an existing avatar
+@Service
+@AllArgsConstructor
+public class AvatarInventoryService {
+    private final AvatarRepository avatarRepository;
+    private final AvatarEquipmentItemRepository avatarEquipmentItemRepository;
+    private final EquipmentItemRepository equipmentItemRepository;
+
+    public List<String> getAllEquipmentItemNames() {
+        return equipmentItemRepository.findAll().stream()
+                .map(EquipmentItem::getName)
+                .sorted()
+                .toList();
+    }
+
+    public void addCoins(Long avatarId, int amount) {
+        Avatar avatar = getAvatarOrThrow(avatarId);
+
+        avatar.setGold(avatar.getGold() + amount);
+        avatarRepository.save(avatar);
+    }
+
+    public boolean loseCoins(Long avatarId, int amount) {
+        Avatar avatar = getAvatarOrThrow(avatarId);
+
+        if (avatar.getGold() < amount) {
+            return false;
+        }
+
+        avatar.setGold(avatar.getGold() - amount);
+        avatarRepository.save(avatar);
+        return true;
+    }
+
+    public void addItem(Long avatarId, String itemName) {
+        Avatar avatar = getAvatarOrThrow(avatarId);
+
+        EquipmentItem item = equipmentItemRepository.findByNameIgnoreCase(itemName)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Equipment item '%s' not found", itemName), ErrorCode.EQUIPMENT_ITEM_NOT_FOUND));
+
+        AvatarEquipmentItem avatarItem = avatarEquipmentItemRepository.findByAvatar_IdAndEquipmentItem_Id(avatarId, item.getId())
+                .orElseGet(() -> {
+                    AvatarEquipmentItem newAvatarItem = new AvatarEquipmentItem();
+                    newAvatarItem.setAvatar(avatar);
+                    newAvatarItem.setEquipmentItem(item);
+                    newAvatarItem.setQuantity(0);
+                    return newAvatarItem;
+                });
+
+        avatarItem.setQuantity(avatarItem.getQuantity() + 1);
+        avatarEquipmentItemRepository.save(avatarItem);
+    }
+
+    public void loseItem(Long avatarId, String itemName) {
+        EquipmentItem item = equipmentItemRepository.findByNameIgnoreCase(itemName)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Equipment item '%s' not found", itemName), ErrorCode.EQUIPMENT_ITEM_NOT_FOUND));
+
+        AvatarEquipmentItem avatarItem = avatarEquipmentItemRepository.findByAvatar_IdAndEquipmentItem_Id(avatarId, item.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s does not have item '%s'", avatarId, itemName), ErrorCode.EQUIPMENT_ITEM_NOT_FOUND));
+
+        if (avatarItem.getQuantity() <= 1) {
+            avatarEquipmentItemRepository.delete(avatarItem);
+        } else {
+            avatarItem.setQuantity(avatarItem.getQuantity() - 1);
+            avatarEquipmentItemRepository.save(avatarItem);
+        }
+    }
+
+    private Avatar getAvatarOrThrow(Long avatarId) {
+        return avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+    }
+}
