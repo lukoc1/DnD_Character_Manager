@@ -1,6 +1,5 @@
 package pl.visa.dndCM.gameData.feature;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import pl.visa.dndCM.gameData.dndClass.DndClass;
@@ -29,7 +28,7 @@ public class DndClassFeature {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    // levels the feature is gained at (open5e "gained_at" - can be several, e.g. 4/8/12/16)
+    // levels the feature is gained at (e.g. 4/8/12/16)
     @OneToMany(mappedBy = "feature")
     private List<DndClassFeatureLevel> levelsGained = new ArrayList<>();
 

@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.util.List;
 
-/** Response from /damagetypes */
+// Response from /damagetypes
 @Getter
 @Setter
 @NoArgsConstructor

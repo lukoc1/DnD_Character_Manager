@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.util.List;
 
-/** Response from /species. */
+// response from /species
 @Getter
 @Setter
 @NoArgsConstructor

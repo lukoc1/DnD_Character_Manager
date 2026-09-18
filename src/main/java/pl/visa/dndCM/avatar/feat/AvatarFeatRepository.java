@@ -1,7 +1,8 @@
-package pl.visa.dndCM.avatar;
+package pl.visa.dndCM.avatar.feat;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import pl.visa.dndCM.avatar.Avatar;
 
 import java.util.List;
 

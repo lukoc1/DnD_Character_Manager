@@ -23,6 +23,6 @@ public class EditUserDTO {
     @Email
     private String email;
 
-    // opcjonalne, puste = nie zmieniaj hasła (walidacja długości w UserService.update)
+    // can be changed but does not have to be
     private String password;
 }

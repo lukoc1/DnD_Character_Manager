@@ -23,7 +23,7 @@ public class EquipmentItem {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    // open5e "category.key", e.g. "weapon" / "armor" / "adventuring-gear" / "tools" / ...
+    // "category.key", e.g. "weapon" / "armor" / "adventuring-gear" / "tools" / ...
     private String category;
 
     private String size;

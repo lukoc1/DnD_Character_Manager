@@ -9,13 +9,11 @@ import pl.visa.dndCM.exception.ResourceNotFoundException;
 
 import java.util.Random;
 
-// HP/temp-HP/hit-dice state changes on an existing avatar
+// HP/temp-HP/hit-dice changes on existing avatar
 @Service
 @AllArgsConstructor
 public class AvatarHealthService {
     private final AvatarRepository avatarRepository;
-
-    private static final Random RANDOM = new Random();
 
     public void takeDamage(Long avatarId, int amount) {
         Avatar avatar = getAvatarOrThrow(avatarId);
@@ -56,7 +54,8 @@ public class AvatarHealthService {
             return;
         }
 
-        int roll = RANDOM.nextInt(avatar.getDndClass().getHitDiceValue()) + 1
+        Random random = new Random();
+        int roll = random.nextInt(avatar.getDndClass().getHitDiceValue()) + 1
                 + avatar.getConsMod();
         int heal = Math.max(roll, 0);
 

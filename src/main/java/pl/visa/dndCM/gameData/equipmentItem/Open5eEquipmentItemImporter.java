@@ -63,8 +63,7 @@ public class Open5eEquipmentItemImporter {
         item.setDistanceUnit(weapon.getDistanceUnit());
 
         if (weapon.getDamageType() != null) {
-            damageTypeRepository.findByApiIndex(weapon.getDamageType().getKey()).stream()
-                    .findFirst()
+            damageTypeRepository.findByApiIndex(weapon.getDamageType().getKey())
                     .ifPresent(item::setDamageType);
         }
     }
@@ -77,8 +76,8 @@ public class Open5eEquipmentItemImporter {
         item.setArmorCategory(armor.getCategory());
         item.setAcBase(armor.getAcBase());
         item.setAcDisplay(armor.getAcDisplay());
-        item.setAcAddDexMod(armor.isAcAddDexmod());
-        item.setAcCapDexMod(armor.getAcCapDexmod());
+        item.setAcAddDexMod(armor.isAcAddDexMod());
+        item.setAcCapDexMod(armor.getAcCapDexMod());
         item.setGrantsStealthDisadvantage(armor.isGrantsStealthDisadvantage());
         item.setStrengthScoreRequired(armor.getStrengthScoreRequired());
     }
@@ -102,11 +101,17 @@ public class Open5eEquipmentItemImporter {
     }
 
     private String key(ApiNamedKeyDTO ref) {
-        return ref == null ? null : ref.getKey();
+        if (ref == null) {
+            return null;
+        }
+        return ref.getKey();
     }
 
     private String name(ApiNamedKeyDTO ref) {
-        return ref == null ? null : ref.getName();
+        if (ref == null) {
+            return null;
+        }
+        return ref.getName();
     }
 
     private Double parseDouble(String value) {

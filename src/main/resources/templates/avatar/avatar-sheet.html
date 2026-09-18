@@ -73,7 +73,6 @@
                 <input type="text" class="form-control" id="loseItem" name="loseItem" list="ownedItemsList" placeholder="Item name" autocomplete="off">
                 <datalist id="ownedItemsList">
                     <option th:each="e : ${avatar.equipment}" th:value="${e.name}"></option>
-                    <option th:each="w : ${avatar.weapons}" th:value="${w.name}"></option>
                 </datalist>
             </div>
 

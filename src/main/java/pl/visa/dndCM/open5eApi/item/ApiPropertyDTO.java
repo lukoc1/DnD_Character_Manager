@@ -3,10 +3,8 @@ package pl.visa.dndCM.open5eApi.item;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
-/**
- * A weapon property: "Heavy", "Two-Handed", or a mastery like "Cleave".
- * "type" == "Mastery" for mastery properties, null for the rest.
- */
+// a weapon property: "Heavy", "Two-Handed", or a mastery like "Cleave"
+// "type" == "Mastery" for mastery properties, null for the rest
 @Getter
 @Setter
 @NoArgsConstructor

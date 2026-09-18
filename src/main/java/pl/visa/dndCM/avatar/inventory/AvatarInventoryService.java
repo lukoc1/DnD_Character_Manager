@@ -3,9 +3,9 @@ package pl.visa.dndCM.avatar.inventory;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.visa.dndCM.avatar.Avatar;
-import pl.visa.dndCM.avatar.AvatarEquipmentItem;
-import pl.visa.dndCM.avatar.AvatarEquipmentItemRepository;
 import pl.visa.dndCM.avatar.AvatarRepository;
+import pl.visa.dndCM.avatar.equipment.AvatarEquipmentItem;
+import pl.visa.dndCM.avatar.equipment.AvatarEquipmentItemRepository;
 import pl.visa.dndCM.exception.ErrorCode;
 import pl.visa.dndCM.exception.ResourceNotFoundException;
 import pl.visa.dndCM.gameData.equipmentItem.EquipmentItem;
@@ -13,7 +13,7 @@ import pl.visa.dndCM.gameData.equipmentItem.EquipmentItemRepository;
 
 import java.util.List;
 
-// gold and equipment ownership changes on an existing avatar
+// equipment changes on existing avatar
 @Service
 @AllArgsConstructor
 public class AvatarInventoryService {
@@ -53,14 +53,16 @@ public class AvatarInventoryService {
         EquipmentItem item = equipmentItemRepository.findByNameIgnoreCase(itemName)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Equipment item '%s' not found", itemName), ErrorCode.EQUIPMENT_ITEM_NOT_FOUND));
 
-        AvatarEquipmentItem avatarItem = avatarEquipmentItemRepository.findByAvatar_IdAndEquipmentItem_Id(avatarId, item.getId())
-                .orElseGet(() -> {
-                    AvatarEquipmentItem newAvatarItem = new AvatarEquipmentItem();
-                    newAvatarItem.setAvatar(avatar);
-                    newAvatarItem.setEquipmentItem(item);
-                    newAvatarItem.setQuantity(0);
-                    return newAvatarItem;
-                });
+        AvatarEquipmentItem avatarItem = avatarEquipmentItemRepository
+                .findByAvatar_IdAndEquipmentItem_Id(avatarId, item.getId())
+                .orElse(null);
+
+        if (avatarItem == null) {
+            avatarItem = new AvatarEquipmentItem();
+            avatarItem.setAvatar(avatar);
+            avatarItem.setEquipmentItem(item);
+            avatarItem.setQuantity(0);
+        }
 
         avatarItem.setQuantity(avatarItem.getQuantity() + 1);
         avatarEquipmentItemRepository.save(avatarItem);

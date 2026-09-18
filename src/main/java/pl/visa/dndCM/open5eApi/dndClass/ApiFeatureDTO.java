@@ -6,7 +6,7 @@ import lombok.*;
 
 import java.util.List;
 
-/** One entry from a class's "features". "feature_type" says what kind it is. */
+// one entry from a class's "features". "feature_type" says what kind it is
 @Getter
 @Setter
 @NoArgsConstructor

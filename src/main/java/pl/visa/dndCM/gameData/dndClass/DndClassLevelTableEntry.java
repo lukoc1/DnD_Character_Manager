@@ -20,11 +20,11 @@ public class DndClassLevelTableEntry {
     @JoinColumn(name = "dnd_class_id")
     private DndClass dndClass;
 
-    // e.g. "Proficiency Bonus", "Rages", "Rage Damage", "Weapon Mastery"
+    // e.g. for Barbarian: "Proficiency Bonus", "Rages", "Rage Damage", "Weapon Mastery"
     private String columnName;
 
     private int level;
 
-    // text, not a number - values can be e.g. "+2"
+    // text, not a number, e.g. "+2"
     private String value;
 }

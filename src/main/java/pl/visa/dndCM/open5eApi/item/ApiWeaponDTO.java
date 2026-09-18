@@ -6,7 +6,7 @@ import lombok.*;
 
 import java.util.List;
 
-/** An item's "weapon" - set only for weapons. */
+// an item's "weapon" - set only for weapons
 @Getter
 @Setter
 @NoArgsConstructor

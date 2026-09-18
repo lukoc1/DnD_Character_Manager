@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.util.List;
 
-/** Response from /backgrounds. */
+// Response from /backgrounds
 @Getter
 @Setter
 @NoArgsConstructor

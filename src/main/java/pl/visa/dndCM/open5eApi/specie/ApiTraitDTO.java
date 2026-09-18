@@ -3,7 +3,7 @@ package pl.visa.dndCM.open5eApi.specie;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
-/** One entry from a species' "traits" (e.g. name "Speed", desc "30 feet", type "SPEED"). */
+// one entry from a species' "traits" (e.g. name "Speed", desc "30 feet", type "SPEED")
 @Getter
 @Setter
 @NoArgsConstructor

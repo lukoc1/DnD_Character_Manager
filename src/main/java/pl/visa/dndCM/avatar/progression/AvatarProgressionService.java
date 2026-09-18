@@ -14,7 +14,7 @@ import pl.visa.dndCM.gameData.feature.FeatureRepository;
 
 import java.util.Random;
 
-// level-up, subclass choice and ability-score-improvement flows for an existing avatar
+// level-up, subclass choice and ability-score-improvement (asi)
 @Service
 @AllArgsConstructor
 public class AvatarProgressionService {
@@ -22,19 +22,6 @@ public class AvatarProgressionService {
     private final FeatureRepository featureRepository;
     private final DndClassLevelTableEntryRepository dndClassLevelTableEntryRepository;
     private final DndSubclassRepository dndSubclassRepository;
-
-    private static final Random RANDOM = new Random();
-
-    // whether the avatar has reached the subclass level but hasn't picked one yet
-    public boolean needsSubclassChoice(Long avatarId) {
-        Avatar avatar = getAvatarOrThrow(avatarId);
-
-        if (avatar.getLevel() < 3 || avatar.getDndsubclass() != null) {
-            return false;
-        }
-
-        return !dndSubclassRepository.findByDndClass_Id(avatar.getDndClass().getId()).isEmpty();
-    }
 
     public boolean canGainSubclass(Long avatarId) {
         Avatar avatar = getAvatarOrThrow(avatarId);
@@ -58,7 +45,8 @@ public class AvatarProgressionService {
 
         return featureRepository.findByDndClass(avatar.getDndClass()).stream()
                 .filter(f -> "Ability Score Improvement".equals(f.getName()))
-                .anyMatch(f -> f.getLevelsGained().stream().anyMatch(l -> l.getLevel() == level));
+                .anyMatch(f -> f.getLevelsGained().stream()
+                        .anyMatch(l -> l.getLevel() == level));
     }
 
     public void applyAbilityScoreImprovement(Long avatarId, String mode, String ability1, String ability2) {
@@ -66,6 +54,7 @@ public class AvatarProgressionService {
 
         int oldConMod = avatar.getConsMod();
 
+        // user can choose one ability +2 or two abilities +1
         if ("single".equals(mode)) {
             AvatarService.addAbilityScore(avatar, ability1, 2);
         } else {
@@ -86,14 +75,15 @@ public class AvatarProgressionService {
     public void levelUp(Long avatarId) {
         Avatar avatar = getAvatarOrThrow(avatarId);
 
-        int roll = RANDOM.nextInt(avatar.getDndClass().getHitDiceValue()) + 1
-                + avatar.getConsMod();
+        Random random = new Random();
+        int roll = random.nextInt(avatar.getDndClass().getHitDiceValue()) + 1 + avatar.getConsMod();
         int hpGain = Math.max(roll, 1);
 
         avatar.setLevel(avatar.getLevel() + 1);
         avatar.setMaxHP(avatar.getMaxHP() + hpGain);
         avatar.setCurrentHP(avatar.getCurrentHP() + hpGain);
 
+        // checks entry table for given class and fixes proficiency bonus based on level
         dndClassLevelTableEntryRepository.findByDndClassAndColumnName(avatar.getDndClass(), "Proficiency Bonus").stream()
                 .filter(entry -> entry.getLevel() == avatar.getLevel())
                 .findFirst()
@@ -102,7 +92,7 @@ public class AvatarProgressionService {
         avatarRepository.save(avatar);
     }
 
-    // parses level table values like "+2" into a plain int
+    // "+2" -> "2"
     private static int parseBonus(String value) {
         return Integer.parseInt(value.replace("+", "").trim());
     }

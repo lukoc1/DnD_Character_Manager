@@ -12,7 +12,6 @@ import java.util.List;
 public class UserDTO {
 
     private Long id;
-//    private UUID uuid;
 
     private String firstName;
     private String lastName;

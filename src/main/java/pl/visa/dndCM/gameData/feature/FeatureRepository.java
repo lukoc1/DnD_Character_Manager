@@ -6,14 +6,11 @@ import pl.visa.dndCM.gameData.dndClass.DndClass;
 import pl.visa.dndCM.gameData.dndSubclass.DndSubclass;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface FeatureRepository extends JpaRepository<DndClassFeature, Long> {
 
     boolean existsByApiIndex(String apiIndex);
-
-    Optional<DndClassFeature> findByApiIndex(String apiIndex);
 
     List<DndClassFeature> findByDndClass(DndClass dndClass);
 

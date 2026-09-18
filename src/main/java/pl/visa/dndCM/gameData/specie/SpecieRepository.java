@@ -7,7 +7,6 @@ import java.util.Optional;
 
 @Repository
 public interface SpecieRepository extends JpaRepository<Specie, Long> {
-    boolean existsByApiIndex(String apiIndex);
 
     Optional<Specie> findByApiIndex(String apiIndex);
 }

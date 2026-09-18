@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-/**
- * Response from /items.
- * "weapon" and "armor" are null unless the item is a weapon / armor.
- **/
+// response from /items
+// "weapon" and "armor" are null unless the item is a weapon / armor
 @Getter
 @Setter
 @NoArgsConstructor

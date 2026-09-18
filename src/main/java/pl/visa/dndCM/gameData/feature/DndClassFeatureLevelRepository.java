@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DndClassFeatureLevelRepository extends JpaRepository<DndClassFeatureLevel, Long> {
 
-    boolean existsByFeature(DndClassFeature feature);
 }

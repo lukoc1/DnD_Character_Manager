@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import pl.visa.dndCM.avatar.equipment.AvatarEquipmentItemDTO;
 
 import java.util.List;
 
@@ -19,7 +20,6 @@ public class AvatarDTO {
 
     private String user;
 
-    // wybrana klasa (id z formularza)
     @NotNull(message = "Class selection is required.")
     private Long dndClassId;
 
@@ -34,54 +34,54 @@ public class AvatarDTO {
     private String name;
 
     private int level;
+    private boolean draft;
 
     // tylko do wyświetlania
     private String className;
     private String backgroundName;
-
     private String specieName;
     private String subclassName;
 
+    // Equipment / creation-wizard related
+    private int gold;
+
+    private List<AvatarEquipmentItemDTO> equipment; // weapons + other items
+    private List<AvatarEquipmentItemDTO> items; // non weapon
+    private List<AvatarEquipmentItemDTO> weapons;
+
+    private List<AvatarClassFeatureDTO> classFeatures;
+    private List<AvatarSpecieTraitDTO> specieTraits;
+    private List<String> feats;
+
+    // Combat / HP
     private int armorClass;
-    //    private Boolean shield;
-//    // Hit Points
     private int maxHP;
     private int currentHP;
     private int tempHP;
-
     private int hitDiceSpent;
-    private int hitDieSize; // "e.g. D12 -> 12
-    //    // Stats
-    private int proficiencyBonus;
-    //
-    private int strMod;
-    private int strSco;
-
-    private int intMod;
-    private int intSco;
-
-    private int dexMod;
-    private int dexSco;
-
-    private int wisMod;
-    private int wisSco;
-
-    private int consMod;
-    private int consSco;
-
-    private int charMod;
-    private int charSco;
-
+    private int hitDieSize; // e.g. D12 -> 12
     private String size;
     private int currentSpeed;
     private String armorTraining;
 
-    private int gold;
+    // Ability scores + proficiency
+    private int proficiencyBonus;
 
-    private List<AvatarEquipmentItemDTO> equipment;
-    private List<AvatarEquipmentItemDTO> items; // non weapon
-    private List<AvatarEquipmentItemDTO> weapons;
-    private List<AvatarClassFeatureDTO> classFeatures;
-    private List<AvatarSpecieTraitDTO> specieTraits;
-    private List<String> feats;
+    private int strMod;
+    private int strSco;
+
+    private int dexMod;
+    private int dexSco;
+
+    private int consMod;
+    private int consSco;
+
+    private int intMod;
+    private int intSco;
+
+    private int wisMod;
+    private int wisSco;
+
+    private int charMod;
+    private int charSco;
 }

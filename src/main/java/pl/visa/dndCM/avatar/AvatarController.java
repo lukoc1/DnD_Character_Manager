@@ -69,13 +69,13 @@ public class AvatarController {
 
     @PostMapping("/{id}/edit")
     public String editAvatar(@PathVariable Long id,
-                              @RequestParam(defaultValue = "0") int damage,
-                              @RequestParam(defaultValue = "0") int heal,
-                              @RequestParam(defaultValue = "0") int tempHP,
-                              @RequestParam(defaultValue = "0") int goldChange,
-                              @RequestParam(required = false) String addItem,
-                              @RequestParam(required = false) String loseItem,
-                              RedirectAttributes ra) {
+                             @RequestParam(defaultValue = "0") int damage,
+                             @RequestParam(defaultValue = "0") int heal,
+                             @RequestParam(defaultValue = "0") int tempHP,
+                             @RequestParam(defaultValue = "0") int goldChange,
+                             @RequestParam(required = false) String addItem,
+                             @RequestParam(required = false) String loseItem,
+                             RedirectAttributes ra) {
         if (heal > 0) {
             avatarHealthService.heal(id, heal);
         }

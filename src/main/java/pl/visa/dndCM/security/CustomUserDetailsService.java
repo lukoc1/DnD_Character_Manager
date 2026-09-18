@@ -17,10 +17,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
+    // username == email
     public UserDetails loadUserByUsername(String username) {
         User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
+        // buduje tymczasowy Spring Security User -> i w sesji mamy Authentication
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
                 .password(user.getPassword())

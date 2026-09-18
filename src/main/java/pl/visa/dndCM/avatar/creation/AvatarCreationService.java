@@ -4,14 +4,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.visa.dndCM.avatar.Avatar;
 import pl.visa.dndCM.avatar.AvatarDTO;
-import pl.visa.dndCM.avatar.AvatarEquipmentItem;
-import pl.visa.dndCM.avatar.AvatarEquipmentItemRepository;
-import pl.visa.dndCM.avatar.AvatarFeat;
-import pl.visa.dndCM.avatar.AvatarFeatRepository;
 import pl.visa.dndCM.avatar.AvatarRepository;
 import pl.visa.dndCM.avatar.AvatarService;
-import pl.visa.dndCM.avatar.AvatarSkillProficiency;
-import pl.visa.dndCM.avatar.AvatarSkillProficiencyRepository;
+import pl.visa.dndCM.avatar.equipment.AvatarEquipmentItem;
+import pl.visa.dndCM.avatar.feat.AvatarFeat;
+import pl.visa.dndCM.avatar.proficiency.AvatarSkillProficiency;
 import pl.visa.dndCM.exception.ErrorCode;
 import pl.visa.dndCM.exception.ResourceNotFoundException;
 import pl.visa.dndCM.gameData.background.Background;
@@ -38,9 +35,6 @@ public class AvatarCreationService {
     private final DndClassRepository dndClassRepository;
     private final BackgroundRepository backgroundRepository;
     private final SpecieRepository specieRepository;
-    private final AvatarSkillProficiencyRepository skillProficiencyRepository;
-    private final AvatarFeatRepository avatarFeatRepository;
-    private final AvatarEquipmentItemRepository avatarEquipmentItemRepository;
     private final EquipmentItemRepository equipmentItemRepository;
 
     public Long save(AvatarDTO avatarDTO, String userEmail) {
@@ -65,19 +59,18 @@ public class AvatarCreationService {
 
         Avatar avatar = getAvatarOrThrow(avatarId);
 
-        skillProficiencyRepository.deleteByAvatar(avatar);
+        avatar.getSkillProficiencies().clear();
         if (chosenSkills != null) {
-            chosenSkills.stream()
-                    .map(name -> AvatarSkillProficiency.builder().avatar(avatar).name(name).build())
-                    .forEach(skillProficiencyRepository::save);
+            for (String name : chosenSkills) {
+                avatar.getSkillProficiencies().add(AvatarSkillProficiency.builder().avatar(avatar).name(name).build());
+            }
         }
 
         DndClass dndClass = avatar.getDndClass();
-        avatar.setStartingEquipmentChoice(equipmentChoice);
         String equipmentText = "B".equals(equipmentChoice) ? dndClass.getStartingEquipmentB() : dndClass.getStartingEquipmentA();
         avatar.setStartingEquipmentClass(equipmentText);
 
-        avatarEquipmentItemRepository.deleteByAvatar(avatar);
+        avatar.getEquipmentItems().clear();
         avatar.setGold(0);
         applyEquipmentList(avatar, equipmentText);
 
@@ -112,8 +105,8 @@ public class AvatarCreationService {
     }
 
 
-    public void saveBackgroundStep(Long avatarId, String abilityMode, String plus2Ability,
-                                   String plus1Ability, String equipmentChoice) {
+    public void saveBackgroundStep(Long avatarId, String mode, String ability1,
+                                   String ability2, String equipmentChoice) {
 
         Avatar avatar = getAvatarOrThrow(avatarId);
 
@@ -123,15 +116,15 @@ public class AvatarCreationService {
         BackgroundBenefit skillBenefit = background.getBenefit("skill_proficiency");
         if (skillBenefit != null) {
             for (String skill : splitList(skillBenefit.getDescription())) {
-                skillProficiencyRepository.save(AvatarSkillProficiency.builder().avatar(avatar).name(skill).build());
+                avatar.getSkillProficiencies().add(AvatarSkillProficiency.builder().avatar(avatar).name(skill).build());
             }
         }
 
         // origin feat
-        avatarFeatRepository.deleteByAvatar(avatar);
+        avatar.getFeats().clear();
         BackgroundBenefit featBenefit = background.getBenefit("feat");
         if (featBenefit != null) {
-            avatarFeatRepository.save(AvatarFeat.builder().avatar(avatar).name(featBenefit.getDescription()).build());
+            avatar.getFeats().add(AvatarFeat.builder().avatar(avatar).name(featBenefit.getDescription()).build());
         }
 
         // equipment package - added on top of the class equipment, plus its raw text
@@ -144,11 +137,11 @@ public class AvatarCreationService {
         }
 
         // ability score increase
-        if ("all".equals(abilityMode)) {
+        if ("all".equals(mode)) {
             background.getAbilityScoreOptions().forEach(ability -> AvatarService.addAbilityScore(avatar, ability, 1));
         } else {
-            AvatarService.addAbilityScore(avatar, plus2Ability, 2);
-            AvatarService.addAbilityScore(avatar, plus1Ability, 1);
+            AvatarService.addAbilityScore(avatar, ability1, 2);
+            AvatarService.addAbilityScore(avatar, ability2, 1);
         }
 
         // setting hit points
@@ -215,7 +208,7 @@ public class AvatarCreationService {
             row.setAvatar(avatar);
             row.setEquipmentItem(item);
             row.setQuantity(quantity);
-            avatarEquipmentItemRepository.save(row);
+            avatar.getEquipmentItems().add(row);
         }
     }
 

@@ -1,4 +1,4 @@
-package pl.visa.dndCM.avatar;
+package pl.visa.dndCM.avatar.equipment;
 
 import lombok.*;
 

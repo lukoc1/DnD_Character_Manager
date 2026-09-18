@@ -135,31 +135,41 @@ public class AvatarCreationController {
 
     @GetMapping("/{id}/create/background")
     public String showBackgroundStep(@PathVariable Long id, Model model) {
+        if (!avatarService.getAvatarById(id).isDraft()) {
+            return "redirect:/avatar/select/" + id;
+        }
+
         addBackgroundStepAttributes(model, id);
         return "avatar/add-avatar/create-background";
     }
 
     @PostMapping("/{id}/create/background")
     public String saveBackgroundStep(@PathVariable Long id,
-                                     @RequestParam(name = "abilityMode", defaultValue = "split") String abilityMode,
-                                     @RequestParam(name = "plus2", required = false) String plus2Ability,
-                                     @RequestParam(name = "plus1", required = false) String plus1Ability,
+                                     @RequestParam(name = "abilityMode", defaultValue = "split") String mode,
+                                     @RequestParam(name = "plus2", required = false) String ability1,
+                                     @RequestParam(name = "plus1", required = false) String ability2,
                                      @RequestParam(name = "equipment", defaultValue = "A") String equipment,
                                      Model model) {
+
+        if (!avatarService.getAvatarById(id).isDraft()) {
+            return "redirect:/avatar/select/" + id;
+        }
 
         Background background = backgroundService.findById(avatarService.getAvatarById(id).getBackgroundId());
         List<String> options = background.getAbilityScoreOptions();
 
-        boolean validSplit = options.contains(plus2Ability) && options.contains(plus1Ability)
-                && !plus2Ability.equals(plus1Ability);
+        // background grants: one ability +2 and one ability +1 OR three abilities +1
+        boolean validSplit = options.contains(ability1) && options.contains(ability2)
+                                                        && !ability1.equals(ability2);
 
-        if (!"all".equals(abilityMode) && !validSplit) {
+        // wybrany split na +2/+1 i jest niepoprawny
+        if (!"all".equals(mode) && !validSplit) {
             addBackgroundStepAttributes(model, id);
             model.addAttribute("error", "Pick two different abilities from the list.");
             return "avatar/add-avatar/create-background";
         }
 
-        avatarCreationService.saveBackgroundStep(id, abilityMode, plus2Ability, plus1Ability, equipment);
+        avatarCreationService.saveBackgroundStep(id, mode, ability1, ability2, equipment);
 
         return "redirect:/avatar/select/" + id;
     }

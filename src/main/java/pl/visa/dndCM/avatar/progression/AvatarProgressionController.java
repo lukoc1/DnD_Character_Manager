@@ -12,7 +12,7 @@ import pl.visa.dndCM.avatar.AvatarDTO;
 import pl.visa.dndCM.avatar.AvatarService;
 import pl.visa.dndCM.gameData.dndSubclass.DndSubclassService;
 
-// post-creation progression: subclass choice, level-up, ability score improvement
+// character progression: subclass choice, level-up, ability score improvement
 @Controller
 @AllArgsConstructor
 @RequestMapping("/avatar")

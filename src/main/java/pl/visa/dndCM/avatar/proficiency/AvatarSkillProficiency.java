@@ -1,10 +1,11 @@
-package pl.visa.dndCM.avatar;
+package pl.visa.dndCM.avatar.proficiency;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import pl.visa.dndCM.avatar.Avatar;
 
-/** One skill the avatar is proficient in, e.g. picked during class step: "Athletics". */
+// one skill the avatar is proficient in, e.g. picked during class step: "Athletics"
 @Entity
 @Table(name = "avatar_skill_proficiency")
 @Getter

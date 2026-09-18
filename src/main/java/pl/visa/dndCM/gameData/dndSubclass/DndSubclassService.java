@@ -19,7 +19,4 @@ public class DndSubclassService {
         return dndSubclassRepository.findByDndClass_Id(dndClassId);
     }
 
-    public List<DndSubclass> findByClassApiIndex(String apiIndex) {
-        return dndSubclassRepository.findByDndClass_ApiIndex(apiIndex);
-    }
 }
