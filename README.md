@@ -74,3 +74,8 @@ i wysyłać je dalej.
 
 Reszta aplikacji (`/avatar/**`, `/home`, `/user/**`) to zwykłe strony Thymeleaf, nie REST API -
 z nich korzysta się przez przeglądarkę, nie przez wywołania HTTP z zewnątrz.
+
+## Dalszy rozwój
+
+Projekt jest rozwijany dalej, dalsze plany obejmują system rzucania zaklęć (spell slots) i
+wyliczanie Armor Class na podstawie noszonej zbroi.
