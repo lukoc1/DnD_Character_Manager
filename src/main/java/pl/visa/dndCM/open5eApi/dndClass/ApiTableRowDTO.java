@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-/** One row of "data_for_class_table" (e.g. Rages at level 3 = "3"). */
+// one row of "data_for_class_table" (e.g. Rages at level 3 = "3")
 @Getter
 @Setter
 @NoArgsConstructor

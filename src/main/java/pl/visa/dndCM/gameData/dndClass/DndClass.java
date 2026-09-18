@@ -25,10 +25,10 @@ public class DndClass {
     private String apiIndex;
     private String name;
 
-    // hit die e.g. "D12", from open5e "hit_dice"
-    private String hitDice;
+    // hit die e.g. "D12" -> 12
+    private int hitDiceValue;
 
-    // "NONE" / "FULL" / "HALF"
+    // "NONE" / "FULL" / "HALF" -- jeszcze bez implementacji
     private String casterType;
 
     private boolean strSavingThrow;
@@ -54,15 +54,29 @@ public class DndClass {
     @JsonIgnore
     private List<Avatar> avatars = new ArrayList<>();
 
-    /** Ability names this class grants saving throw proficiency in, e.g. ["Strength", "Constitution"]. */
+    // ability names this class grants saving throw proficiency in, e.g. ("Strength", "Constitution")
     public List<String> getSavingThrowAbilities() {
         List<String> abilities = new ArrayList<>();
-        if (strSavingThrow) abilities.add("Strength");
-        if (dexSavingThrow) abilities.add("Dexterity");
-        if (consSavingThrow) abilities.add("Constitution");
-        if (intSavingThrow) abilities.add("Intelligence");
-        if (wisSavingThrow) abilities.add("Wisdom");
-        if (chaSavingThrow) abilities.add("Charisma");
+
+        if (strSavingThrow) {
+            abilities.add("Strength");
+        }
+        if (dexSavingThrow) {
+            abilities.add("Dexterity");
+        }
+        if (consSavingThrow) {
+            abilities.add("Constitution");
+        }
+        if (intSavingThrow) {
+            abilities.add("Intelligence");
+        }
+        if (wisSavingThrow) {
+            abilities.add("Wisdom");
+        }
+        if (chaSavingThrow) {
+            abilities.add("Charisma");
+        }
+
         return abilities;
     }
 }

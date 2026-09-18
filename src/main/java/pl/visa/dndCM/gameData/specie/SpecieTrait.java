@@ -27,7 +27,7 @@ public class SpecieTrait {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    // e.g. "SIZE", "SPEED", null
+    // e.g. "SIZE", "SPEED"
     private String type;
 
     private int traitOrder;

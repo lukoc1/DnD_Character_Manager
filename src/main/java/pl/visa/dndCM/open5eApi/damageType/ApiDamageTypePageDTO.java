@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.util.List;
 
-/** API pagination: {count, next, previous, results}. */
+// API pagination: {count, next, previous, results}
 @Getter
 @Setter
 @NoArgsConstructor

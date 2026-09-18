@@ -1,4 +1,4 @@
-package pl.visa.dndCM.avatar.card;
+package pl.visa.dndCM.avatar.creation;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import pl.visa.dndCM.avatar.AvatarDTO;
 import pl.visa.dndCM.avatar.AvatarService;
+import pl.visa.dndCM.gameData.background.Background;
 import pl.visa.dndCM.gameData.background.BackgroundService;
 import pl.visa.dndCM.gameData.dndClass.DndClass;
 import pl.visa.dndCM.gameData.dndClass.DndClassService;
@@ -20,19 +21,19 @@ import pl.visa.dndCM.gameData.specie.SpecieService;
 
 import java.util.List;
 
-/** Character-creation wizard: step by step the user fills the avatar and it moves to the next page. */
 @Controller
 @AllArgsConstructor
 @RequestMapping("/avatar")
-public class CardController {
+public class AvatarCreationController {
 
     private final AvatarService avatarService;
+    private final AvatarCreationService avatarCreationService;
     private final DndClassService dndClassService;
     private final BackgroundService backgroundService;
     private final SpecieService specieService;
 
 
-    // Step 1 - name, background, class, species
+    // Name, background, class, species
 
     @GetMapping("/create")
     public String showAddAvatarForm(Model model) {
@@ -54,7 +55,7 @@ public class CardController {
             return "avatar/add-avatar/create-avatar";
         }
 
-        Long avatarId = avatarService.save(avatarDTO, authentication.getName());
+        Long avatarId = avatarCreationService.save(avatarDTO, authentication.getName());
 
         return "redirect:/avatar/" + avatarId + "/create/class";
     }
@@ -66,7 +67,7 @@ public class CardController {
     }
 
 
-    // Step 2 - what the class gives + skill and starting equipment choices
+    // What the class gives + skill and starting equipment
 
     @GetMapping("/{id}/create/class")
     public String showClassStep(@PathVariable Long id, Model model) {
@@ -80,22 +81,22 @@ public class CardController {
                                 @RequestParam(name = "equipment", defaultValue = "A") String equipment,
                                 Model model) {
 
-        int required = dndClassService.findById(avatarService.getAvatarById(id).getDndClassId()).getSkillChoiceCount();
-        int chosen = skills == null ? 0 : skills.size();
+        int requiredSkillsNum = dndClassService.findById(avatarService.getAvatarById(id).getDndClassId()).getSkillChoiceCount();
+        int chosenSkillsNum = skills == null ? 0 : skills.size();
 
-        if (chosen != required) {
+        if (chosenSkillsNum != requiredSkillsNum) {
             addClassStepAttributes(model, id);
-            model.addAttribute("error", "Choose exactly " + required + " skills.");
+            model.addAttribute("error", "Choose exactly " + requiredSkillsNum + " skills.");
             return "avatar/add-avatar/create-class";
         }
 
-        avatarService.saveClassStep(id, skills, equipment);
+        avatarCreationService.saveClassStep(id, skills, equipment);
 
         return "redirect:/avatar/" + id + "/create/abilities";
     }
 
 
-    // Step 3 - roll and assign the six ability scores
+    // Roll and assign ability scores
 
     @GetMapping("/{id}/create/abilities")
     public String showAbilitiesStep(@PathVariable Long id, Model model) {
@@ -115,9 +116,9 @@ public class CardController {
             return "avatar/add-avatar/create-abilities";
         }
 
-        avatarService.saveAbilitiesStep(id, str, dex, con, intel, wis, cha);
+        avatarCreationService.saveAbilitiesStep(id, str, dex, con, intel, wis, cha);
 
-        return "redirect:/avatar/select/" + id;
+        return "redirect:/avatar/" + id + "/create/background";
     }
 
     private void addClassStepAttributes(Model model, Long avatarId) {
@@ -127,5 +128,57 @@ public class CardController {
         model.addAttribute("avatar", avatar);
         model.addAttribute("dndClass", dndClass);
         model.addAttribute("savingThrows", String.join(", ", dndClass.getSavingThrowAbilities()));
+    }
+
+
+    // What the background gives + ability score increase + equipment choice
+
+    @GetMapping("/{id}/create/background")
+    public String showBackgroundStep(@PathVariable Long id, Model model) {
+        if (!avatarService.getAvatarById(id).isDraft()) {
+            return "redirect:/avatar/select/" + id;
+        }
+
+        addBackgroundStepAttributes(model, id);
+        return "avatar/add-avatar/create-background";
+    }
+
+    @PostMapping("/{id}/create/background")
+    public String saveBackgroundStep(@PathVariable Long id,
+                                     @RequestParam(name = "abilityMode", defaultValue = "split") String mode,
+                                     @RequestParam(name = "plus2", required = false) String ability1,
+                                     @RequestParam(name = "plus1", required = false) String ability2,
+                                     @RequestParam(name = "equipment", defaultValue = "A") String equipment,
+                                     Model model) {
+
+        if (!avatarService.getAvatarById(id).isDraft()) {
+            return "redirect:/avatar/select/" + id;
+        }
+
+        Background background = backgroundService.findById(avatarService.getAvatarById(id).getBackgroundId());
+        List<String> options = background.getAbilityScoreOptions();
+
+        // background grants: one ability +2 and one ability +1 OR three abilities +1
+        boolean validSplit = options.contains(ability1) && options.contains(ability2)
+                                                        && !ability1.equals(ability2);
+
+        // wybrany split na +2/+1 i jest niepoprawny
+        if (!"all".equals(mode) && !validSplit) {
+            addBackgroundStepAttributes(model, id);
+            model.addAttribute("error", "Pick two different abilities from the list.");
+            return "avatar/add-avatar/create-background";
+        }
+
+        avatarCreationService.saveBackgroundStep(id, mode, ability1, ability2, equipment);
+
+        return "redirect:/avatar/select/" + id;
+    }
+
+    private void addBackgroundStepAttributes(Model model, Long avatarId) {
+        AvatarDTO avatar = avatarService.getAvatarById(avatarId);
+        Background background = backgroundService.findById(avatar.getBackgroundId());
+
+        model.addAttribute("avatar", avatar);
+        model.addAttribute("background", background);
     }
 }

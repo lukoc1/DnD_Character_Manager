@@ -12,7 +12,7 @@ import pl.visa.dndCM.open5eApi.specie.ApiSpeciePageDTO;
 public class ApiClient {
 
     private final RestTemplate restTemplate;
-    private final String BASE_URL = "http://127.0.0.1:8000/v2";
+    private static final String BASE_URL = "http://127.0.0.1:8000/v2";
 
     public ApiClient() {
         try {
@@ -22,30 +22,30 @@ public class ApiClient {
         }
     }
 
-    /** Classes + subclasses */
+    // Classes + subclasses + features
     public ApiClassPageDTO getClasses() {
         return restTemplate.getForObject(
                 BASE_URL + "/classes/?document__key__in=srd-2024&limit=100", ApiClassPageDTO.class);
     }
 
-    /** Backgrounds */
+    // Backgrounds
     public ApiBackgroundPageDTO getBackgrounds() {
         return restTemplate.getForObject(
                 BASE_URL + "/backgrounds/?document__key__in=srd-2024&limit=100", ApiBackgroundPageDTO.class);
     }
 
-    /** Damage types */
+    // Damage types
     public ApiDamageTypePageDTO getDamageTypes() {
         return restTemplate.getForObject(BASE_URL + "/damagetypes/?limit=100", ApiDamageTypePageDTO.class);
     }
 
-    /** Species */
+    // Species
     public ApiSpeciePageDTO getSpecies() {
         return restTemplate.getForObject(
                 BASE_URL + "/species/?document__key__in=srd-2024&limit=100", ApiSpeciePageDTO.class);
     }
 
-    /** Items */
+    // Items
     public ApiItemPageDTO getItems() {
         return restTemplate.getForObject(
                 BASE_URL + "/items/?document__key__in=srd-2024&limit=250", ApiItemPageDTO.class);

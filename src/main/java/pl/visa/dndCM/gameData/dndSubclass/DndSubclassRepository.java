@@ -9,8 +9,6 @@ import java.util.Optional;
 @Repository
 public interface DndSubclassRepository extends JpaRepository<DndSubclass, Long> {
 
-    boolean existsByApiIndex(String apiIndex);
-
     Optional<DndSubclass> findByApiIndex(String apiIndex);
 
     List<DndSubclass> findByDndClass_Id(Long dndClassId);

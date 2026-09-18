@@ -2,214 +2,85 @@ package pl.visa.dndCM.avatar;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.visa.dndCM.gameData.background.Background;
-import pl.visa.dndCM.gameData.background.BackgroundRepository;
-import pl.visa.dndCM.gameData.dndClass.DndClass;
-import pl.visa.dndCM.gameData.dndClass.DndClassRepository;
+import pl.visa.dndCM.avatar.equipment.AvatarEquipmentItemDTO;
+import pl.visa.dndCM.avatar.feat.AvatarFeat;
+import pl.visa.dndCM.avatar.feat.AvatarFeatRepository;
+import pl.visa.dndCM.avatar.proficiency.AvatarSkillProficiency;
+import pl.visa.dndCM.avatar.proficiency.AvatarSkillProficiencyRepository;
 import pl.visa.dndCM.exception.ErrorCode;
 import pl.visa.dndCM.exception.ResourceNotFoundException;
+import pl.visa.dndCM.gameData.dndClass.DndClass;
 import pl.visa.dndCM.gameData.equipmentItem.EquipmentItem;
-import pl.visa.dndCM.gameData.equipmentItem.EquipmentItemRepository;
-import pl.visa.dndCM.gameData.specie.Specie;
-import pl.visa.dndCM.gameData.specie.SpecieRepository;
-import pl.visa.dndCM.user.*;
+import pl.visa.dndCM.gameData.equipmentItem.EquipmentItemProperty;
+import pl.visa.dndCM.gameData.equipmentItem.EquipmentItemPropertyRepository;
+import pl.visa.dndCM.gameData.feature.DndClassFeature;
+import pl.visa.dndCM.gameData.feature.DndClassFeatureLevel;
+import pl.visa.dndCM.gameData.feature.FeatureRepository;
+import pl.visa.dndCM.gameData.specie.SpecieTraitRepository;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class AvatarService {
     private final AvatarRepository avatarRepository;
-    private final UserRepository userRepository;
-    private final DndClassRepository dndClassRepository;
-    private final BackgroundRepository backgroundRepository;
-    private final SpecieRepository specieRepository;
     private final AvatarSkillProficiencyRepository skillProficiencyRepository;
-    private final AvatarEquipmentItemRepository avatarEquipmentItemRepository;
-    private final EquipmentItemRepository equipmentItemRepository;
+    private final AvatarFeatRepository avatarFeatRepository;
+    private final EquipmentItemPropertyRepository equipmentItemPropertyRepository;
+    private final FeatureRepository featureRepository;
+    private final SpecieTraitRepository specieTraitRepository;
 
-    private static final Pattern GOLD = Pattern.compile("^(\\d+)\\s*GP$", Pattern.CASE_INSENSITIVE);
-    private static final Pattern QUANTITY = Pattern.compile("^(\\d+)\\s+(.*)$");
-
-    /// methods
+        // public API
 
     public AvatarDTO getAvatarById(Long id) {
-        return avatarRepository.findById(id)
-                .map(s -> toDTO(s))
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", id), ErrorCode.AVATAR_NOT_FOUND));
-    }
-
-    public List<AvatarDTO> findAll() {
-        return avatarRepository.findAll()
-                .stream().map(s -> toDTO(s)).toList();
+        return toDTO(getAvatarOrThrow(id));
     }
 
     public List<AvatarDTO> findAllByUserId(Long id) {
         return avatarRepository.findAllByUser_IdAndDraftFalse(id).stream()
-                .map(a -> toDTO(a)).toList();
+                .map(this::toDTO).toList();
     }
 
-    /** Names of the skills this avatar is proficient in - for ticking checkboxes on the sheet. */
+    // names of the skills this avatar is proficient in - for ticking checkboxes on the sheet
     public Set<String> getSkillProficiencyNames(Long avatarId) {
         return skillProficiencyRepository.findByAvatar_Id(avatarId).stream()
                 .map(AvatarSkillProficiency::getName)
                 .collect(Collectors.toSet());
     }
 
-    /** Ability names whose saving throw the avatar's class makes it proficient in (e.g. "Strength"). */
+    // ability names whose saving throw the avatar's class makes it proficient in (e.g. "Strength")
     public Set<String> getSavingThrowAbilities(Long avatarId) {
-
-        Avatar avatar = avatarRepository.findById(avatarId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+        Avatar avatar = getAvatarOrThrow(avatarId);
 
         DndClass dndClass = avatar.getDndClass();
         if (dndClass == null) {
             return new HashSet<>();
         }
-        return new HashSet<>(dndClass.getSavingThrowAbilities());
+
+        Set<String> savingThrowAbilities = new HashSet<>(dndClass.getSavingThrowAbilities());
+        return savingThrowAbilities;
     }
 
-    public Long save(AvatarDTO avatarDTO, String userName) {
+    public int getPassivePerception(Long avatarId) {
+        Avatar avatar = getAvatarOrThrow(avatarId);
 
-        User user = userRepository.findByName(userName)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("User %s not found", userName), ErrorCode.USER_NOT_FOUND));
+        boolean proficientInPerception = skillProficiencyRepository.findByAvatar_Id(avatarId).stream()
+                .anyMatch(p -> "Perception".equals(p.getName()));
 
-        Avatar avatar = toEntity(avatarDTO);
-        avatar.setUser(user);
-        avatar.setLevel(1);
-        avatar.setDraft(true);
-
-        return avatarRepository.save(avatar).getId();
-    }
-
-    /** Admin cleanup - removes every half-finished avatar left behind in the creation wizard. */
-    public void deleteAllDrafts() {
-
-        List<Avatar> drafts = avatarRepository.findAllByDraftTrue();
-        avatarRepository.deleteAll(drafts);
-    }
-
-    /** Persists the class-step choices (chosen skills + starting equipment) on an existing avatar. */
-    public void saveClassStep(Long avatarId, List<String> chosenSkills, String equipmentChoice) {
-
-        Avatar avatar = avatarRepository.findById(avatarId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
-
-        skillProficiencyRepository.deleteByAvatar(avatar);
-        if (chosenSkills != null) {
-            chosenSkills.stream()
-                    .map(name -> AvatarSkillProficiency.builder().avatar(avatar).name(name).build())
-                    .forEach(skillProficiencyRepository::save);
-        }
-
-        DndClass dndClass = avatar.getDndClass();
-        avatar.setStartingEquipmentChoice(equipmentChoice);
-        String equipmentText = "B".equals(equipmentChoice)
-                ? dndClass.getStartingEquipmentB()
-                : dndClass.getStartingEquipmentA();
-        avatar.setStartingEquipmentClass(equipmentText);
-
-        avatarEquipmentItemRepository.deleteByAvatar(avatar);
-        avatar.setGold(0);
-        applyEquipmentList(avatar, equipmentText);
-
-        avatarRepository.save(avatar);
-    }
-
-    /** Persists the six rolled ability scores, their modifiers and the base proficiency bonus. */
-    public void saveAbilitiesStep(Long avatarId, int str, int dex, int con, int intel, int wis, int cha) {
-
-        Avatar avatar = avatarRepository.findById(avatarId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
-
-        avatar.setStrSco(str);   avatar.setStrMod(abilityModifier(str));
-        avatar.setDexSco(dex);   avatar.setDexMod(abilityModifier(dex));
-        avatar.setConsSco(con);  avatar.setConsMod(abilityModifier(con));
-        avatar.setIntSco(intel); avatar.setIntMod(abilityModifier(intel));
-        avatar.setWisSco(wis);   avatar.setWisMod(abilityModifier(wis));
-        avatar.setCharSco(cha);  avatar.setCharMod(abilityModifier(cha));
-
-        avatar.setProficiencyBonus(2);
-
-        // abilities step is currently the last one - avatar is now finished
-        avatar.setDraft(false);
-
-        avatarRepository.save(avatar);
-    }
-
-    private static int abilityModifier(int score) {
-        return Math.floorDiv(score - 10, 2);
-    }
-
-    /**
-     * Best-effort: parses a "Greataxe, 4 Handaxes, Explorer's Pack, and 15 GP" style list and
-     * adds the matched items + gold to the avatar. Unknown tokens are skipped. Same format is
-     * used by class and background steps, so callers clear first if they want a fresh start.
-     */
-    public void applyEquipmentList(Avatar avatar, String text) {
-        if (text == null) {
-            return;
-        }
-
-        for (String raw : text.split(",")) {
-            String token = raw.trim().replaceFirst("^and\\s+", "").trim();
-            if (token.isEmpty()) {
-                continue;
-            }
-
-            Matcher goldMatch = GOLD.matcher(token);
-            if (goldMatch.matches()) {
-                avatar.setGold(avatar.getGold() + Integer.parseInt(goldMatch.group(1)));
-                continue;
-            }
-
-            int quantity = 1;
-            String name = token;
-            Matcher quantityMatch = QUANTITY.matcher(token);
-            if (quantityMatch.matches()) {
-                quantity = Integer.parseInt(quantityMatch.group(1));
-                name = quantityMatch.group(2).trim();
-            }
-
-            EquipmentItem item = findEquipmentByName(name);
-            if (item == null) {
-                continue;
-            }
-
-            AvatarEquipmentItem row = new AvatarEquipmentItem();
-            row.setAvatar(avatar);
-            row.setEquipmentItem(item);
-            row.setQuantity(quantity);
-            avatarEquipmentItemRepository.save(row);
-        }
-    }
-
-    private EquipmentItem findEquipmentByName(String name) {
-        Optional<EquipmentItem> exact = equipmentItemRepository.findByNameIgnoreCase(name);
-        if (exact.isPresent()) {
-            return exact.get();
-        }
-        // "Handaxes" -> "Handaxe"
-        if (name.endsWith("s")) {
-            return equipmentItemRepository.findByNameIgnoreCase(name.substring(0, name.length() - 1)).orElse(null);
-        }
-        return null;
+        return 10 + avatar.getWisMod() + (proficientInPerception ? avatar.getProficiencyBonus() : 0);
     }
 
     public void deleteAvatarById(Long id) {
-        avatarRepository.deleteById(id);
+        avatarRepository.delete(getAvatarOrThrow(id));
     }
 
-
-    /// utils
-
     public AvatarDTO toDTO(Avatar avatar) {
+        List<AvatarEquipmentItemDTO> equipment = toEquipmentDTOs(avatar);
 
         return AvatarDTO.builder()
                 .id(avatar.getId())
@@ -222,11 +93,19 @@ public class AvatarService {
                 .specieId(avatar.getSpecie().getId())
                 .subclassName(avatar.getSubclassName())
                 .level(avatar.getLevel())
+                .draft(avatar.isDraft())
                 .userId(avatar.getUser().getId())
                 .armorClass(avatar.getArmorClass())
+
                 .maxHP(avatar.getMaxHP())
                 .currentHP(avatar.getCurrentHP())
                 .tempHP(avatar.getTempHP())
+                .hitDiceSpent(avatar.getHitDiceSpent())
+                .hitDieSize(avatar.getDndClass().getHitDiceValue())
+                .size(avatar.getSize())
+                .currentSpeed(avatar.getCurrentSpeed())
+                .armorTraining(avatar.getDndClass().getArmorTraining())
+
                 .proficiencyBonus(avatar.getProficiencyBonus())
                 .strMod(avatar.getStrMod())
                 .strSco(avatar.getStrSco())
@@ -240,46 +119,200 @@ public class AvatarService {
                 .wisSco(avatar.getWisSco())
                 .charMod(avatar.getCharMod())
                 .charSco(avatar.getCharSco())
+
+                .equipment(equipment)
+                .weapons(toWeaponDTOs(equipment))
+                .items(toNonWeaponDTOs(equipment))
+                .classFeatures(toClassFeatureDTOs(avatar))
+                .specieTraits(toSpecieTraitDTOs(avatar))
+                .feats(toFeatNames(avatar))
+                .gold(avatar.getGold())
+
                 .build();
     }
 
-    public Avatar toEntity(AvatarDTO avatarDTO) {
-        return Avatar.builder()
-                .id(avatarDTO.getId())
-                .name(avatarDTO.getName())
-                .background(findBackground(avatarDTO.getBackgroundId()))
-                .dndClass(findDndClass(avatarDTO.getDndClassId()))
-                .specie(findSpecie(avatarDTO.getSpecieId()))
-                .subclassName(avatarDTO.getSubclassName())
-                .level(avatarDTO.getLevel())
-                .build();
+
+        // shared static utils
+
+    public static int abilityModifier(int score) {
+        int diff = score - 10;
+        int modifier = diff / 2;
+
+        if (diff < 0 && diff % 2 != 0) {
+            modifier--;
+        }
+
+        return modifier;
     }
 
-    private DndClass findDndClass(Long dndClassId) {
-        if (dndClassId == null) {
+    // adds value to the given ability (max 20), updating its modifier
+    public static void addAbilityScore(Avatar avatar, String ability, int value) {
+        if (ability == null) {
+            return;
+        }
+
+        switch (ability) {
+            case "Strength" -> {
+                int v = Math.min(20, avatar.getStrSco() + value);
+                avatar.setStrSco(v);
+                avatar.setStrMod(abilityModifier(v));
+            }
+            case "Dexterity" -> {
+                int v = Math.min(20, avatar.getDexSco() + value);
+                avatar.setDexSco(v);
+                avatar.setDexMod(abilityModifier(v));
+            }
+            case "Constitution" -> {
+                int v = Math.min(20, avatar.getConsSco() + value);
+                avatar.setConsSco(v);
+                avatar.setConsMod(abilityModifier(v));
+            }
+            case "Intelligence" -> {
+                int v = Math.min(20, avatar.getIntSco() + value);
+                avatar.setIntSco(v);
+                avatar.setIntMod(abilityModifier(v));
+            }
+            case "Wisdom" -> {
+                int v = Math.min(20, avatar.getWisSco() + value);
+                avatar.setWisSco(v);
+                avatar.setWisMod(abilityModifier(v));
+            }
+            case "Charisma" -> {
+                int v = Math.min(20, avatar.getCharSco() + value);
+                avatar.setCharSco(v);
+                avatar.setCharMod(abilityModifier(v));
+            }
+            default -> {}
+        }
+    }
+
+
+        //  helpers
+
+    private Avatar getAvatarOrThrow(Long avatarId) {
+        return avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Avatar id=%s not found", avatarId), ErrorCode.AVATAR_NOT_FOUND));
+    }
+
+    private List<AvatarEquipmentItemDTO> toEquipmentDTOs(Avatar avatar) {
+        return avatar.getEquipmentItems().stream()
+                .map(e -> AvatarEquipmentItemDTO.builder()
+                        .name(e.getEquipmentItem().getName())
+                        .quantity(e.getQuantity())
+                        .category(e.getEquipmentItem().getCategory())
+                        .damageDice(e.getEquipmentItem().getDamageDice())
+
+                        .damageType(e.getEquipmentItem().getDamageType() != null ? e.getEquipmentItem().getDamageType().getName() : null)
+
+                        .atkBonus(weaponAtkBonus(avatar, e.getEquipmentItem()))
+                        .build())
+                .toList();
+    }
+
+    private List<AvatarEquipmentItemDTO> toWeaponDTOs(List<AvatarEquipmentItemDTO> equipment) {
+        return equipment.stream()
+                .filter(w -> "weapon".equals(w.getCategory()))
+                .toList();
+    }
+
+    private List<AvatarEquipmentItemDTO> toNonWeaponDTOs(List<AvatarEquipmentItemDTO> equipment) {
+        return equipment.stream()
+                .filter(w -> !"weapon".equals(w.getCategory()))
+                .toList();
+    }
+
+    private List<AvatarClassFeatureDTO> toClassFeatureDTOs(Avatar avatar) {
+
+        List<DndClassFeature> classFeatures = featureRepository.findByDndClass(avatar.getDndClass());
+        List<DndClassFeature> features = new ArrayList<>();
+        for (DndClassFeature classFeature : classFeatures) {
+            features.add(classFeature);
+        }
+
+        if (avatar.getDndsubclass() != null) {
+
+            List<DndClassFeature> subclassFeatures = featureRepository.findBySubclass(avatar.getDndsubclass());
+            for (DndClassFeature subclassFeature : subclassFeatures) {
+                features.add(subclassFeature);
+            }
+        }
+
+        // niektóre features są zdobywane na kilku levelach (np. Ability Score Improvement na 4/8/12/16)
+        // - anyMatch sprawdza, czy avatar osiągnął choć jeden z tych progów, żeby wiedzieć, czy w ogóle ją pokazać
+        return features.stream()
+                .filter(f -> f.getLevelsGained().stream()
+                        .anyMatch(l -> l.getLevel() <= avatar.getLevel()))
+                // wyświetlanie w kolejności zdobywania
+                .sorted(Comparator.comparing(f -> f.getLevelsGained().stream()
+                        .mapToInt(DndClassFeatureLevel::getLevel).min().orElse(0)))
+                .map(f -> AvatarClassFeatureDTO.builder()
+                        .name(f.getName())
+                        .description(f.getDescription())
+                        .build())
+                .toList();
+    }
+
+    private List<AvatarSpecieTraitDTO> toSpecieTraitDTOs(Avatar avatar) {
+        return specieTraitRepository.findBySpecieOrderByTraitOrder(avatar.getSpecie()).stream()
+                // speed and size are shown in different place than other traits
+                .filter(t -> !"SIZE".equals(t.getType()) && !"SPEED".equals(t.getType()))
+                .map(t -> AvatarSpecieTraitDTO.builder()
+                        .name(t.getName())
+                        .description(t.getDescription())
+                        .build())
+                .toList();
+    }
+
+    private List<String> toFeatNames(Avatar avatar) {
+        return avatarFeatRepository.findByAvatar_Id(avatar.getId()).stream()
+                .map(AvatarFeat::getName)
+                .toList();
+    }
+
+    // attack bonus = ability modifier (Strength or Dexterity for ranged/finesse weapons - whichever
+    // is higher for finesse) + proficiency bonus, if class is proficient with this weapon
+    private Integer weaponAtkBonus(Avatar avatar, EquipmentItem item) {
+        if (item == null || !"weapon".equals(item.getCategory())) {
             return null;
         }
 
-        return dndClassRepository.findById(dndClassId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("DndClass id=%s not found", dndClassId), ErrorCode.DND_CLASS_NOT_FOUND));
-    }
+        List<EquipmentItemProperty> properties = equipmentItemPropertyRepository.findByEquipmentItem(item);
+        boolean finesse = properties.stream().anyMatch(p -> "Finesse".equalsIgnoreCase(p.getName()));
 
-    private Background findBackground(Long backgroundId) {
-        if (backgroundId == null) {
-            return null;
+        int abilityMod;
+        if (item.getDistanceUnit() != null) {
+            abilityMod = avatar.getDexMod();
+        } else if (finesse) {
+            abilityMod = Math.max(avatar.getStrMod(), avatar.getDexMod());
+        } else {
+            abilityMod = avatar.getStrMod();
         }
 
-        return backgroundRepository.findById(backgroundId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Background id=%s not found", backgroundId), ErrorCode.BACKGROUND_NOT_FOUND));
+        int proficiencyBonus = isWeaponProficient(avatar.getDndClass(), item, properties) ? avatar.getProficiencyBonus() : 0;
+
+        return abilityMod + proficiencyBonus;
     }
 
-    private Specie findSpecie(Long specieId) {
-        if (specieId == null) {
-            return null;
+    // "Simple weapons" / "Simple and martial weapons that have the finesse or light property" / ...
+    private boolean isWeaponProficient(DndClass dndClass, EquipmentItem item, List<EquipmentItemProperty> itemProperties) {
+        String weaponProficiencies = dndClass.getWeaponProficiencies();
+        if (weaponProficiencies == null) {
+            return false;
+        }
+        String lower = weaponProficiencies.toLowerCase();
+
+        // weapon is "simple" and class is proficient with "simple weapons"
+        if (item.isSimple() && lower.contains("simple")) {
+            return true;
         }
 
-        return specieRepository.findById(specieId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Specie id=%s not found", specieId), ErrorCode.SPECIE_NOT_FOUND));
+        // martial weapons sometimes needs additional proificiency e.g. finesse/Light/Heavy
+        if (item.isMartial() && lower.contains("martial")) {
+            if (lower.contains("that have")) {
+                return itemProperties.stream().anyMatch(p -> lower.contains(p.getName().toLowerCase()));
+            }
+            return true;
+        }
+        return false;
     }
-
 }

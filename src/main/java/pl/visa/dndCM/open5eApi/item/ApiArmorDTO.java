@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-/** An item's "armor" stats - for armor and shield */
+// an item's "armor" stats - for armor and shield
+// currently mostly unused - imported and stored on EquipmentItem, but no AC calculation logic reads these fields back yet
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,10 +23,10 @@ public class ApiArmorDTO {
     private String acDisplay;
 
     @JsonProperty("ac_add_dexmod")
-    private boolean acAddDexmod;
+    private boolean acAddDexMod;
 
     @JsonProperty("ac_cap_dexmod")
-    private Integer acCapDexmod;
+    private Integer acCapDexMod;
 
     @JsonProperty("grants_stealth_disadvantage")
     private boolean grantsStealthDisadvantage;

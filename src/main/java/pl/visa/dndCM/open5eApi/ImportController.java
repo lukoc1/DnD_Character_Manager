@@ -27,6 +27,8 @@ import pl.visa.dndCM.gameData.specie.SpecieRepository;
 
 import java.util.List;
 
+// GET endpoints return entities directly, not DTOs - public data from open5e api,
+// relations already have @JsonIgnore where needed
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api")
@@ -88,7 +90,6 @@ public class ImportController {
         return "Equipment items loaded";
     }
 
-    // TODO: return a DTO, not the entity
     @GetMapping("/equipment")
     public List<EquipmentItem> getEquipment() {
         return equipmentItemRepository.findAll();
@@ -100,7 +101,7 @@ public class ImportController {
     }
 
 
-    // Classes + subclasses + features + progression tables, from local open5e-api (v2)
+    // Classes + subclasses + features + progression tables
 
     @GetMapping("/import/classes")
     public String importClasses() {
@@ -113,7 +114,7 @@ public class ImportController {
         return dndClassRepository.findAll();
     }
 
-    // Backgrounds, from local open5e-api (v2), with full benefits
+    // Backgrounds
 
     @GetMapping("/import/backgrounds")
     public String importBackground() {

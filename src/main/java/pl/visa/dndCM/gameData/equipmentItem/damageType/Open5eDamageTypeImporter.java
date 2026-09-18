@@ -24,8 +24,7 @@ public class Open5eDamageTypeImporter {
 
     private void importDamageType(ApiDamageTypeDTO dto) {
 
-        DamageType damageType = damageTypeRepository.findByApiIndex(dto.getKey()).stream()
-                .findFirst()
+        DamageType damageType = damageTypeRepository.findByApiIndex(dto.getKey())
                 .orElseGet(DamageType::new);
 
         damageType.setApiIndex(dto.getKey());
@@ -42,7 +41,7 @@ public class Open5eDamageTypeImporter {
 
         return descriptions.stream()
                 .filter(d -> "srd-2024".equals(d.getDocument()))
-                .map(ApiDamageDescriptionDTO::getDesc)
+                .map(d -> d.getDesc())
                 .findFirst()
                 .orElse(null);
     }

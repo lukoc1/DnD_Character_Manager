@@ -7,7 +7,6 @@ import java.util.Optional;
 
 @Repository
 public interface DndClassRepository extends JpaRepository<DndClass, Long> {
-    boolean existsByApiIndex(String apiIndex);
 
     Optional<DndClass> findByApiIndex(String apiIndex);
 }

@@ -11,17 +11,17 @@
 
 <div class="container">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="h3 m-0">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h1 class="h3">
             <span th:text="${avatar.name}">Hero</span> - Ability scores
         </h1>
     </div>
 
     <div th:if="${error}" class="alert alert-danger" th:text="${error}">error</div>
 
-    <p class="text-secondary">
+    <div class="text-secondary">
         Roll four d6 and keep the highest three. Do this six times, then assign each result to an ability.
-    </p>
+    </div>
 
     <form th:action="@{/avatar/{id}/create/abilities(id=${avatar.id})}" method="post" id="abilities-form">
 
@@ -29,7 +29,12 @@
 
             <div class="d-flex align-items-center gap-3 mb-3">
                 <button type="button" class="btn btn-dark" id="roll-btn">Roll</button>
-                <span class="text-secondary">Rolled: <span id="rolled-pool" class="fw-bold">-</span></span>
+                <span class="text-secondary">
+                    Rolled:
+                    <span id="rolled-nums" class="fw-bold">
+                        -
+                    </span>
+                </span>
             </div>
 
             <div class="row g-2">

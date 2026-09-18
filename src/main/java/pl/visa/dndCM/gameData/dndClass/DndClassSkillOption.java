@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-/** One skill a class can pick from, e.g. Barbarian: Athletics / Perception / Survival / ... */
+// one skill a class can pick from, e.g. Barbarian: Athletics / Perception / Survival / ...
 @Entity
 @Table(name = "dnd_class_skill_option")
 @Getter

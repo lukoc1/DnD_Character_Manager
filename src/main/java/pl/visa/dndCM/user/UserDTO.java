@@ -1,12 +1,8 @@
 package pl.visa.dndCM.user;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import pl.visa.dndCM.avatar.Avatar;
-import pl.visa.dndCM.avatar.AvatarDTO;
 
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -16,8 +12,11 @@ import java.util.UUID;
 public class UserDTO {
 
     private Long id;
-//    private UUID uuid;
-    @NotBlank
-    private String name;
+
+    private String firstName;
+    private String lastName;
+    private String email;
+    private Role role;
+
     private List<String> avatarList;
 }

@@ -31,4 +31,5 @@ public class CustomExceptionHandler {
 
         return "user/register-user";
     }
+
 }

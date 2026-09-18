@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-/** One level a feature is gained at, e.g. Ability Score Improvement -> 4, 8, 12, 16. */
+// level a feature is gained at, e.g. Ability Score Improvement -> 4, 8, 12, 16
 @Entity
 @Table(name = "class_feature_level")
 @Getter

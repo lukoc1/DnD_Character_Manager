@@ -6,8 +6,8 @@ import lombok.*;
 
 import java.util.List;
 
-/** Response from /classes.
- * Subclasses are in the same list, marked by a non-null "subclass_of". */
+// Response from /classes
+// Subclasses are in the same list, marked by a non-null "subclass_of"
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,7 +28,7 @@ public class ApiClassDTO {
     private List<ApiSavingThrowDTO> savingThrows;
 
     @JsonProperty("subclass_of")
-    private ApiClassRefDTO subclassOf;
+    private ApiSubclassOfDTO subclassOf;
 
     private List<ApiFeatureDTO> features;
 }

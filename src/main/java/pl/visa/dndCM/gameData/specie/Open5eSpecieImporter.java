@@ -7,7 +7,6 @@ import pl.visa.dndCM.open5eApi.specie.ApiSpecieDTO;
 import pl.visa.dndCM.open5eApi.specie.ApiTraitDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -19,15 +18,9 @@ public class Open5eSpecieImporter {
 
     public void importSpecies() {
 
-        List<ApiSpecieDTO> all = apiClient.getSpecies().getResults();
+        List<ApiSpecieDTO> specieDTOList = apiClient.getSpecies().getResults();
 
-        all.stream()
-                .filter(s -> s.getSubspeciesOf() == null)
-                .forEach(this::importSpecie);
-
-        all.stream()
-                .filter(s -> s.getSubspeciesOf() != null)
-                .forEach(this::importSubspecie);
+        specieDTOList.forEach(this::importSpecie);
     }
 
     private void importSpecie(ApiSpecieDTO dto) {
@@ -36,26 +29,35 @@ public class Open5eSpecieImporter {
         specie.setApiIndex(dto.getKey());
         specie.setName(dto.getName());
 
+        String speed = traitFirstWord(dto.getTraits(), "SPEED");
+
+        specie.setSize(traitFirstWord(dto.getTraits(), "SIZE"));
+        specie.setBaseSpeed(speed == null ? 0 : Integer.parseInt(speed));
+
         Specie saved = specieRepository.save(specie);
 
         importTraits(dto.getTraits(), saved);
     }
 
-    private void importSubspecie(ApiSpecieDTO dto) {
-
-        Optional<Specie> parent = specieRepository.findByApiIndex(dto.getSubspeciesOf().getKey());
-        if (parent.isEmpty()) {
-            return;
+    private String traitFirstWord(List<ApiTraitDTO> traits, String type) {
+        String desc = findTraitDesc(traits, type);
+        if (desc == null || desc.isBlank()) {
+            return null;
         }
 
-        Specie subspecie = specieRepository.findByApiIndex(dto.getKey()).orElseGet(Specie::new);
-        subspecie.setApiIndex(dto.getKey());
-        subspecie.setName(dto.getName());
-        subspecie.setParentSpecie(parent.get());
+        return desc.trim().split(" ")[0];
+    }
 
-        Specie saved = specieRepository.save(subspecie);
+    private String findTraitDesc(List<ApiTraitDTO> traits, String type) {
+        if (traits == null) {
+            return null;
+        }
 
-        importTraits(dto.getTraits(), saved);
+        return traits.stream()
+                .filter(t -> type.equals(t.getType()))
+                .map(t -> t.getDesc())
+                .findFirst()
+                .orElse(null);
     }
 
     private void importTraits(List<ApiTraitDTO> traits, Specie specie) {
@@ -64,12 +66,12 @@ public class Open5eSpecieImporter {
         }
 
         List<SpecieTrait> rows = traits.stream()
-                .map(trait -> SpecieTrait.builder()
+                .map(t -> SpecieTrait.builder()
                         .specie(specie)
-                        .name(trait.getName())
-                        .description(trait.getDesc())
-                        .type(trait.getType())
-                        .traitOrder(trait.getOrder())
+                        .name(t.getName())
+                        .description(t.getDesc())
+                        .type(t.getType())
+                        .traitOrder(t.getOrder())
                         .build())
                 .toList();
 

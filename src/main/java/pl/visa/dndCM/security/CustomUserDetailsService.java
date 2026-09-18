@@ -2,6 +2,7 @@ package pl.visa.dndCM.security;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import pl.visa.dndCM.user.User;
 import pl.visa.dndCM.user.UserRepository;
@@ -16,13 +17,16 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
+    // username == email
     public UserDetails loadUserByUsername(String username) {
-        User user = userRepository.findByName(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
+        // buduje tymczasowy Spring Security User -> i w sesji mamy Authentication
         return org.springframework.security.core.userdetails.User
-                .withUsername(user.getName())
+                .withUsername(user.getEmail())
                 .password(user.getPassword())
+                .roles(user.getRole().name())
                 .build();
     }
 }

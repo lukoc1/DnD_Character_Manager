@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-/**
- * One entry from a background's "benefits" (already structured, no parsing), e.g.
- * name "Skill Proficiencies", desc "Insight and Religion", type "skill_proficiency".
- */
+// one entry from a background's "benefits", e.g.
+// name "Skill Proficiencies", desc "Insight and Religion", type "skill_proficiency"
 @Entity
 @Table(name = "background_benefit")
 @Getter

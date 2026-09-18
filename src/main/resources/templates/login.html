@@ -14,10 +14,16 @@
 <div class="container">
 
     <div th:if="${param.error}" class="alert alert-danger" role="alert">
-        Wrong login or password!
+        Wrong email or password!
     </div>
     <div th:if="${param.logout}" class="alert alert-success" role="alert">
         Logout successfully.
+    </div>
+    <div th:if="${param.deleted}" class="alert alert-success" role="alert">
+        Account deleted successfully.
+    </div>
+    <div th:if="${param.edited}" class="alert alert-success" role="alert">
+        Profile updated, please log in again.
     </div>
 
     <div class="d-flex justify-content-between align-items-right mb-3">
@@ -30,8 +36,8 @@
     <form th:action="@{/login}" method="post">
 
         <div class="mb-3">
-            <label class="form-label">Username</label>
-            <input type="text" class="form-control" aria-describedby="emailHelp" name="username" required />
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" aria-describedby="emailHelp" name="username" required />
         </div>
         <div class="mb-3">
             <label class="form-label">Password</label>

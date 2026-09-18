@@ -33,15 +33,15 @@ public class Open5eClassImporter {
 
     public void importClasses() {
 
-        List<ApiClassDTO> all = apiClient.getClasses().getResults();
+        List<ApiClassDTO> classes = apiClient.getClasses().getResults();
 
-        all.stream()
+        classes.stream()
                 .filter(c -> c.getSubclassOf() == null)
-                .forEach(this::importBaseClass);
+                .forEach(c -> importBaseClass(c));
 
-        all.stream()
+        classes.stream()
                 .filter(c -> c.getSubclassOf() != null)
-                .forEach(this::importSubclass);
+                .forEach(c -> importSubclass(c));
     }
 
     private void importBaseClass(ApiClassDTO dto) {
@@ -49,7 +49,7 @@ public class Open5eClassImporter {
         DndClass dndClass = dndClassRepository.findByApiIndex(dto.getKey()).orElseGet(DndClass::new);
         dndClass.setApiIndex(dto.getKey());
         dndClass.setName(dto.getName());
-        dndClass.setHitDice(dto.getHitDice());
+        dndClass.setHitDiceValue(parseHitDie(dto.getHitDice()));
         dndClass.setCasterType(dto.getCasterType());
         applySavingThrows(dndClass, dto.getSavingThrows());
         List<String> skillNames = applyCoreTraits(dndClass, dto.getFeatures());
@@ -88,22 +88,33 @@ public class Open5eClassImporter {
             }
 
             switch (savingThrow.getName().toLowerCase()) {
-                case "strength" -> dndClass.setStrSavingThrow(true);
-                case "dexterity" -> dndClass.setDexSavingThrow(true);
-                case "constitution" -> dndClass.setConsSavingThrow(true);
-                case "intelligence" -> dndClass.setIntSavingThrow(true);
-                case "wisdom" -> dndClass.setWisSavingThrow(true);
-                case "charisma" -> dndClass.setChaSavingThrow(true);
-                default -> { }
+                case "strength" -> {
+                    dndClass.setStrSavingThrow(true);
+                }
+                case "dexterity" -> {
+                    dndClass.setDexSavingThrow(true);
+                }
+                case "constitution" -> {
+                    dndClass.setConsSavingThrow(true);
+                }
+                case "intelligence" -> {
+                    dndClass.setIntSavingThrow(true);
+                }
+                case "wisdom" -> {
+                    dndClass.setWisSavingThrow(true);
+                }
+                case "charisma" -> {
+                    dndClass.setChaSavingThrow(true);
+                }
+                default -> {}
             }
         }
     }
 
-    /**
-     * Reads the CORE_TRAITS_TABLE markdown, sets the simple class fields (primary ability,
-     * weapon proficiencies, armor training, starting equipment A/B, skill choice count) and
-     * returns the skill names to choose from (persisted separately as DndClassSkillOption rows).
-     */
+    // reads the CORE_TRAITS_TABLE, sets the simple class fields (primary ability,
+    // weapon proficiencies, armor training, starting equipment A/B, skill choice count) and
+    // returns the skill names to choose
+//    http://127.0.0.1:8000/v2/classes/?document__key__in=srd-2024&limit=100
     private List<String> applyCoreTraits(DndClass dndClass, List<ApiFeatureDTO> features) {
         if (features == null) {
             return List.of();
@@ -112,7 +123,8 @@ public class Open5eClassImporter {
         Optional<String> desc = features.stream()
                 .filter(f -> "CORE_TRAITS_TABLE".equals(f.getFeatureType()))
                 .findFirst()
-                .map(ApiFeatureDTO::getDesc);
+                .map(f -> f.getDesc());
+
         if (desc.isEmpty()) {
             return List.of();
         }
@@ -127,7 +139,7 @@ public class Open5eClassImporter {
         return parseSkillChoice(dndClass, traits.get("Skill Proficiencies"));
     }
 
-    /** Turns "|Label|Value|" lines into a label -> value map, skipping the "|||" / "|---|---|" rows. */
+    // turns "|Label|Value|" into map(label, value), skipping "|||" / "|---|---|"
     private Map<String, String> parseCoreTraitsTable(String markdown) {
         Map<String, String> traits = new HashMap<>();
 
@@ -149,8 +161,9 @@ public class Open5eClassImporter {
         return traits;
     }
 
-    /** "Choose 2: Arcana, History, ..., or Religion" -> sets skillChoiceCount, returns the names. */
+    // "Choose 2: Arcana, History, ..., or Religion" -> sets skillChoiceCount, returns the names
     private List<String> parseSkillChoice(DndClass dndClass, String value) {
+        // Bard issue -> for some reason looks different from others
         if (value == null || !value.startsWith("Choose ")) {
             return List.of();
         }
@@ -160,20 +173,22 @@ public class Open5eClassImporter {
             return List.of();
         }
 
+        // e.g. "Choose 2"
         try {
             dndClass.setSkillChoiceCount(Integer.parseInt(value.substring("Choose ".length(), colonIndex).trim()));
         } catch (NumberFormatException e) {
             return List.of();
         }
 
+        // takes Skills after ":"
         return Arrays.stream(value.substring(colonIndex + 1).split(","))
-                .map(String::trim)
-                .map(option -> option.replaceFirst("^or\\s+", ""))
-                .filter(option -> !option.isEmpty())
+                .map(s -> s.trim())
+                .map(s -> s.replaceFirst("^or\\s+", ""))
+                .filter(s -> !s.isEmpty())
                 .toList();
     }
 
-    /** "Choose A or B: (A) ...; or (B) ..." -> startingEquipmentA / startingEquipmentB. */
+    // "Choose A or B" -> startingEquipmentA / startingEquipmentB
     private void applyStartingEquipment(DndClass dndClass, String value) {
         if (value == null) {
             return;
@@ -188,7 +203,12 @@ public class Open5eClassImporter {
         String[] parts = body.split(";\\s*or\\s*\\(B\\)\\s*");
 
         dndClass.setStartingEquipmentA(parts[0].replaceFirst("^\\(A\\)\\s*", "").trim());
-        dndClass.setStartingEquipmentB(parts.length > 1 ? parts[1].trim() : null);
+
+        if (parts.length > 1) {
+            dndClass.setStartingEquipmentB(parts[1].trim());
+        } else {
+            dndClass.setStartingEquipmentB(null);
+        }
     }
 
     private void importSkillOptions(List<String> names, DndClass dndClass) {
@@ -203,6 +223,7 @@ public class Open5eClassImporter {
         skillOptionRepository.saveAll(rows);
     }
 
+    // see e.g. "Barbarian Features" table (PlayersHandbook2024)
     private void importFeaturesAndTables(List<ApiFeatureDTO> features, DndClass dndClass, DndSubclass subclass) {
         if (features == null) {
             return;
@@ -211,8 +232,9 @@ public class Open5eClassImporter {
         for (ApiFeatureDTO feature : features) {
             switch (feature.getFeatureType()) {
                 case "CLASS_LEVEL_FEATURE" -> importClassLevelFeature(feature, dndClass, subclass);
+                // more convenient to keep all in one table than separate
                 case "PROFICIENCY_BONUS", "CLASS_TABLE_DATA" -> importLevelTable(feature, dndClass);
-                default -> { /* CORE_TRAITS_TABLE handled separately, everything else skipped */ }
+                default -> {}
             }
         }
     }
@@ -262,4 +284,13 @@ public class Open5eClassImporter {
 
         levelTableEntryRepository.saveAll(rows);
     }
+
+    private int parseHitDie(String hitDice) {
+        if (hitDice == null) {
+            return 0;
+        }
+        return Integer.parseInt(hitDice.replace("D", ""));
+
+    }
+
 }
